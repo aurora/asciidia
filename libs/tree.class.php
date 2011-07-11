@@ -80,23 +80,24 @@ class tree extends asciidia
     /**/
     {
         $path = rtrim($path, '/');
-        $out  = array($path);
+        $out  = array(basename($path));
         
-        $iterator = new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator($path),
-            RecursiveIteratorIterator::SELF_FIRST
-        );
-        
-        foreach ($iterator as $name => $cur) {
-            if (!$cur->isDir()) {
-                // skip files
-                continue;
+        $rglob = function($path, $struct = '') use (&$rglob, &$out) {
+            $dirs = glob($path . '/*', GLOB_ONLYDIR);
+            
+            for ($i = 0, $cnt = count($dirs); $i < $cnt; ++$i) {
+                if (!is_dir($dirs[$i]) || substr($name = basename($dirs[$i]), 0, 1) == '.') {
+                    continue;
+                }
+                
+                $out[] = $struct . '+-' . $name;
+                
+                $rglob($dirs[$i], $struct . ($i == $cnt - 1 ? '  ' : '| '));
             }
-
-            $cnt = substr_count($name, '/');
-            $out[] = str_repeat('| ', $cnt - 1) . '+-' . $cur->getFilename();
-        }
+        };
         
+        $rglob($path);
+
         return implode("\n", $out);
     }
 }
