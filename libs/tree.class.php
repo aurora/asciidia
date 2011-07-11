@@ -69,4 +69,34 @@ class tree extends asciidia
         
         return $output;
     }
+    
+    /**
+     * Return recursive directory ASCII tree for a specified path.
+     *
+     * @octdoc  m:tree/getTree
+     * @return  string      $path           Path to return directory tree for.
+     */
+    public function getTree($path)
+    /**/
+    {
+        $path = rtrim($path, '/');
+        $out  = array($path);
+        
+        $iterator = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($path),
+            RecursiveIteratorIterator::SELF_FIRST
+        );
+        
+        foreach ($iterator as $name => $cur) {
+            if (!$cur->isDir()) {
+                // skip files
+                continue;
+            }
+
+            $cnt = substr_count($name, '/');
+            $out[] = str_repeat('| ', $cnt - 1) . '+-' . $cur->getFilename();
+        }
+        
+        return implode("\n", $out);
+    }
 }
