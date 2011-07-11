@@ -71,7 +71,7 @@ if ($raw) {
         $opt['o']
     );
 
-    `$cmd`;
+    passthru($cmd);
 }
 
 /*
