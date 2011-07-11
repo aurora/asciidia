@@ -107,11 +107,7 @@ class tree extends asciidia
             $dirs = glob($path . '/*', GLOB_ONLYDIR);
             
             for ($i = 0, $cnt = count($dirs); $i < $cnt; ++$i) {
-                if (!is_dir($dirs[$i]) || substr($name = basename($dirs[$i]), 0, 1) == '.') {
-                    continue;
-                }
-                
-                $out[] = $struct . '+-' . $name;
+                $out[] = $struct . '+-' . basename($dirs[$i]);
                 
                 $rglob($dirs[$i], $struct . ($i == $cnt - 1 ? '  ' : '| '));
             }
