@@ -9,10 +9,11 @@ Usage
 Description
 -----------
 
-Asciidia generates bitmap files (png) from simple ASCII diagram. In that it is similar
+Asciidia generates bitmap files (png) from simple ASCII diagrams. In that it is similar
 to programs like [ditaa](http://ditaa.sourceforge.net/). However: motivation for writing
 asciidia was not to replace ditaa or similar tools. Instead i was not satisfied with some 
-diagrams produced with ditaa especially i was not able to render directory trees with it.
+diagrams produced with ditaa especially i was not able to render nice looking directory 
+trees with it.
 
 Because of this, asciidia is more a quick hack with very limited functionality compared 
 to a full-featured application like ditaa. For large diagrams asciidia might have 
@@ -24,9 +25,9 @@ Asciidia requires and uses imagemagick to render it's diagrams to a bitmap.
 
     -t  Optional type: "tree" or "diagram". Default is: "diagram".
     -r  Optional flag to output the imagemagick draw commands instead of creating a bitmap.
-    -i  Required input filename. If '-' is specified, input is read from STDIN. If a 
+    -i  Required input filename. If "-" is specified, input is read from STDIN. If a 
         directory is specified, the directory will be drawn as tree-diagram instead.
-    -o  Required output filename. If '-' is specified, output is written to STDOUT.
+    -o  Required output filename. If "-" is specified, output is written to STDOUT.
 
 Requirements
 ------------
