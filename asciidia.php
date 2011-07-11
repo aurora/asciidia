@@ -23,16 +23,29 @@ $type  = 'diagram';
 // process command-line parameters
 $opt   = getopt('t:ri:o:');
 
-if (!array_key_exists('i', $opt) || !array_key_exists('o', $opt)) {
-    usage();
-}
 if (array_key_exists('t', $opt)) {
      if (in_array($opt['t'], $types)) {
          $type = $opt['t'];
      } else {
-         usage(sprintf("unknown type '%s'", $opt['t']));
+         usage(sprintf('unknown type "%s"', $opt['t']));
      }
 }
+if (!array_key_exists('i', $opt) || !array_key_exists('o', $opt)) {
+    usage();
+} elseif (is_dir($opt['i']) && $opt['t'] != 'tree') {
+    usage('a directory as input is only allowed for diagram type "tree"');
+} elseif ($opt['i'] != '-' && !is_readable($opt['i'])) {
+    usage('input is not readable');
+} elseif (is_dir($opt['o'])) {
+    usage('only a filename is allowed as output');
+} elseif ($opt['o'] != '-') {
+    if (file_exists($opt['o'])) {
+        usage('output already exists');
+    } elseif (!touch($opt['o']) || !is_writable($opt['o'])) {
+        usage('output is not writable');
+    }
+}
+
 $raw = array_key_exists('r', $opt);
 
 // process diagram
