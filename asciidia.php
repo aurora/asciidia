@@ -49,11 +49,18 @@ if (!array_key_exists('i', $opt) || !array_key_exists('o', $opt)) {
 $raw = array_key_exists('r', $opt);
 
 // process diagram
-$content = file_get_contents(
-    ($opt['i'] == '-' ? 'php://stdin' : $opt['i'])
-);
-
 $dia = new $type();
+
+if ($type == 'tree' && $opt['i'] != '-' && is_dir($opt['i'])) {
+    // directory as input
+    $content = $dia->getTree($opt['i']);
+} else {
+    // file or STDIN as input
+    $content = file_get_contents(
+        ($opt['i'] == '-' ? 'php://stdin' : $opt['i'])
+    );
+}
+
 $out = $dia->parse($content);
 
 if ($raw) {
@@ -107,7 +114,8 @@ function usage($msg = '')
     printf("options:
     -t  type: %s. Default is: diagram
     -r  output as imagemagick draw commands instead of creating a bitmap
-    -i  input filename. if '-', input is read from STDIN
+    -i  input filename. if '-', input is read from STDIN. If a directory is
+        specified, the directory will be drawn as tree-diagram instead.
     -o  output filename. if '-', output is written to STDOUT
 ", implode(', ', $types));
     exit(0);
