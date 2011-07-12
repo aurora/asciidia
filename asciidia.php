@@ -37,13 +37,14 @@
 $types = array('diagram', 'tree');
 $type  = 'diagram';
 $scale = '';
+$cell  = '';
 
 /*
  * main
  */
 
 // process command-line parameters
-$opt   = getopt('t:ri:o:s:');
+$opt   = getopt('t:ri:o:s:c:');
 
 if (array_key_exists('t', $opt)) {
      if (in_array($opt['t'], $types)) {
@@ -74,6 +75,15 @@ if (array_key_exists('s', $opt)) {
         $scale = $opt['s'];
     }
 }
+if (array_key_exists('c', $opt)) {
+    if (!preg_match('/^\d+(x\d+|)$/', $opt['c'])) {
+        usage('wrong cell-size parameter');
+    } elseif (strpos($opt['c'], 'x') !== false) {
+        $cell = explode('x', $opt['c']);
+    } else {
+        $cell = array($opt['c'], $opt['c']);
+    }
+}
 
 $raw = array_key_exists('r', $opt);
 
@@ -88,6 +98,11 @@ if ($type == 'tree' && $opt['i'] != '-' && is_dir($opt['i'])) {
     $content = file_get_contents(
         ($opt['i'] == '-' ? 'php://stdin' : $opt['i'])
     );
+}
+
+if ($cell) {
+    $dia->xs = $cell[0];
+    $dia->ys = $cell[1];
 }
 
 $out = $dia->parse($content);
