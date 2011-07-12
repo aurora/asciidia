@@ -4,7 +4,7 @@ asciidia
 Usage
 -----
 
-    $ ./asciidia.php [-t ...] [-r] -i ... -o ...
+    $ ./asciidia.php [-t ...] [-r] [-c ...] [-s ...] -i ... -o ...
 
 Description
 -----------
