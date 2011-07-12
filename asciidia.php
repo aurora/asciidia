@@ -155,15 +155,17 @@ function usage($msg = '')
         printf("error: %s\n", $msg);
     }
     
-    printf("usage: %s [-t ...] [-r] [-s ...] -i ... -o ...\n", $argv[0]);
+    printf("usage: %s [-t ...] [-r] [-c ...] [-s ...] -i ... -o ...\n", $argv[0]);
     printf("options:
     -t  type: %s. Default is: diagram
     -r  output as imagemagick draw commands instead of creating a bitmap
-    -i  input filename. if '-', input is read from STDIN. If a directory is
-        specified, the directory will be drawn as tree-diagram instead.
+    -c  defines the widht/height of each cell / character on the canvas in 
+        pixel. Notation is ...x... (width x height) or ... (width x width).
     -s  only if '-r' is not specified. scales image. notation is ...x...
         (width x height) whereas ... is a number to scale to. if width or
         height are ommited, image will be scale by keeping aspect ratio.
+    -i  input filename. if '-', input is read from STDIN. If a directory is
+        specified, the directory will be drawn as tree-diagram instead.
     -o  output filename. if '-', output is written to STDOUT
 ", implode(', ', $types));
     exit(0);
