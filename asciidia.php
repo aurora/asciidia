@@ -36,13 +36,14 @@
  */
 $types = array('diagram', 'tree');
 $type  = 'diagram';
+$scale = '';
 
 /*
  * main
  */
 
 // process command-line parameters
-$opt   = getopt('t:ri:o:');
+$opt   = getopt('t:ri:o:s:');
 
 if (array_key_exists('t', $opt)) {
      if (in_array($opt['t'], $types)) {
@@ -64,6 +65,13 @@ if (!array_key_exists('i', $opt) || !array_key_exists('o', $opt)) {
         usage('output already exists');
     } elseif (!touch($opt['o']) || !is_writable($opt['o'])) {
         usage('output is not writable');
+    }
+}
+if (array_key_exists('s', $opt)) {
+    if (!preg_match('/^(\d*x\d+|\d+x\d*)$/', $opt['s'])) {
+        usage('wrong scaling parameter');
+    } else {
+        $scale = $opt['s'];
     }
 }
 
@@ -93,9 +101,10 @@ if ($raw) {
     list($w, $h) = $dia->getSize();
 
     $cmd = sprintf(
-        'convert -size %dx%d xc:white -stroke black -fill none -draw "%s" png:%s',
+        'convert -size %dx%d xc:white -stroke black -fill none -draw "%s" %s png:%s',
         $w, $h,
         implode(' ', $out),
+        ($scale ? '-scale ' . $scale : ''),
         $opt['o']
     );
 
@@ -131,12 +140,15 @@ function usage($msg = '')
         printf("error: %s\n", $msg);
     }
     
-    printf("usage: %s [-t ...] [-r] -i ... -o ...\n", $argv[0]);
+    printf("usage: %s [-t ...] [-r] [-s ...] -i ... -o ...\n", $argv[0]);
     printf("options:
     -t  type: %s. Default is: diagram
     -r  output as imagemagick draw commands instead of creating a bitmap
     -i  input filename. if '-', input is read from STDIN. If a directory is
         specified, the directory will be drawn as tree-diagram instead.
+    -s  only if '-r' is not specified. scales image. notation is ...x...
+        (width x height) whereas ... is a number to scale to. if width or
+        height are ommited, image will be scale by keeping aspect ratio.
     -o  output filename. if '-', output is written to STDOUT
 ", implode(', ', $types));
     exit(0);
