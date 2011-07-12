@@ -134,7 +134,7 @@ abstract class asciidia
     /**/
     
     /**
-     * Parse an ASCII diagram an convert it to imagemagick commants.
+     * Parse an ASCII diagram an convert it to imagemagick commands.
      *
      * @octdoc  m:asciidia/parse
      * @param   string      $diagram        ASCII Diagram to parse.
