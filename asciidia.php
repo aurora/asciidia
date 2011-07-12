@@ -34,7 +34,7 @@
 /*
  * config
  */
-$types = array('diagram', 'tree');
+$types = array('diagram', 'tree', 'ebnf');
 $type  = 'diagram';
 $scale = '';
 $cell  = '';
