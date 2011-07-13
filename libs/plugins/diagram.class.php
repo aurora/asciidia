@@ -33,14 +33,16 @@
 # /   - round top left corner / round bottom right corner
 # \   - round top right / round bottom left corner
 
+require_once(__DIR__ . '/../plugin.class.php');
+
 /**
  * Class for converting simple ASCII diagrams.
  *
- * @octdoc      c:libs/diagram
+ * @octdoc      c:plugin/diagram
  * @copyright   copyright (c) 2011 by Harald Lapp
  * @author      Harald Lapp <harald@octris.org>
  */
-class diagram extends asciidia
+class diagram extends plugin
 /**/
 {
     /**
