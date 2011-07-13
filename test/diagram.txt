@@ -12,3 +12,25 @@ x-----+
         ^   V------------------+
         |   |
         +-<-+
+
+
+Drawing primitives:
+
+-----   simple line
+<----   horizontal left arrow
+---->   horizontal right arrow
+<--->   horizontal arrow with two heads
+
+|  ^  |  ^
+|  |  |  |
+|  |  |  V
+|  |  V  vertical arrow with two heads
+|  |  vertical down arrow
+|  vertical up arrow
+vertical line
+
+o----x  horizontal line with start and end marker
+
+     |
+-----+ horizontal line hitting vertical line 
+     |
