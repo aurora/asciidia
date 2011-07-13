@@ -96,6 +96,15 @@ abstract class asciidia
     /**/
     
     /**
+     * Stroke color
+     *
+     * @octdoc  v:asciidia/$stroke
+     * @var     string
+     */
+    protected $stroke = 'black';
+    /**/
+    
+    /**
      * Imagemagick MVG commands.
      *
      * @octdoc  v:asciidia/$mvg
