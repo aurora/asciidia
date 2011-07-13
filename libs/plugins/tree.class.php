@@ -85,7 +85,7 @@ class tree extends diagram
      * @octdoc  m:tree/getTree
      * @return  string      $path           Path to return directory tree for.
      */
-    public function getTree($path)
+    protected function getTree($path)
     /**/
     {
         $path = rtrim($path, '/');
