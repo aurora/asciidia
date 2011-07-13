@@ -451,8 +451,8 @@ abstract class asciidia
             $y = $y * $this->ys + $this->yf;
 
             $this->mvg[] = sprintf(
-                'fill %s circle %d,%d %d,%d',
-                $this->bg, $x, $y, $x + $this->xf, $y
+                'fill %s ellipse %d,%d %d,%d 0,360',
+                $this->bg, $x, $y, $hxf, $hyf
             );
             break;
         }
