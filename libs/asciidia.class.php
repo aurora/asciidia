@@ -239,6 +239,18 @@ abstract class asciidia
         $this->mvg = array();
     }
 
+    /**
+     * Enable a grid overlay useful for debugging asciidia.
+     *
+     * @octdoc  m:asciidia/enableGrid
+     * @param   bool        $enable             Whether to enable / disable grid.
+     */
+    public function enableGrid($enable)
+    /**/
+    {
+        $this->grid = $enable;
+    }
+
     /*
      * drawing primitives
      */
