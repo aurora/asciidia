@@ -38,7 +38,7 @@ abstract class asciidia
      * @octdoc  v:asciidia/$xs
      * @var     float
      */
-    protected $xs = 10.0;
+    protected $xs = 15.0;
     /**/
     
     /**
