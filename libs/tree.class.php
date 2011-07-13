@@ -28,69 +28,55 @@
  * @copyright   copyright (c) 2011 by Harald Lapp
  * @author      Harald Lapp <harald@octris.org>
  */
-class tree extends asciidia
+class tree extends diagram
 /**/
 {
     /**
-     * Draw a diagram.
+     * Parse an ASCII tree diagram an convert it to imagemagick commands.
      *
-     * @octdoc  m:diagram/draw
-     * @param   int         $x                  X-position of cell to draw.
-     * @param   int         $y                  Y-position of cell to draw.
-     * @param   string      $ch                 Character to draw.
-     * @param   callback    $get_surrounding    Callback to determine surrounding characters.
-     * @return  string                          Imagemagick draw commands.
+     * @octdoc  m:tree/parse
+     * @param   string      $diagram        ASCII Diagram to parse.
+     * @return  string                      Imagemagick commands to draw diagram.
      */
-    public function draw($x, $y, $ch, $get_surrounding)
+    public function parse($diagram)
     /**/
     {
-        list($a, $r, $b, $l) = $get_surrounding();
-        
-        $output = array();
-        
-        if ($ch == '+' && ($a == '|' || $r == '-' || $b == '|' || $l == '-' || $b == '+' || $a == '+')) {
-            if ($l == '-' || $r == '-') {
-                $output[] = sprintf(
-                    "line   %d,%d %d,%d",
-                    ($l == '-' ? $x * $this->xs : $x * $this->xs + $this->xf),
-                    $y * $this->ys + $this->yf,
-                    ($r == '-' ? ($x + 1) * $this->xs - 1 : $x * $this->xs + $this->xf), 
-                    $y * $this->ys + $this->yf
-                );
+        $rows = explode("\n", $diagram);
+    
+        for ($y = 0, $h = count($rows); $y < $h; ++$y) {
+            for ($x = 0, $w = strlen($rows[$y]); $x < $w; ++$x) {
+                $c = $rows[$y][$x];
+                list($a, $r, $b, $l) = $this->getSurrounding($x, $y, $rows);
+
+                if ($c == '+' && $r == '-') {
+                    $this->drawMarker($x, $y, $c, true, true, ($b == '+' || $b == '|'), false);
+                } elseif ($c == '-' && ($l == '+' || $l == '-' || $r == '-' || $r == '>')) {
+                    $this->addLine($x, $y, $rows);
+                } elseif ($c == '>' && ($l == '-')) {
+                    $this->addLine($x, $y, $rows);
+                } elseif ($c == '|' && ($a == '+' || $a == '|' || $b == '+' || $b == '|')) {
+                    $this->addLine($x, $y, $rows);
+                } elseif ($c != ' ') {
+                    $this->addChar($x, $y, $c);
+                }
             }
-            
-            $output[] = sprintf(
-                "line   %d,%d %d,%d",
-                $x * $this->xs + $this->xf,
-                $y * $this->ys,
-                $x * $this->xs + $this->xf,
-                (($b == '|' || $b == '+') ? ($y + 1) * $this->ys - 1 : $y * $this->ys + $this->yf)
-            );
-        } elseif ($ch == '-') {
-            $output[] = sprintf(
-                "line   %d,%d %d,%d",
-                $x * $this->xs, $y * $this->ys + $this->yf,
-                ($x + 1) * $this->xs - 1, $y * $this->ys + $this->yf
-            );
-        } elseif ($ch == '|') {
-            $output[] = sprintf(
-                "line   %d,%d %d,%d",
-                $x * $this->xs + $this->xf, $y * $this->ys,
-                $x * $this->xs + $this->xf, ($y + 1) * $this->ys - 1
-            );
-        } elseif ($ch != ' ') {
-            // draw text
-            $output[] = sprintf(
-                "text %d,%d '%s'",
-                $x * $this->xs,
-                ($y + 1) * $this->ys - ($this->yf / 2),
-                addcslashes($ch, "'")
-            );
         }
         
-        return $output;
+        foreach ($this->strings as $string) {
+            $this->drawText($string['x'], $string['y'], $string['text']);
+        }
+        
+        foreach ($this->lines as $line) {
+            if ($line['type'] == 'H') {
+                $this->drawHLine($line['x1'], $line['y1'], $line['x2'], $line['arrow']);
+            } elseif ($line['type'] == 'V') {
+                $this->drawVLine($line['x1'], $line['y1'], $line['y2'], $line['arrow']);
+            }
+        }
+        
+        return $this->getCommands();
     }
-    
+
     /**
      * Return recursive directory ASCII tree for a specified path.
      *
