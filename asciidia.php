@@ -44,7 +44,7 @@ $cell  = '';
  */
 
 // process command-line parameters
-$opt   = getopt('t:ri:o:s:c:');
+$opt   = getopt('t:ri:o:s:c:d');
 
 if (array_key_exists('t', $opt)) {
      if (in_array($opt['t'], $types)) {
@@ -85,10 +85,12 @@ if (array_key_exists('c', $opt)) {
     }
 }
 
-$raw = array_key_exists('r', $opt);
+$raw   = array_key_exists('r', $opt);
+$debug = array_key_exists('d', $opt);
 
 // process diagram
 $dia = new $type();
+$dia->enableGrid($debug);
 
 if ($type == 'tree' && $opt['i'] != '-' && is_dir($opt['i'])) {
     // directory as input
