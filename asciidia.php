@@ -31,46 +31,63 @@
  */
 /**/
 
+require_once(__DIR__ . '/libs/asciidia.class.php');
+require_once(__DIR__ . '/libs/stdlib.class.php');
+
 /*
  * config
  */
-$types = array('diagram', 'tree');
-$type  = 'diagram';
 $scale = '';
 $cell  = '';
+$types = stdlib::getPlugins();
 
 /*
  * main
  */
 
-// process command-line parameters
-$opt   = getopt('t:ri:o:s:c:d');
+// process standard command-line parameters
+$opt = getopt('t:i:o:s:c:dr');
 
-if (array_key_exists('t', $opt)) {
+if (!array_key_exists('t', $opt)) {
      if (in_array($opt['t'], $types)) {
          $type = $opt['t'];
      } else {
-         usage(sprintf('unknown type "%s"', $opt['t']));
+         stdlib::usage(sprintf('unknown type "%s"', $opt['t']));
      }
 }
-if (!array_key_exists('i', $opt) || !array_key_exists('o', $opt)) {
-    usage();
+// type, input, output are always required command-line arguments
+if (!array_key_exists('t', $opt) || !array_key_exists('i', $opt) || !array_key_exists('o', $opt)) {
+    stdlib::usage();
+}
+
+if (!in_array($opt['t'], $types)) {
+    stdlib::usage(sprintf('unknown plugin "%s"', $opt['t']));
+}
+
+require_once(__DIR__ . '/libs/plugins/' . $opt['t'] . '.class.php');
+
+$dia = new $opt['t']();
+
+// plugin might have it's own set of command-line arguments
+$dia->
+
+
 } elseif (is_dir($opt['i']) && $opt['t'] != 'tree') {
-    usage('a directory as input is only allowed for diagram type "tree"');
+    stdlib::usage('a directory as input is only allowed for diagram type "tree"');
 } elseif ($opt['i'] != '-' && !is_readable($opt['i'])) {
-    usage('input is not readable');
+    stdlib::usage('input is not readable');
 } elseif (is_dir($opt['o'])) {
-    usage('only a filename is allowed as output');
+    stdlib::usage('only a filename is allowed as output');
 } elseif ($opt['o'] != '-') {
     if (file_exists($opt['o'])) {
-        usage('output already exists');
+        stdlib::usage('output already exists');
     } elseif (!touch($opt['o']) || !is_writable($opt['o'])) {
-        usage('output is not writable');
+        stdlib::usage('output is not writable');
     }
 }
 if (array_key_exists('s', $opt)) {
     if (!preg_match('/^(\d*x\d+|\d+x\d*)$/', $opt['s'])) {
-        usage('wrong scaling parameter');
+        stdlib::usage('wrong scaling parameter');
     } else {
         $scale = $opt['s'];
     }
@@ -131,18 +148,6 @@ if ($raw) {
 /*
  * functions
  */
-/**
- * Simple class autoloader.
- *
- * @octdoc  f:asciidia/__autoload
- * @param   string      $classname          Name of class to load.
- */
-function __autoload($classname)
-/**/
-{
-    require_once(__DIR__ . '/libs/' . $classname . '.class.php');
-}
-
 /**
  * Show simple usage information and exit application.
  *
