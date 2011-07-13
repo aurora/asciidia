@@ -87,6 +87,15 @@ abstract class asciidia
     /**/
     
     /**
+     * Whether grid overlay is enabled
+     *
+     * @octdoc  v:asciidia/$grid
+     * @var     bool
+     */
+    protected $grid = false;
+    /**/
+    
+    /**
      * Background color.
      *
      * @octdoc  v:asciidia/$bg
@@ -183,15 +192,36 @@ abstract class asciidia
     public function getCommands()
     /**/
     {
-        $output = array();
-    
+        $debug = array();
+        
+        if ($this->grid) {
+            // draw debugging grid
+            for ($x = 0; $x <= $this->w; ++$x) {
+                $debug[] = sprintf(
+                    'line %d,0 %d,%d',
+                    $x * $this->xs,
+                    $x * $this->xs,
+                    $this->h * $this->ys + $this->ys
+                );
+            }
+            for ($y = 0; $y <= $this->h; ++$y) {
+                $debug[] = sprintf(
+                    'line 0,%d %d,%d',
+                    $y * $this->ys,
+                    $this->w * $this->xs + $this->xs,
+                    $y * $this->ys
+                );
+            }
+        }
+        
         return array_merge(
             array(
                 'push graphic-context',
                 'font Courier',
                 sprintf('font-size %f', $this->ys)
-            ),
+            ), 
             $this->mvg,
+            $debug,
             array(
                 'pop graphic-context'
             )
