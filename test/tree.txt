@@ -1,4 +1,25 @@
 /
-+-home
-| +-harald
-| +-shared
++- ...
++- home/
+|  +- ...
+|  +- harald/
+|  |  +- ...
+|  |  +- www/
+|  |  |  +- data/
+|  |  |  +- etc/ 
+|  |  |  |  +- org.octris.core      -> ../work/org.octris.core/etc/
+|  |  |  +- host/
+|  |  |  +- libs/
+|  |  |  |  +- org.octris.core      -> ../work/org.octris.core/libs/
+|  |  |  +- locale/
+|  |  |  +- templates/
+|  |  |  +- tools/
+|  |  |  |  +- org.octris.core      -> ../work/org.octris.core/tools/
+|  |  |  +- work/
+|  |  |  |  +- org.octris.core/
+|  |  |  |     +- doc/
+|  |  |  |     +- etc/
+|  |  |  |     +- libs/
+|  |  |  |     +- libsjs/
+|  |  |  |     +- tests/
+|  |  |  |     +- tools/
