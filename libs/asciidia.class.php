@@ -315,6 +315,27 @@ abstract class asciidia
         );
         
         if ($arrow !== false) {
+            if ($x1 > $x2) $x1 ^= $x2 ^= $x1 ^= $x2;
+            $f = $this->yf / 2;
+            
+            if ($arrow <= 0) {
+                $this->mvg[] = sprintf(
+                    "fill %s path 'M %d,%d %d,%d %d,%d Z'",
+                    $this->stroke,
+                    $x1 * $this->xs, $y * $this->ys + $this->yf,
+                    $x1 * $this->xs + $this->xf, $y * $this->ys + $f,
+                    $x1 * $this->xs + $this->xf, $y * $this->ys + $this->yf + $f
+                );
+            }
+            if ($arrow >= 0) {
+                $this->mvg[] = sprintf(
+                    "fill %s path 'M %d,%d %d,%d %d,%d Z'",
+                    $this->stroke,
+                    $x2 * $this->xs + $this->xs, $y * $this->ys + $this->yf,
+                    $x2 * $this->xs + $this->xf, $y * $this->ys + $f,
+                    $x2 * $this->xs + $this->xf, $y * $this->ys + $this->yf + $f
+                );
+            }
         }
     }
     
@@ -347,6 +368,27 @@ abstract class asciidia
         );
         
         if ($arrow !== false) {
+            if ($y1 > $y2) $y1 ^= $y2 ^= $y1 ^= $y2;
+            $f = $this->xf / 2;
+            
+            if ($arrow <= 0) {
+                $this->mvg[] = sprintf(
+                    "fill %s path 'M %d,%d %d,%d %d,%d Z'",
+                    $this->stroke,
+                    $x * $this->xs + $this->xf, $y1 * $this->ys,
+                    $x * $this->xs + $f, $y1 * $this->ys + $this->yf,
+                    $x * $this->xs + $this->xf + $f, $y1 * $this->ys + $this->yf
+                );
+            }
+            if ($arrow >= 0) {
+                $this->mvg[] = sprintf(
+                    "fill %s path 'M %d,%d %d,%d %d,%d Z'",
+                    $this->stroke,
+                    $x * $this->xs + $f, $y2 * $this->ys + $this->yf,
+                    $x * $this->xs + $this->xf, $y2 * $this->ys + $this->ys,
+                    $x * $this->xs + $this->xf + $f, $y2 * $this->ys + $this->yf
+                );
+            }
         }
     }
 
