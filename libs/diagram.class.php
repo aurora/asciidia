@@ -24,10 +24,10 @@
 # syntax (not all implemented, yet)
 #
 # +   - punkt / kreuzung / ecke
-# |   - vertikale linie
-# -   - horizontale linie
 # x   - kreuz-markierung
 # o   - kreis-markierung
+# |   - vertical line
+# -   - horizontal line
 # <   - pfeil links
 # >   - pfeil rechts
 # ^   - pfeil oben
@@ -46,122 +46,196 @@ class diagram extends asciidia
 /**/
 {
     /**
-     * Draw a diagram.
+     * Determined text-strings of diagram.
      *
-     * @octdoc  m:diagram/draw
-     * @param   int         $x                  X-position of cell to draw.
-     * @param   int         $y                  Y-position of cell to draw.
-     * @param   string      $ch                 Character to draw.
-     * @param   callback    $get_surrounding    Callback to determine surrounding characters.
-     * @return  string                          Imagemagick draw commands.
+     * @octdoc  v:diagram/$strings
+     * @var     array
      */
-    public function draw($x, $y, $ch, $get_surrounding)
+    protected $strings = array();
+    /**/
+
+    /**
+     * Determined string positions and mapping to stored strings.
+     *
+     * @octdoc  v:diagram/$strings_pos
+     * @var     array
+     */
+    protected $strings_pos = array();
+    /**/
+    
+    /**
+     * Horizontal line parser.
+     *
+     * @octdoc  m:diagram/parseHLine
+     * @param   int         $x1             X-position the line starts at.
+     * @param   int         $y              Y-position the line starts at.
+     * @param   array       $rows           Diagram to parse.
+     * @return  bool                        Returns always false to let main parser continue.
+     */
+    protected function parseHLine($x1, $y, array &$rows)
     /**/
     {
-        list($a, $r, $b, $l) = $get_surrounding();
+        list($a, $r, $b, $l) = $this->getSurrounding($x1, $y, $rows);
+
+        $arrow = ($rows[$y][$x1] == '<' ? -1 : false);
+        $x2    = $x1;
+
+        if ($arrow !== false && $r != '-') return false;
         
-        $output = array();
+        do {
+            $rows[$y][$x2++] = '';
+        } while (isset($rows[$y][$x2]) && $rows[$y][$x2] == '-');
         
-        if ($ch == '+' || (($ch == 'x' || $ch == 'o') && ($a == '|' || $r == '-' || $b == '|' || $l == '-'))) {
-            if ($l == '-' || $r == '-') {
-                $output[] = sprintf(
-                    "line   %d,%d %d,%d",
-                    ($l == '-' ? $x * $this->xs : $x * $this->xs + $this->xf),
-                    $y * $this->ys + $this->yf,
-                    ($r == '-' ? ($x + 1) * $this->xs - 1 : $x * $this->xs + $this->xf), 
-                    $y * $this->ys + $this->yf
-                );
-            }
-            if ($a == '|' || $b == '|') {
-                $output[] = sprintf(
-                    "line   %d,%d %d,%d",
-                    $x * $this->xs + $this->xf,
-                    ($a == '|' ? $y * $this->ys : $y * $this->ys + $this->yf),
-                    $x * $this->xs + $this->xf,
-                    ($b == '|' ? ($y + 1) * $this->ys - 1 : $y * $this->ys + $this->yf)
-                );
-            }
-            
-            if ($ch == 'x') {
-                $output[] = sprintf(
-                    "line   %d,%d %d,%d",
-                    $x * $this->xs,
-                    $y * $this->ys,
-                    ($x + 1) * $this->xs - 1,
-                    ($y + 1) * $this->ys - 1
-                );
-                $output[] = sprintf(
-                    "line   %d,%d %d,%d",
-                    ($x + 1) * $this->xs - 1,
-                    $y * $this->ys,
-                    $x * $this->xs,
-                    ($y + 1) * $this->ys - 1
-                );
-            } elseif ($ch == 'o') {
-                
-            }
-        } elseif ($ch == '-') {
-            $output[] = sprintf(
-                "line   %d,%d %d,%d",
-                $x * $this->xs, $y * $this->ys + $this->yf,
-                ($x + 1) * $this->xs - 1, $y * $this->ys + $this->yf
-            );
-        } elseif ($ch == '|') {
-            $output[] = sprintf(
-                "line   %d,%d %d,%d",
-                $x * $this->xs + $this->xf, $y * $this->ys,
-                $x * $this->xs + $this->xf, ($y + 1) * $this->ys - 1
-            );
-        } elseif ($ch == '>' && $l == '-') {
-            $output[] = sprintf(
-                "fill black path 'M %d,%d %d,%d %d,%d Z'",
-                $x * $this->xs + $this->xf, $y * $this->ys,
-                ($x + 1) * $this->xs - 1, $y * $this->ys + $this->yf,
-                $x * $this->xs + $this->xf, ($y + 1) * $this->ys - 1
-            );
-            $output[] = sprintf(
-                "line   %d,%d %d,%d",
-                $x * $this->xs, $y * $this->ys + $this->yf,
-                ($x + 1) * $this->xs - 1, $y * $this->ys + $this->yf
-            );
-        } elseif ($ch == '<' && $r == '-') {
-            $output[] = sprintf(
-                "fill black path 'M %d,%d %d,%d %d,%d Z'",
-                $x * $this->xs + $this->xf, $y * $this->ys,
-                $x * $this->xs, $y * $this->ys + $this->yf,
-                $x * $this->xs + $this->xf, ($y + 1) * $this->ys - 1
-            );
-            $output[] = sprintf(
-                "line   %d,%d %d,%d",
-                $x * $this->xs, $y * $this->ys + $this->yf,
-                ($x + 1) * $this->xs - 1, $y * $this->ys + $this->yf
-            );
-        } elseif ($ch == 'V' && $a == '|') {
-            $output[] = sprintf(
-                "fill black path 'M %d,%d %d,%d %d,%d Z'",
-                $x * $this->xs, $y * $this->ys + $this->yf,
-                $x * $this->xs + $this->xf, ($y + 1) * $this->ys - 1,
-                ($x + 1) * $this->xs - 1, $y * $this->ys + $this->yf 
-            );
-            $output[] = sprintf(
-                "line   %d,%d %d,%d",
-                $x * $this->xs + $this->xf, $y * $this->ys,
-                $x * $this->xs + $this->xf, ($y + 1) * $this->ys - 1
-            );
-        } elseif ($ch == '^' && $b == '|') {
-            $output[] = sprintf(
-                "fill black path 'M %d,%d %d,%d %d,%d Z'",
-                $x * $this->xs, $y * $this->ys + $this->yf,
-                $x * $this->xs + $this->xf, $y * $this->ys,
-                ($x + 1) * $this->xs - 1, $y * $this->ys + $this->yf 
-            );
-            $output[] = sprintf(
-                "line   %d,%d %d,%d",
-                $x * $this->xs + $this->xf, $y * $this->ys,
-                $x * $this->xs + $this->xf, ($y + 1) * $this->ys - 1
-            );
+        if ($rows[$y][$x2] == '>') {
+            $arrow = (int)$arrow + 1;
+            $rows[$y][$x2] = '';
         }
         
-        return $output;
+        $this->drawHLine($x1, $y, $x2, $arrow);
+
+        return false;
+    }
+    
+    /**
+     * Vertical line parser.
+     *
+     * @octdoc  m:diagram/parseVLine
+     * @param   int         $x              X-position the line starts at.
+     * @param   int         $y1             Y-position the line starts at.
+     * @param   array       $rows           Diagram to parse.
+     * @return  bool                        Returns always false to let main parser continue.
+     */
+    protected function parseVLine($x, $y1, array &$rows)
+    /**/
+    {
+        list($a, $r, $b, $l) = $this->getSurrounding($x, $y1, $rows);
+
+        $arrow = ($rows[$y1][$x] == '^' ? -1 : false);
+        $y2    = $y1;
+
+        if ($arrow !== false && $b != '|') return false;
+        
+        do {
+            $rows[$y2++][$x] = '';
+        } while (isset($rows[$y2]) && isset($rows[$y2][$x]) && $rows[$y2][$x] == '|');
+        
+        if ($rows[$y2][$x] == 'V') {
+            $arrow = (int)$arrow + 1;
+            $rows[$y2][$x] = '';
+        }
+        
+        $this->drawVLine($x, $y1, $y2, $arrow);
+
+        return false;
+    }
+
+    /**
+     * Add character to list of characters to determine text-strings to render.
+     *
+     * @octdoc  m:diagram/addChar
+     * @param   int         $x              X-position of character.
+     * @param   int         $y              Y-position of character.
+     * @param   string      $ch             Character to add.
+     */
+    protected function addChar($x, $y, $ch)
+    /**/
+    {
+        if (isset($this->strings_pos[$y]) && isset($this->strings_pos[$y][$x - 1])) {
+            // string found, concatenate character
+            $this->strings_pos[$y][$x] = $this->strings_pos[$y][$x - 1];
+            $this->strings[$this->strings_pos[$y][$x]]['text'] .= $ch;
+        } else {
+            // add new string
+            $this->strings[$idx = count($this->strings)] = array(
+                'x'    => $x,
+                'y'    => $y,
+                'text' => $ch
+            );
+            $this->strings_pos[$y][$x] = $idx;
+        }
+    }
+    
+    /**
+     * Get character surrounding current x/y position.
+     *
+     * @octdoc  m:diagram/getSurrounding
+     * @param   int         $x              Current x-position.
+     * @param   int         $y              Current y-position.
+     * @param   array       $rows           Diagram to parse.
+     * @return  array                       List of surrounding characters.
+     */
+    protected function getSurrounding($x, $y, array &$rows)
+    /**/
+    {
+        return array(
+            // above
+            (isset($rows[$y - 1]) && isset($rows[$y - 1][$x]) 
+                ? $rows[$y - 1][$x]
+                : ''),
+        
+            // right
+            (isset($rows[$y]) && isset($rows[$y][$x + 1]) 
+                ? $rows[$y][$x + 1]
+                : ''),
+        
+            // below
+            (isset($rows[$y + 1]) && isset($rows[$y + 1][$x]) 
+                ? $rows[$y + 1][$x]
+                : ''),
+            
+            // left
+            (isset($rows[$y]) && isset($rows[$y][$x - 1]) 
+                ? $rows[$y][$x - 1]
+                : '')
+        );
+    }
+    
+    /**
+     * Parse an ASCII diagram an convert it to imagemagick commands.
+     *
+     * @octdoc  m:asciidia/parse
+     * @param   string      $diagram        ASCII Diagram to parse.
+     * @return  string                      Imagemagick commands to draw diagram.
+     */
+    public function parse($diagram)
+    /**/
+    {
+        $rows = explode("\n", $diagram);
+    
+        for ($y = 0, $h = count($rows); $y < $h; ++$y) {
+            for ($x = 0, $w = strlen($rows[$y]); $x < $w; ++$x) {
+                $c = $rows[$y][$x];
+                list($a, $r, $b, $l) = $this->getSurrounding($x, $y, $rows);
+
+                if ($c == '/' && (($a == '|' && $l == '-') || ($r == '-' && $b == '|'))) {
+                    // round corner (top-left or bottom-right)
+                    $this->drawCorner($x, $y, ($a == '|' && $l == '-' ? 'br' : 'tl'));
+                } elseif ($c == '\\' && (($a == '|' && $r == '-') || ($b == '|' && $l == '-'))) {
+                    // round corner (top-right or bottom-left)
+                    $this->drawCorner($x, $y, ($a == '|' && $r == '-' ? 'bl' : 'tr'));
+                } elseif (($c == 'x' || $c == 'o' || $c == '+') && ($a == '|' || $r == '-' || $b == '|' || $l == '-')) {
+                    // marker
+                    $this->drawMarker($x, $y, $c, ($a == '|'), ($r == '-'), ($b == '|'), ($l == '-'));
+                } elseif (($c == '-' || $c == '<') && $this->parseHLine($x, $y, $rows)) {
+                    // could be a horizontal line
+                    /* implemented in parseLine */
+                } elseif (($c == '|' || $c == '^') && $this->parseVLine($x, $y, $rows)) {
+                    // could be a vertical line
+                    /* implemented in parseLine */
+                // } elseif ($c == '+') && $this->parseLine($x, $y, $rows)) {
+                //     // could be a starting point of a line of unknown direction
+                //     /* implemented in parseLine */
+                } elseif ($c != ' ') {
+                    // a text string
+                    $this->addChar($x, $y, $c);
+                }
+            }
+        }
+        
+        foreach ($this->strings as $string) {
+            $this->drawText($string['x'], $string['y'], $string['text']);
+        }
+        
+        return $this->getCommands();
     }
 }
