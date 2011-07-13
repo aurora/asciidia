@@ -21,17 +21,15 @@
  * https://github.com/aurora/asciidia
  */
 
-# syntax (not all implemented, yet)
-#
-# +   - punkt / kreuzung / ecke
-# x   - kreuz-markierung
-# o   - kreis-markierung
+# +   - line-crossing / line-corner
+# x   - cross marker
+# o   - circle marker
 # |   - vertical line
 # -   - horizontal line
-# <   - pfeil links
-# >   - pfeil rechts
-# ^   - pfeil oben
-# V   - pfeil unten
+# <   - left arrow
+# >   - right arrow
+# ^   - up arrow
+# V   - down arrow
 # /   - round top left corner / round bottom right corner
 # \   - round top right / round bottom left corner
 
