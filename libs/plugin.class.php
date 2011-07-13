@@ -22,20 +22,20 @@
  */
 
 /**
- * ASCII Diagram core class. Implements text parser and core functionality of
- * text-diagram to imagemagick-draw converter.
+ * Plugin base class. Implements drawing primitives and provides plugins with 
+ * all other needed methods.
  *
- * @octdoc      c:libs/asciidia
+ * @octdoc      c:libs/plugin
  * @copyright   copyright (c) 2011 by Harald Lapp
  * @author      Harald Lapp <harald@octris.org>
  */
-abstract class asciidia
+abstract class plugin
 /**/
 {
     /**
      * X-multiplicator -- the width of a cell on the canvas.
      *
-     * @octdoc  v:asciidia/$xs
+     * @octdoc  v:plugin/$xs
      * @var     float
      */
     protected $xs = 15.0;
@@ -44,7 +44,7 @@ abstract class asciidia
     /**
      * Y-multiplicator -- the height of a cell on the canvas.
      *
-     * @octdoc  v:asciidia/$ys
+     * @octdoc  v:plugin/$ys
      * @var     float
      */
     protected $ys = 15.0;
@@ -53,7 +53,7 @@ abstract class asciidia
     /**
      * X-fract -- half of a cells width.
      *
-     * @octdoc  v:asciidia/$xf
+     * @octdoc  v:plugin/$xf
      * @var     float
      */
     protected $xf = 0;
@@ -62,7 +62,7 @@ abstract class asciidia
     /**
      * Y-fract -- half of a cells height.
      *
-     * @octdoc  v:asciidia/yf
+     * @octdoc  v:plugin/yf
      * @var     float
      */
     protected $yf = 0;
@@ -71,7 +71,7 @@ abstract class asciidia
     /**
      * Width of diagram canvas.
      *
-     * @octdoc  v:asciidia/$w
+     * @octdoc  v:plugin/$w
      * @var     int
      */
     protected $w = 0;
@@ -80,7 +80,7 @@ abstract class asciidia
     /**
      * Height of diagram canvas.
      *
-     * @octdoc  v:asciidia/$h
+     * @octdoc  v:plugin/$h
      * @var     int
      */
     protected $h = 0;
@@ -89,7 +89,7 @@ abstract class asciidia
     /**
      * Whether grid overlay is enabled
      *
-     * @octdoc  v:asciidia/$grid
+     * @octdoc  v:plugin/$grid
      * @var     bool
      */
     protected $grid = false;
@@ -98,7 +98,7 @@ abstract class asciidia
     /**
      * Background color.
      *
-     * @octdoc  v:asciidia/$bg
+     * @octdoc  v:plugin/$bg
      * @var     string
      */
     protected $bg = 'white';
@@ -107,7 +107,7 @@ abstract class asciidia
     /**
      * Stroke color
      *
-     * @octdoc  v:asciidia/$stroke
+     * @octdoc  v:plugin/$stroke
      * @var     string
      */
     protected $stroke = 'black';
@@ -116,16 +116,24 @@ abstract class asciidia
     /**
      * Imagemagick MVG commands.
      *
-     * @octdoc  v:asciidia/$mvg
+     * @octdoc  v:plugin/$mvg
      * @var     array
      */
     protected $mvg = array();
     /**/
     
     /**
+     * Abstract method(s) to be implemented by plugins.
+     *
+     * @octdoc  m:plugin/
+     */
+    abstract public function parse($content);
+    /**/
+    
+    /**
      * Constructor.
      *
-     * @octdoc  m:asciidia/__construct
+     * @octdoc  m:plugin/__construct
      */
     public function __construct()
     /**/
@@ -133,11 +141,11 @@ abstract class asciidia
         $this->xf = $this->xs / 2;
         $this->yf = $this->ys / 2;
     }
-    
+
     /**
      * Magic setter.
      *
-     * @octdoc  m:asciidia/__set
+     * @octdoc  m:plugin/__set
      * @param   string      $name               Name of property to set.
      * @param   mixed       $value              Value to set for property.
      */
@@ -159,7 +167,7 @@ abstract class asciidia
     /**
      * Return size of canvas.
      *
-     * @octdoc  m:asciidia/getSize
+     * @octdoc  m:plugin/getSize
      * @param   array                       w,h size of canvas.
      */
     public function getSize()
@@ -174,7 +182,7 @@ abstract class asciidia
     /**
      * Add MVG command to command-list.
      *
-     * @octdoc  m:asciidia/addCommand
+     * @octdoc  m:plugin/addCommand
      * @param   string      $command        Command to at.
      */
     public function addCommand($command)
@@ -186,7 +194,7 @@ abstract class asciidia
     /**
      * Return all commands needed for drawing diagram.
      *
-     * @octdoc  m:asciidia/getCommands
+     * @octdoc  m:plugin/getCommands
      * @return  array                       Imagemagick MVG commands.
      */
     public function getCommands()
@@ -231,7 +239,7 @@ abstract class asciidia
     /**
      * Clear MVG command stack.
      *
-     * @octdoc  m:asciidia/clearCommands
+     * @octdoc  m:plugin/clearCommands
      */
     public function clearCommands()
     /**/
@@ -242,7 +250,7 @@ abstract class asciidia
     /**
      * Enable a grid overlay useful for debugging asciidia.
      *
-     * @octdoc  m:asciidia/enableGrid
+     * @octdoc  m:plugin/enableGrid
      * @param   bool        $enable             Whether to enable / disable grid.
      */
     public function enableGrid($enable)
@@ -251,6 +259,125 @@ abstract class asciidia
         $this->grid = $enable;
     }
 
+    /**
+     * Execute plugin.
+     *
+     * @octdoc  m:plugin/run
+     * @param   string      $inp                Name of input.
+     * @param   string      $out                Name of output.
+     * @param   string      $fmt                Output format.
+     * @return  array                           Status information.
+     */
+    public function run($inp, $out, $fmt = 'png')
+    /**/
+    {
+        list($status, $msg, $content) = $this->loadFile($inp);
+        
+        if ($status) {
+            list($status, $msg) = $this->testFile($out);
+            
+            if ($status) {
+                $mvg = $this->parse($content);
+                
+                $this->saveFile($out, $fmt, $mvg);
+            }
+        }
+
+        return array($status, $msg);
+    }
+
+    /**
+     * Check command-line arguments.
+     *
+     * @octdoc  m:plugin/checkArgs
+     * @return  array                           Status information.
+     */
+    public function checkArgs()
+    /**/
+    {
+        return array(true, '');
+    }
+
+    /**
+     * Load a file.
+     *
+     * @octdoc  m:plugin/loadFile
+     * @param   string      $name               Name of file to load.
+     * @return  array                           Status information.
+     */
+    public function loadFile($name)
+    /**/
+    {
+        $return = array(true, '', '');
+        
+        if ($name != '-' && !is_readable($name)) {
+            $return = array(false, 'input is not readable', '');
+        } else {
+            $return[2] = file_get_contents(
+                ($name == '-' ? 'php://stdin' : $name)
+            );
+        }
+        
+        return $return;
+    }
+
+    /**
+     * Test if a file is valid for writing.
+     *
+     * @octdoc  m:plugin/testFile
+     * @param   string      $name               Name of file to save.
+     * @return  array                           Status information.
+     */
+    public function testFile($name)
+    /**/
+    {
+        $return = array(true, '');
+        
+        if (is_dir($name)) {
+            $return = array(false, 'only a filename is allowed as output');
+        } elseif ($name != '-') {
+            if (file_exists($name)) {
+                $return = array(false, 'output already exists');
+            } elseif (!touch($name) || !is_writable($name)) {
+                $return = array(false, 'output is not writable');
+            }
+        }
+        
+        return $return;
+    }
+
+    /**
+     * Save a file or test if file can be saved to.
+     *
+     * @octdoc  m:plugin/saveFile
+     * @param   string      $name               Name of file to save.
+     * @param   string      $fmt                Fileformat to save file as.
+     * @param   array       $commands           Imagemagick commands to save.
+     */
+    public function saveFile($name, $fmt, array $commands)
+    /**/
+    {
+        if ($fmt == 'mvg') {
+            // imagemagick mvg commands
+            file_put_contents(
+                ($name == '-' ? 'php://stdout' : $name),
+                implode("\n", $commands)
+            );
+        } else {
+            list($w, $h) = $this->getSize();
+
+            $cmd = sprintf(
+                'convert -size %dx%d xc:white -stroke black -fill none -draw %s %s png:%s',
+                $w, $h,
+                escapeshellarg(implode(' ', $commands)),
+                '', // TODO: ($scale ? '-scale ' . $scale : ''),
+                $name
+            );
+
+            passthru($cmd);
+        }
+    }
+    
     /*
      * drawing primitives
      */
@@ -258,7 +385,7 @@ abstract class asciidia
     /**
      * Draw a line between two points. An optional arrow head may be specified:
      *
-     * @octdoc  m:asciidia/drawLine
+     * @octdoc  m:plugin/drawLine
      * @param   int         $x1                 x start-point.
      * @param   int         $y1                 y start-point.
      * @param   int         $x2                 x end-point.
@@ -294,7 +421,7 @@ abstract class asciidia
      * *    1 -- draw arrow x1/y1 -> x2/y2
      * *    -1 -- draw arrow x1/y1 <- x2/y2
      *
-     * @octdoc  m:asciidia/drawLine
+     * @octdoc  m:plugin/drawLine
      * @param   int         $x1                 x start-point.
      * @param   int         $y                  y start-point.
      * @param   int         $x2                 x end-point.
@@ -347,7 +474,7 @@ abstract class asciidia
      * *    1 -- draw arrow x1/y1 -> x2/y2
      * *    -1 -- draw arrow x1/y1 <- x2/y2
      *
-     * @octdoc  m:asciidia/drawLine
+     * @octdoc  m:plugin/drawLine
      * @param   int         $x                  x start-point.
      * @param   int         $y1                 y start-point.
      * @param   int         $y2                 y end-point.
@@ -395,7 +522,7 @@ abstract class asciidia
     /**
      * Draw a marker.
      *
-     * @octdoc  m:asciidia/drawMarker
+     * @octdoc  m:plugin/drawMarker
      * @param   int         $x                  x point.
      * @param   int         $y                  y point.
      * @param   string      $type               Type of marker (x, o).
@@ -462,7 +589,7 @@ abstract class asciidia
     /**
      * Draw a text string.
      *
-     * @octdoc  m:asciidia/drawText
+     * @octdoc  m:plugin/drawText
      * @param   int         $x                  x point.
      * @param   int         $y                  y point.
      * @param   string      $text               Text to draw.
@@ -489,7 +616,7 @@ abstract class asciidia
      * *    br -- Bottom-Right
      * *    bl -- Bottom-Left
      *
-     * @octdoc  m:asciidia/drawCorner
+     * @octdoc  m:plugin/drawCorner
      * @param   int         $x                  x point.
      * @param   int         $y                  y point.
      * @param   string      $type               Type of corner.
