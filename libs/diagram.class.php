@@ -64,73 +64,25 @@ class diagram extends asciidia
     /**/
     
     /**
-     * Horizontal line parser.
+     * Determined lines in diagram.
      *
-     * @octdoc  m:diagram/parseHLine
-     * @param   int         $x1             X-position the line starts at.
-     * @param   int         $y              Y-position the line starts at.
-     * @param   array       $rows           Diagram to parse.
-     * @return  bool                        Returns always false to let main parser continue.
+     * @octdoc  v:diagram/$lines
+     * @var     array
      */
-    protected function parseHLine($x1, $y, array &$rows)
+    protected $lines = array();
     /**/
-    {
-        list($a, $r, $b, $l) = $this->getSurrounding($x1, $y, $rows);
-
-        $arrow = ($rows[$y][$x1] == '<' ? -1 : false);
-        $x2    = $x1;
-
-        if ($arrow !== false && $r != '-') return false;
-        
-        do {
-            $rows[$y][$x2++] = '';
-        } while (isset($rows[$y][$x2]) && $rows[$y][$x2] == '-');
-        
-        if ($rows[$y][$x2] == '>') {
-            $arrow = (int)$arrow + 1;
-            $rows[$y][$x2] = '';
-        }
-        
-        $this->drawHLine($x1, $y, $x2, $arrow);
-
-        return false;
-    }
     
     /**
-     * Vertical line parser.
+     * Determined line positions and mapping to stored lines.
      *
-     * @octdoc  m:diagram/parseVLine
-     * @param   int         $x              X-position the line starts at.
-     * @param   int         $y1             Y-position the line starts at.
-     * @param   array       $rows           Diagram to parse.
-     * @return  bool                        Returns always false to let main parser continue.
+     * @octdoc  v:diagram/$lines_pos
+     * @var     array
      */
-    protected function parseVLine($x, $y1, array &$rows)
+    protected $lines_pos = array(array('H' => array(), 'V' => array()));
     /**/
-    {
-        list($a, $r, $b, $l) = $this->getSurrounding($x, $y1, $rows);
-
-        $arrow = ($rows[$y1][$x] == '^' ? -1 : false);
-        $y2    = $y1;
-
-        if ($arrow !== false && $b != '|') return false;
-        
-        do {
-            $rows[$y2++][$x] = '';
-        } while (isset($rows[$y2]) && isset($rows[$y2][$x]) && $rows[$y2][$x] == '|');
-        
-        if ($rows[$y2][$x] == 'V') {
-            $arrow = (int)$arrow + 1;
-            $rows[$y2][$x] = '';
-        }
-        
-        $this->drawVLine($x, $y1, $y2, $arrow);
-
-        return false;
-    }
-
+    
     /**
-     * Add character to list of characters to determine text-strings to render.
+     * Add character to list of strings to determine text-strings to render.
      *
      * @octdoc  m:diagram/addChar
      * @param   int         $x              X-position of character.
@@ -151,7 +103,73 @@ class diagram extends asciidia
                 'y'    => $y,
                 'text' => $ch
             );
+            
+            if (!isset($this->strings_pos[$y])) $this->strings_pos[$y] = array();
+            
             $this->strings_pos[$y][$x] = $idx;
+        }
+    }
+    
+    /**
+     * Add line to list of lines.
+     *
+     * @octdoc  m:diagram/addLine
+     * @param   int         $x              X-position of character.
+     * @param   int         $y              Y-position of character.
+     * @param   array       $rows           Diagram to parse.
+     */
+    public function addLine($x, $y, &$rows)
+    /**/
+    {
+        $ch = $rows[$y][$x];
+        list($a, $r, $b, $l) = $this->getSurrounding($x, $y, $rows);
+
+        if ($ch == '|' || $ch == '^' || $ch == 'V') {
+            // vertical line
+            if (!isset($this->lines_pos['V'][$y])) $this->lines_pos['V'][$y] = array();
+            
+            if ($ch != '^' && $a != 'V' && isset($this->lines_pos['V'][$y - 1]) && isset($this->lines_pos['V'][$y - 1][$x])) {
+                // line found
+                $idx = $this->lines_pos['V'][$y - 1][$x];
+                
+                $this->lines_pos['V'][$y][$x] = $idx;
+                ++$this->lines[$idx]['y2'];
+                
+                if ($ch == 'V') $this->lines[$idx]['arrow'] = (int)$this->lines[$idx]['arrow'] + 1;
+            } else {
+                $this->lines[$idx = count($this->lines)] = array(
+                    'type'  => 'V',
+                    'x1'    => $x,
+                    'y1'    => $y,
+                    'y2'    => $y,
+                    'arrow' => ($ch == '^' ? -1 : false)
+                );
+
+                $this->lines_pos['V'][$y][$x] = $idx;
+            }
+        } elseif ($ch == '-' || $ch == '<' || $ch == '>') {
+            // horizontal line
+            if (!isset($this->lines_pos['H'][$y])) $this->lines_pos['H'][$y] = array();
+            
+            if ($ch != '<' && $l != '>' && isset($this->lines_pos['H'][$y]) && isset($this->lines_pos['H'][$y][$x - 1])) {
+                // line found
+                $idx = $this->lines_pos['H'][$y][$x - 1];
+                
+                $this->lines_pos['H'][$y][$x] = $idx;
+                ++$this->lines[$idx]['x2'];
+                
+                if ($ch == '>') $this->lines[$idx]['arrow'] = (int)$this->lines[$idx]['arrow'] + 1;
+            } else {
+                $this->lines[$idx = count($this->lines)] = array(
+                    'type'  => 'H',
+                    'x1'    => $x,
+                    'x2'    => $x,
+                    'y1'    => $y,
+                    'arrow' => ($ch == '<' ? -1 : false)
+                );
+
+                $this->lines_pos['H'][$y][$x] = $idx;
+            }
         }
     }
     
@@ -216,15 +234,12 @@ class diagram extends asciidia
                 } elseif (($c == 'x' || $c == 'o' || $c == '+') && ($a == '|' || $r == '-' || $b == '|' || $l == '-')) {
                     // marker
                     $this->drawMarker($x, $y, $c, ($a == '|'), ($r == '-'), ($b == '|'), ($l == '-'));
-                } elseif (($c == '-' || $c == '<') && $this->parseHLine($x, $y, $rows)) {
-                    // could be a horizontal line
-                    /* implemented in parseLine */
-                } elseif (($c == '|' || $c == '^') && $this->parseVLine($x, $y, $rows)) {
-                    // could be a vertical line
-                    /* implemented in parseLine */
-                // } elseif ($c == '+') && $this->parseLine($x, $y, $rows)) {
-                //     // could be a starting point of a line of unknown direction
-                //     /* implemented in parseLine */
+                } elseif ($c == '-' || ($c == '<' && $r == '-') || ($c == '>' && $l == '-')) {
+                    // horizontal line
+                    $this->addLine($x, $y, $rows);
+                } elseif ($c == '|' || ($c == '^' && $b == '|') || ($c == 'V' && $a == '|')) {
+                    // Vertical line
+                    $this->addLine($x, $y, $rows);
                 } elseif ($c != ' ') {
                     // a text string
                     $this->addChar($x, $y, $c);
@@ -235,6 +250,18 @@ class diagram extends asciidia
         foreach ($this->strings as $string) {
             $this->drawText($string['x'], $string['y'], $string['text']);
         }
+        
+        foreach ($this->lines as $line) {
+            vprintf("line %s: %d,%d,%d %s\n", array_values($line));
+
+            if ($line['type'] == 'H') {
+                $this->drawHLine($line['x1'], $line['y1'], $line['x2'], $line['arrow']);
+            } elseif ($line['type'] == 'V') {
+                $this->drawVLine($line['x1'], $line['y1'], $line['y2'], $line['arrow']);
+            }
+        }
+        
+        $this->enableGrid(true);
         
         return $this->getCommands();
     }
