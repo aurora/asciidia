@@ -45,14 +45,12 @@ class ebnf extends diagram
      * 
      * @octdoc  d:ebnf/T_NOP, T_OPERATOR, T_LITERAL, T_IDENTIFIER, T_WHITESPACE
      */
-    const T_NOP        = 0;
     const T_OPERATOR   = 1;
     const T_LITERAL    = 2;
     const T_IDENTIFIER = 3;
     const T_WHITESPACE = 4;
-    const T_END        = 5;
     /**/
-    
+
     /**
      * Parser patterns.
      *
@@ -60,11 +58,24 @@ class ebnf extends diagram
      * @var     array
      */
     protected static $patterns = array(
-        self::T_OPERATOR   => '[=\{\}\(\)\|\.\[\]]',
+        self::T_OPERATOR   => '[=;\{\}\(\)\|\[\]]',
         self::T_LITERAL    => "([\"']).*?(?!\\\\)\\2",
         self::T_IDENTIFIER => '[a-zA-Z0-9_-]+',
-        self::T_WHITESPACE => '\s+',
-        self::T_END        => ';'
+        self::T_WHITESPACE => '\s+'
+    );
+    /**/
+    
+    /**
+     * Token names.
+     *
+     * @octdoc  v:ebnf/$token_names
+     * @var     array
+     */
+    protected static $token_names = array(
+        self::T_OPERATOR   => 'T_OPERATOR',
+        self::T_LITERAL    => 'T_LITERAL',
+        self::T_IDENTIFIER => 'T_IDENTIFIER',
+        self::T_WHITESPACE => 'T_WHITESPACE'
     );
     /**/
     
@@ -132,7 +143,7 @@ class ebnf extends diagram
      * @param   mixed       $value          Optional expected value.
      * @return  bool                        Returns true if token is valid, otherwise false is returned.
      */
-    public function chkToken($token, $type, $value = null)
+    protected function chkToken($token, $type, $value = null)
     /**/
     {
         return ($token
@@ -145,21 +156,42 @@ class ebnf extends diagram
     }
     
     /**
+     * Remove a token from stack.
+     *
+     * @octdoc  m:ebnf/eatToken
+     * @param   array       $tokens         Token stack.
+     * @return  bool                        Returns true if token was removed from stack successfully.
+     */
+    protected function eatToken(&$tokens)
+    /**/
+    {
+        return (is_array($tokens)
+                ? !!array_shift($tokens)
+                : false);
+    }
+    
+    /**
      * Return next token from stack.
      *
      * @octdoc  m:ebnf/getToken
      * @param   array       $tokens         Token stack.
      * @param   int         $type           Optional type of token that is expected.
      * @param   mixed       $value          Optional expected value.
-     * @param   bool        $push           Optional push token back on stack if it's not valid.
+     * @param   bool        $eat            Optional flag whether to remove token from stack.
      * @return  array|bool                  Token or false, if expectation where not fulfilled.
      */
-    protected function getToken(&$tokens, $type = null, $value = null, $push = false)
+    protected function getToken(&$tokens, $type = null, $value = null, $eat = true)
     /**/
     {
-        if (($return = (is_array($tokens) && ($token = array_shift($tokens)))) && !is_null($type)) {
-            if (!($return = $this->chkToken($token, $type, $value)) && $push) {
-                array_unshift($tokens, $token);
+        if (($return = is_array($tokens))) {
+            if ($eat) {
+                $return = array_shift($tokens);
+            } else {
+                $return = current($tokens);
+            }
+
+            if (!is_null($type) && !$this->chkToken($return, $type, $value)) {
+                $return = false;
             }
         }
         
@@ -170,23 +202,27 @@ class ebnf extends diagram
      * Parse EBNF production.
      *
      * @octdoc  m:ebnf/parseProd
+     * @param   DOMDocument $dom         Document to add elements to.
      * @param   array       $tokens         Token stack.
-     * @param   string      $name           Name of production rule.
+     * @param   array       $current        Current token.
      * @return  array                       Elements to add to syntax.
      */
-    protected function parseProd(&$tokens, $name)
+    protected function parseProd(DOMDocument $dom, &$tokens, array $current)
     /**/
     {
-        $return = array('name' => $name, 'children' => array());
+        $return = $dom->createElement('production');
+        $return->setAttribute('name', $current['value']);
         
         if (!($token = $this->getToken($tokens, self::T_OPERATOR, '='))) {
-            $this->error('identifier must be followed by "="');
+            $this->error('identifier must be followed by "=" in line %d', array($current['line']));
         }
         
-        $return['children'][] = $this->parseExpr($syntax, $tokens);
+        $line = $token['line'];
+        
+        $return->appendChild($this->parseExpr($dom, $tokens, $token));
         
         if (!($token = $this->getToken($tokens, self::T_OPERATOR, ';'))) {
-            $this->error('production must end with ";"');
+            $this->error('production must end with ";" in line %d', array($line));
         }
         
         return $return;
@@ -196,17 +232,19 @@ class ebnf extends diagram
      * Parse EBNF expression.
      *
      * @octdoc  m:ebnf/parseExpr
+     * @param   DOMDocument $dom         Document to add elements to.
      * @param   array       $tokens         Token stack.
+     * @param   array       $token          Current token.
      * @return  array                       Elements to add to syntax.
      */
-    protected function parseExpr(&$tokens)
+    protected function parseExpr(DOMDocument $dom, &$tokens, array $token)
     /**/
     {
-        $return = array('children' => array());
-
+        $return = $dom->createElement('expression');
+        
         do {
-            $return['children'][] = $this->parseTerm($tokens);
-        } while (($token = $this->getToken($tokens, self::T_OPERATOR, '|', true)));
+            $return->appendChild($this->parseTerm($dom, $tokens, $token));
+        } while (($token = $this->getToken($tokens, self::T_OPERATOR, '|', false)) && $this->eatToken($tokens));
         
         return $return;
     }
@@ -215,17 +253,21 @@ class ebnf extends diagram
      * Parse EBNF term.
      *
      * @octdoc  m:ebnf/parseTerm
+     * @param   DOMDocument $dom         Document to add elements to.
      * @param   array       $tokens         Token stack.
+     * @param   array       $token          Current token.
      * @return  array                       Elements to add to syntax.
      */
-    public function parseTerm(&$tokens)
+    public function parseTerm(DOMDocument $dom, &$tokens, array $token)
     /**/
     {
-        $return = array('children' => array());
+        $return = $dom->createElement('term');
         
         do {
-            $return['children'][] = $this->parseFact($tokens);
-        } while (!$this->getToken($tokens, self::T_OPERATOR, array(';', '=', '|', ')', ']', '}')));
+            $return->appendChild($this->parseFact($dom, $tokens, $token));
+        } while (($token = current($tokens)) && !in_array($token['value'], array(';', '=', '|', ')', ']', '}'))); 
+    // } while (($this->getToken($tokens, self::T_OPERATOR, null, false)) && !in_array($token['value'], array(';', '=', '|', ')', ']', '}'))); 
+         // && $this->eatToken($tokens));
         
         return $return;
     }
@@ -234,45 +276,69 @@ class ebnf extends diagram
      * Parse EBNF factor.
      *
      * @octdoc  m:ebnf/parseFact
+     * @param   DOMDocument $dom         Document to add elements to.
      * @param   array       $tokens         Token stack.
+     * @param   array       $current        Current token.
      * @return  array                       Elements to add to syntax.
      */
-    public function parseFact(&$tokens)
+    public function parseFact(DOMDocument $dom, &$tokens, array $current)
     /**/
     {
         if (!($token = $this->getToken($tokens))) {
-            $this->error('unexpected end -- no more tokens');
-        } elseif ($this->chkToken($token, T_IDENTIFIER)) {
-            return array('value' => $token['value']);
-        } elseif ($this->chkToken($token, T_LITERAL)) {
-            return array('value' => stripcslashes(substr($token['value'], 1, -1)));
-        } elseif ($this->chkToken($token, T_OPERATOR, '(')) {
-            $return = $this->parseExpr($tokens);
-            
-            if (!$this->getToken($tokens, T_OPERATOR, ')')) {
-                $this->error('group must end with ")"');
-            }
-            
-            return $return;
-        } elseif ($this->chkToken($token, T_OPERATOR, '[')) {
-            $return = $this->parseExpr($tokens);
-
-            if (!$this->getToken($tokens, T_OPERATOR, ']')) {
-                $this->error('option must end with "]"');
-            }
-
-            return $return;
-        } elseif ($this->chkToken($token, T_OPERATOR, '{')) {
-            $return = $this->parseExpr($tokens);
-
-            if (!$this->getToken($tokens, T_OPERATOR, '}')) {
-                $this->error('loop must end with "}"');
-            }
-
-            return $return;
+            $this->error('unexpected end in line %d', array($current['line']));
         } else {
-            $this->error('unexpected token %d: "%s"', array_values($token));
+            if ($this->chkToken($token, self::T_IDENTIFIER)) {
+                $return = $dom->createElement('identifier');
+                $return->setAttribute('value', $token['value']);
+            } elseif ($this->chkToken($token, self::T_LITERAL)) {
+                $return = $dom->createElement('literal');
+                $return->setAttribute('value', stripcslashes(substr($token['value'], 1, -1)));
+            } elseif ($this->chkToken($token, self::T_OPERATOR, '(')) {
+                $return = $this->parseExpr($dom, $tokens, $token);
+            
+                if (!$this->getToken($tokens, self::T_OPERATOR, ')')) {
+                    $this->error('group must end with ")"');
+                }
+            } elseif ($this->chkToken($token, self::T_OPERATOR, '[')) {
+                $return = $dom->createElement('option');
+                $return->appendChild($this->parseExpr($dom, $tokens, $token));
+
+                if (!$this->getToken($tokens, self::T_OPERATOR, ']')) {
+                    $this->error('option must end with "]"');
+                }
+            } elseif ($this->chkToken($token, self::T_OPERATOR, '{')) {
+                $return = $dom->createElement('repetition');
+                $return->appendChild($this->parseExpr($dom, $tokens, $token));
+
+                if (!$this->getToken($tokens, self::T_OPERATOR, '}')) {
+                    $this->error('loop must end with "}"');
+                }
+            } else {
+                $this->error(
+                    'unexpected token "%s" in line %d: %s', 
+                    array(
+                        self::$token_names[$token['token']],
+                        $token['line'],
+                        $token['value']
+                    )
+                );
+            }
         }
+        
+        return $return;
+    }
+    
+    /**
+     * Render syntax document to ASCII diagram.
+     *
+     * @octdoc  m:ebnf/render
+     * @param   DOMNode     $node           Node to render.
+     * @return  string                      Rendered ASCII diagram.
+     */
+    protected function render(DOMNode $node)
+    /**/
+    {
+        return '';
     }
     
     /**
@@ -286,24 +352,23 @@ class ebnf extends diagram
     /**/
     {
         $tokens = $this->tokenize($diagram);
-        $syntax = array('children' => array());
+        $dom    = new DOMDocument();
+        $syntax = $dom->createElement('syntax');
         
         if (!($token = $this->getToken($tokens, self::T_OPERATOR, '{'))) {
             $this->error('EBNF must start with "{"');
         }
 
-        while (count($tokens) > 0 && ($token = $this->getToken($tokens, self::T_IDENTIFIER, null, true))) {
-            $syntax['children'][] = $this->parseProd($tokens, $token['value']);
+        while (count($tokens) > 0 && ($token = $this->getToken($tokens, self::T_IDENTIFIER))) {
+            $syntax->appendChild($this->parseProd($dom, $tokens, $token));
         }
         
-        if (count($tokens) > 1 || $this->checkToken($token, self::T_OPERATOR, '}')) {
+        if (count($tokens) > 1 || $this->chkToken($token, self::T_OPERATOR, '}')) {
             $this->error('EBNF must end with "}"');
         }
         
-        print_r($syntax);
-        
-        die;
-        
+        $diagram = $this->render($syntax);
+
         return parent::parse($diagram);
     }
 }
