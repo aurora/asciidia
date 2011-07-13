@@ -482,7 +482,7 @@ abstract class asciidia
     }
     
     /**
-     * Draw a rounded corner. The type of the corner is defined as follows:
+     * Draw a (rounded) corner. The type of the corner is defined as follows:
      *
      * *    tl -- Top-Left
      * *    tr -- Top-Right
@@ -493,8 +493,9 @@ abstract class asciidia
      * @param   int         $x                  x point.
      * @param   int         $y                  y point.
      * @param   string      $type               Type of corner.
+     * @param   bool        $round              Whether corner should be round.
      */
-    protected function drawCorner($x, $y, $type)
+    protected function drawCorner($x, $y, $type, $round = false)
     /**/
     {   
         $rotation = array(
@@ -513,14 +514,24 @@ abstract class asciidia
         $this->w = max($this->w, $x);
         $this->h = max($this->h, $y);
 
-        $this->mvg[] = sprintf(
-            'fill transparent ellipse %d,%d %d,%d %d,%d',
-            $x * $this->xs + $xf, 
-            $y * $this->ys + $yf,
-            $this->xf,
-            $this->yf,
-            $rs,
-            $re
-        );
+        if ($round) {
+            $this->mvg[] = sprintf(
+                'fill transparent ellipse %d,%d %d,%d %d,%d',
+                $x * $this->xs + $xf, 
+                $y * $this->ys + $yf,
+                $this->xf,
+                $this->yf,
+                $rs,
+                $re
+            );
+        } else {
+            $this->drawMarker(
+                $x, $y, '+', 
+                ($type == 'br' || $type == 'bl'),
+                ($type == 'bl' || $type == 'tl'),
+                ($type == 'tl' || $type == 'tr'),
+                ($type == 'tr' || $type == 'br')
+            );
+        }
     }
 }
