@@ -225,12 +225,12 @@ class diagram extends asciidia
 
                 if ($c == '/' && (($a == '|' && $l == '-') || ($r == '-' && $b == '|'))) {
                     // round corner (top-left or bottom-right)
-                    if ($a == '|' && $l == '-') $this->drawCorner($x, $y, 'br');
-                    if ($r == '-' && $b == '|') $this->drawCorner($x, $y, 'tl');
+                    if ($a == '|' && $l == '-') $this->drawCorner($x, $y, 'br', true);
+                    if ($r == '-' && $b == '|') $this->drawCorner($x, $y, 'tl', true);
                 } elseif ($c == '\\' && (($a == '|' && $r == '-') || ($b == '|' && $l == '-'))) {
                     // round corner (top-right or bottom-left)
-                    if ($a == '|' && $r == '-') $this->drawCorner($x, $y, 'bl');
-                    if ($b == '|' && $l == '-') $this->drawCorner($x, $y, 'tr');
+                    if ($a == '|' && $r == '-') $this->drawCorner($x, $y, 'bl', true);
+                    if ($b == '|' && $l == '-') $this->drawCorner($x, $y, 'tr', true);
                 } elseif (($c == 'x' || $c == 'o' || $c == '+') && ($a == '|' || $r == '-' || $b == '|' || $l == '-')) {
                     // marker
                     $this->drawMarker($x, $y, $c, ($a == '|'), ($r == '-'), ($b == '|'), ($l == '-'));
