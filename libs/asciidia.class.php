@@ -499,19 +499,30 @@ abstract class asciidia
     protected function drawCorner($x, $y, $type)
     /**/
     {   
-        $rotation = array('tl' => 2, 'tr' => 3, 'br' => 0, 'bl' => 1);
+        $rotation = array(
+            'br' => array(0, 0, 0, 90),
+            'bl' => array($this->xs, 0, 90, 180),
+            'tl' => array($this->xs, $this->ys, 180, 270),
+            'tr' => array(0, $this->ys, 270, 360)
+        );
+        
+        if (!isset($rotation[$type])) {
+            return;
+        }
+        
+        list($xf, $yf, $rs, $re) = $rotation[$type];
         
         $this->w = max($this->w, $x);
         $this->h = max($this->h, $y);
 
         $this->mvg[] = sprintf(
-            'arc %d,%d %d,%d %d,%d', 
-            $x * $this->xs,
-            $y * $this->ys,
-            $x * $this->xs + $this->xf,
-            $y * $this->ys + $this->yf,
-            $rotation[$type] * 90,
-            ($rotation[$type] + 1) * 90
+            'fill transparent ellipse %d,%d %d,%d %d,%d',
+            $x * $this->xs + $xf, 
+            $y * $this->ys + $yf,
+            $this->xf,
+            $this->yf,
+            $rs,
+            $re
         );
     }
 }
