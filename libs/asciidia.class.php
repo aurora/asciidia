@@ -410,8 +410,6 @@ abstract class asciidia
         $this->w = max($this->w, $x);
         $this->h = max($this->h, $y);
 
-        printf("%s: %d,%d,%d,%d\n", $type, $ca, $cr, $cb, $cl);
-
         // draw connectors
         $this->mvg[] = sprintf(
             'line   %d,%d %d,%d',

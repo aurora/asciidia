@@ -254,8 +254,6 @@ class diagram extends asciidia
         }
         
         foreach ($this->lines as $line) {
-            vprintf("line %s: %d,%d,%d %s\n", array_values($line));
-
             if ($line['type'] == 'H') {
                 $this->drawHLine($line['x1'], $line['y1'], $line['x2'], $line['arrow']);
             } elseif ($line['type'] == 'V') {
