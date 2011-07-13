@@ -429,21 +429,24 @@ abstract class asciidia
         );
         
         // draw marker
+        $hxf = $this->xf / 2;
+        $hyf = $this->yf / 2;
+        
         switch ($type) {
         case 'x':
             $this->mvg[] = sprintf(
                 'line   %d,%d %d,%d',
-                $x * $this->xs,
-                $y * $this->ys,
-                ($x + 1) * $this->xs - 1,
-                ($y + 1) * $this->ys - 1
+                $x * $this->xs + $hxf,
+                $y * $this->ys + $hyf,
+                $x * $this->xs + $this->xs - $hxf,
+                $y * $this->ys + $this->ys - $hyf
             );
             $this->mvg[] = sprintf(
                 'line   %d,%d %d,%d',
-                ($x + 1) * $this->xs - 1,
-                $y * $this->ys,
-                $x * $this->xs,
-                ($y + 1) * $this->ys - 1
+                $x * $this->xs + $this->xs - $hxf,
+                $y * $this->ys + $hyf,
+                $x * $this->xs + $hxf,
+                $y * $this->ys + $this->ys - $hyf
             );
             break;
         case 'o':
