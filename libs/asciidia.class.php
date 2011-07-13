@@ -87,6 +87,24 @@ abstract class asciidia
     /**/
     
     /**
+     * Background color.
+     *
+     * @octdoc  v:asciidia/$bg
+     * @var     string
+     */
+    protected $bg = 'white';
+    /**/
+    
+    /**
+     * Imagemagick MVG commands.
+     *
+     * @octdoc  v:asciidia/$mvg
+     * @var     array
+     */
+    protected $mvg = array();
+    /**/
+    
+    /**
      * Constructor.
      *
      * @octdoc  m:asciidia/__construct
@@ -121,82 +139,6 @@ abstract class asciidia
     }
     
     /**
-     * Abstract method that needs to be implemented in each subclass.
-     *
-     * @octdoc  m:asciidia/draw
-     * @param   int         $x                  X-position of cell to draw.
-     * @param   int         $y                  Y-position of cell to draw.
-     * @param   string      $ch                 Character to draw.
-     * @param   callback    $get_surrounding    Callback to determine surrounding characters.
-     * @return  string                          Imagemagick draw commands.
-     */
-    abstract public function draw($x, $y, $ch, $get_surrounding);
-    /**/
-    
-    /**
-     * Parse an ASCII diagram an convert it to imagemagick commands.
-     *
-     * @octdoc  m:asciidia/parse
-     * @param   string      $diagram        ASCII Diagram to parse.
-     * @return  string                      Imagemagick commands to draw diagram.
-     */
-    public function parse($diagram)
-    /**/
-    {
-        $rows = explode("\n", $diagram);
-        $h    = count($rows);
-        $w    = 0;
-    
-        $get_surrounding = function($x, $y) use ($rows) {
-            return array(
-                // above
-                (isset($rows[$y - 1]) && isset($rows[$y - 1][$x]) 
-                    ? $rows[$y - 1][$x]
-                    : ''),
-            
-                // right
-                (isset($rows[$y]) && isset($rows[$y][$x + 1]) 
-                    ? $rows[$y][$x + 1]
-                    : ''),
-            
-                // below
-                (isset($rows[$y + 1]) && isset($rows[$y + 1][$x]) 
-                    ? $rows[$y + 1][$x]
-                    : ''),
-                
-                // left
-                (isset($rows[$y]) && isset($rows[$y][$x - 1]) 
-                    ? $rows[$y][$x - 1]
-                    : '')
-            );
-        };
-    
-        $output = array();
-        $output[] = "push graphic-context";
-        $output[] = "font Courier";
-        $output[] = sprintf("font-size %f", $this->ys);
-    
-        for ($y = 0; $y < $h; ++$y) {
-            for ($x = 0, $len = strlen($rows[$y]); $x < $len; ++$x) {
-                $w = max($w, $len);
-            
-                $output = array_merge(
-                    $output,
-                    $this->draw($x, $y, $rows[$y][$x], function() use ($get_surrounding, $x, $y) {
-                        return $get_surrounding($x, $y);
-                    })
-                );
-            }
-        }
-        
-        $output[] = "pop graphic-context";
-
-        $this->w = $w; $this->h = $h;
-        
-        return $output;
-    }
-    
-    /**
      * Return size of canvas.
      *
      * @octdoc  m:asciidia/getSize
@@ -205,6 +147,275 @@ abstract class asciidia
     public function getSize()
     /**/
     {
-        return array($this->w * $this->xs, $this->h * $this->ys);
+        return array(
+            ($this->w + 1) * $this->xs - 1, 
+            ($this->h + 1) * $this->ys - 1
+        );
+    }
+
+    /**
+     * Add MVG command to command-list.
+     *
+     * @octdoc  m:asciidia/addCommand
+     * @param   string      $command        Command to at.
+     */
+    public function addCommand($command)
+    /**/
+    {
+        $this->mvg[] = $command;
+    }
+
+    /**
+     * Return all commands needed for drawing diagram.
+     *
+     * @octdoc  m:asciidia/getCommands
+     * @return  array                       Imagemagick MVG commands.
+     */
+    public function getCommands()
+    /**/
+    {
+        $output = array();
+    
+        return array_merge(
+            array(
+                'push graphic-context',
+                'font Courier',
+                sprintf('font-size %f', $this->ys)
+            ),
+            $this->mvg,
+            array(
+                'pop graphic-context'
+            )
+        );
+    }
+
+    /**
+     * Clear MVG command stack.
+     *
+     * @octdoc  m:asciidia/clearCommands
+     */
+    public function clearCommands()
+    /**/
+    {
+        $this->mvg = array();
+    }
+
+    /*
+     * drawing primitives
+     */
+
+    /**
+     * Draw a line between two points. An optional arrow head may be specified:
+     *
+     * @octdoc  m:asciidia/drawLine
+     * @param   int         $x1                 x start-point.
+     * @param   int         $y1                 y start-point.
+     * @param   int         $x2                 x end-point.
+     * @param   int         $y2                 y end-point.
+     * @param   int|bool    $arrow              Optional arrow head.
+     */
+    protected function drawLine($x1, $y1, $x2, $y2, $arrow = false)
+    /**/
+    {
+        $this->w = max($this->w, $x1, $x2);
+        $this->h = max($this->h, $y1, $y2);
+
+        $this->mvg[] = sprintf(
+            'line   %d,%d %d,%d',
+            $x1 * $this->xs + $this->xf,
+            $y1 * $this->ys + $this->yf,
+            $x2 * $this->xs + $this->xf,
+            $y2 * $this->ys + $this->yf
+        );
+        
+        if ($arrow !== false) {
+            $angle = rad2deg(atan2(($y2 - $y1), ($x2 - $x1)));
+            
+            // TODO
+        }
+    }
+    
+    /**
+     * Draw a horizontal line. An optional arrow head may be specified:
+     *
+     * *    false -- no arrow heads
+     * *    0 -- draw arrow heads on both sides (x1/y1 <-> x2/y2)
+     * *    1 -- draw arrow x1/y1 -> x2/y2
+     * *    -1 -- draw arrow x1/y1 <- x2/y2
+     *
+     * @octdoc  m:asciidia/drawLine
+     * @param   int         $x1                 x start-point.
+     * @param   int         $y                  y start-point.
+     * @param   int         $x2                 x end-point.
+     * @param   int|bool    $arrow              Optional arrow head.
+     */
+    protected function drawHLine($x1, $y, $x2, $arrow = false)
+    /**/
+    {
+        $this->w = max($this->w, $x1, $x2);
+        $this->h = max($this->h, $y);
+
+        $this->mvg[] = sprintf(
+            'line   %d,%d %d,%d',
+            $x1 * $this->xs,
+            $y * $this->ys + $this->yf,
+            $x2 * $this->xs,
+            $y * $this->ys + $this->yf
+        );
+        
+        if ($arrow !== false) {
+        }
+    }
+    
+    /**
+     * Draw a vertical line. An optional arrow head may be specified:
+     *
+     * *    false -- no arrow heads
+     * *    0 -- draw arrow heads on both sides (x1/y1 <-> x2/y2)
+     * *    1 -- draw arrow x1/y1 -> x2/y2
+     * *    -1 -- draw arrow x1/y1 <- x2/y2
+     *
+     * @octdoc  m:asciidia/drawLine
+     * @param   int         $x                  x start-point.
+     * @param   int         $y1                 y start-point.
+     * @param   int         $y2                 y end-point.
+     * @param   int|bool    $arrow              Optional arrow head.
+     */
+    protected function drawVLine($x, $y1, $y2, $arrow = false)
+    /**/
+    {
+        $this->w = max($this->w, $x);
+        $this->h = max($this->h, $y1, $y2);
+
+        $this->mvg[] = sprintf(
+            'line   %d,%d %d,%d',
+            $x * $this->xs + $this->xf,
+            $y1 * $this->ys,
+            $x * $this->xs + $this->xf,
+            $y2 * $this->ys
+        );
+        
+        if ($arrow !== false) {
+        }
+    }
+
+    /**
+     * Draw a marker.
+     *
+     * @octdoc  m:asciidia/drawMarker
+     * @param   int         $x                  x point.
+     * @param   int         $y                  y point.
+     * @param   string      $type               Type of marker (x, o).
+     * @param   bool        $ca                 Draw top connector.
+     * @param   bool        $cr                 Draw right connector.
+     * @param   bool        $cb                 Draw bottom connector.
+     * @param   bool        $cl                 Draw left connector.
+     */
+    protected function drawMarker($x, $y, $type, $ca, $cr, $cb, $cl)
+    /**/
+    {
+        $this->w = max($this->w, $x);
+        $this->h = max($this->h, $y);
+
+        printf("%s: %d,%d,%d,%d\n", $type, $ca, $cr, $cb, $cl);
+
+        // draw connectors
+        $this->mvg[] = sprintf(
+            'line   %d,%d %d,%d',
+            $x * $this->xs + ((1 - (int)$cl) * $this->xf),
+            $y * $this->ys + $this->yf,
+            $x * $this->xs + $this->xf + ((int)$cr * $this->xf),
+            $y * $this->ys + $this->yf
+        );
+        $this->mvg[] = sprintf(
+            'line   %d,%d %d,%d',
+            $x * $this->xs + $this->xf,
+            $y * $this->ys + ((1 - (int)$ca) * $this->yf),
+            $x * $this->xs + $this->xf,
+            $y * $this->ys + $this->yf + ((int)$cb * $this->yf)
+        );
+        
+        // draw marker
+        switch ($type) {
+        case 'x':
+            $this->mvg[] = sprintf(
+                'line   %d,%d %d,%d',
+                $x * $this->xs,
+                $y * $this->ys,
+                ($x + 1) * $this->xs - 1,
+                ($y + 1) * $this->ys - 1
+            );
+            $this->mvg[] = sprintf(
+                'line   %d,%d %d,%d',
+                ($x + 1) * $this->xs - 1,
+                $y * $this->ys,
+                $x * $this->xs,
+                ($y + 1) * $this->ys - 1
+            );
+            break;
+        case 'o':
+            $x = $x * $this->xs + $this->xf;
+            $y = $y * $this->ys + $this->yf;
+
+            $this->mvg[] = sprintf(
+                'fill %s circle %d,%d %d,%d',
+                $this->bg, $x, $y, $x + $this->xf, $y
+            );
+            break;
+        }
+    }
+
+    /**
+     * Draw a text string.
+     *
+     * @octdoc  m:asciidia/drawText
+     * @param   int         $x                  x point.
+     * @param   int         $y                  y point.
+     * @param   string      $text               Text to draw.
+     */
+    protected function drawText($x, $y, $text)
+    /**/
+    {
+        $this->w = max($this->w, $x + strlen($text));
+        $this->h = max($this->h, $y);
+        
+        $this->mvg[] = sprintf(
+            "text %d,%d '%s'",
+            $x * $this->xs,
+            ($y + 1) * $this->ys - ($this->yf / 2),
+            addcslashes($text, "'")
+        );
+    }
+    
+    /**
+     * Draw a rounded corner. The type of the corner is defined as follows:
+     *
+     * *    tl -- Top-Left
+     * *    tr -- Top-Right
+     * *    br -- Bottom-Right
+     * *    bl -- Bottom-Left
+     *
+     * @octdoc  m:asciidia/drawCorner
+     * @param   int         $x                  x point.
+     * @param   int         $y                  y point.
+     * @param   string      $type               Type of corner.
+     */
+    protected function drawCorner($x, $y, $type)
+    /**/
+    {   
+        $rotation = array('tl' => 2, 'tr' => 3, 'br' => 0, 'bl' => 1);
+        
+        $this->w = max($this->w, $x);
+        $this->h = max($this->h, $y);
+
+        $this->mvg[] = sprintf(
+            'arc %d,%d %d,%d %d,%d', 
+            $x * $this->xs,
+            $y * $this->ys,
+            $x * $this->xs + $this->xf,
+            $y * $this->ys + $this->yf,
+            $rotation[$type] * 90,
+            ($rotation[$type] + 1) * 90
+        );
     }
 }
