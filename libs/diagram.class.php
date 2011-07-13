@@ -209,7 +209,7 @@ class diagram extends asciidia
     /**
      * Parse an ASCII diagram an convert it to imagemagick commands.
      *
-     * @octdoc  m:asciidia/parse
+     * @octdoc  m:diagram/parse
      * @param   string      $diagram        ASCII Diagram to parse.
      * @return  string                      Imagemagick commands to draw diagram.
      */
