@@ -116,9 +116,9 @@ if ($raw) {
     list($w, $h) = $dia->getSize();
 
     $cmd = sprintf(
-        'convert -size %dx%d xc:white -stroke black -fill none -draw "%s" %s png:%s',
+        'convert -size %dx%d xc:white -stroke black -fill none -draw %s %s png:%s',
         $w, $h,
-        implode(' ', $out),
+        escapeshellarg(implode(' ', $out)),
         ($scale ? '-scale ' . $scale : ''),
         $opt['o']
     );
