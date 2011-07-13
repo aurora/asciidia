@@ -1,6 +1,12 @@
 asciidia
 ========
 
+Note
+----
+
+**This branch is work in progress. Readme will be updated, when branch is merged into 
+master**
+
 Usage
 -----
 
