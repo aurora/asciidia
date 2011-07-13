@@ -310,7 +310,7 @@ abstract class asciidia
             'line   %d,%d %d,%d',
             $x1 * $this->xs,
             $y * $this->ys + $this->yf,
-            $x2 * $this->xs,
+            $x2 * $this->xs + $this->xs,
             $y * $this->ys + $this->yf
         );
         
@@ -343,7 +343,7 @@ abstract class asciidia
             $x * $this->xs + $this->xf,
             $y1 * $this->ys,
             $x * $this->xs + $this->xf,
-            $y2 * $this->ys
+            $y2 * $this->ys + $this->ys
         );
         
         if ($arrow !== false) {
