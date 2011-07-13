@@ -21,10 +21,12 @@
  * https://github.com/aurora/asciidia
  */
 
+require_once(__DIR__ . '/diagram.class.php');
+
 /**
  * Class for creating "nice"-looking directory-trees from ASCII representation.
  *
- * @octdoc      c:libs/tree
+ * @octdoc      c:plugin/tree
  * @copyright   copyright (c) 2011 by Harald Lapp
  * @author      Harald Lapp <harald@octris.org>
  */
