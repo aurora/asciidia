@@ -54,6 +54,21 @@ class tree extends diagram
         
         return $return;
     }
+    
+    /**
+     * Display usage information.
+     *
+     * @octdoc  m:tree/usage
+     */
+    public function usage()
+    /**/
+    {
+        print "options:
+    -i  besides the default input types (see above) the tree plugin allows
+        a directory as input, too. if specified, the directory-tree will be
+        rendered\n";
+    }
+    
     /**
      * Parse an ASCII tree diagram an convert it to imagemagick commands.
      *
