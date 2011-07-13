@@ -34,6 +34,27 @@ class tree extends diagram
 /**/
 {
     /**
+     * Overwrite loadFile of plugin class, because tree plugin may read
+     * directories and use their content for rendering a diagram.
+     *
+     * @octdoc  m:tree/loadFile
+     * @param   string      $name               Name of file to load.
+     * @return  array                           Status information.
+     */
+    public function loadFile($name)
+    /**/
+    {
+        $return = array(true, '', '');
+        
+        if (is_dir($name)) {
+            $return[2] = $this->getTree($name);
+        } else {
+            $return = parent::loadFile($name);
+        }
+        
+        return $return;
+    }
+    /**
      * Parse an ASCII tree diagram an convert it to imagemagick commands.
      *
      * @octdoc  m:tree/parse
