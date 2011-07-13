@@ -261,8 +261,6 @@ class diagram extends asciidia
             }
         }
         
-        $this->enableGrid(true);
-        
         return $this->getCommands();
     }
 }
