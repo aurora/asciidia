@@ -192,7 +192,7 @@ class ebnf extends plugin
                 $return = current($tokens);
             }
 
-            if (!is_null($type) && !$this->chkToken($return, $type, $value)) {
+            if (!$this->chkToken($return, $type, $value)) {
                 $return = false;
             }
         }
