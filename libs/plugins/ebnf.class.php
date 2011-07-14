@@ -149,7 +149,7 @@ class ebnf extends plugin
     /**/
     {
         return ($token
-                ? ($token['token'] == $type && 
+                ? ((is_null($type) || $token['token'] == $type) && 
                     (is_null($value) || 
                     (is_array($value)
                         ? in_array($token['value'], $value)
