@@ -234,13 +234,13 @@ class context
         );
         
         // resolve child contexts
-        array_walk($this->mvg, function($cmd) use (&$mvg) {
-            if (!is_object($cmd) && $cmd instanceof context) {
+        foreach ($this->mvg as $cmd) {
+            if (is_object($cmd) && $cmd instanceof context) {
                 $mvg = array_merge($mvg, $cmd->getCommands());
             } else {
                 $mvg[] = $cmd;
             }
-        });
+        }
         
         // draw debugging grid
         if ($this->grid) {
