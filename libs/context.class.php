@@ -364,8 +364,8 @@ class context
         
         $this->mvg[] = sprintf(
             'translate %d,%d', 
-            $this->tx * $this->xs,
-            $this->ty * $this->ys
+            $tx * $this->xs,
+            $ty * $this->ys
         );
     }
 
