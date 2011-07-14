@@ -79,6 +79,7 @@ class tree extends diagram
     public function parse($diagram)
     /**/
     {
+        $ctx  = $this->getContext();
         $rows = explode("\n", $diagram);
     
         for ($y = 0, $h = count($rows); $y < $h; ++$y) {
@@ -87,7 +88,7 @@ class tree extends diagram
                 list($a, $r, $b, $l) = $this->getSurrounding($x, $y, $rows);
 
                 if ($c == '+' && $r == '-') {
-                    $this->drawMarker($x, $y, $c, true, true, ($b == '+' || $b == '|'), false);
+                    $ctx->drawMarker($x, $y, $c, true, true, ($b == '+' || $b == '|'), false);
                 } elseif ($c == '-' && ($l == '+' || $l == '-' || $r == '-' || $r == '>')) {
                     $this->addLine($x, $y, $rows);
                 } elseif ($c == '>' && ($l == '-')) {
@@ -101,14 +102,14 @@ class tree extends diagram
         }
         
         foreach ($this->strings as $string) {
-            $this->drawText($string['x'], $string['y'], $string['text']);
+            $ctx->drawText($string['x'], $string['y'], $string['text']);
         }
         
         foreach ($this->lines as $line) {
             if ($line['type'] == 'H') {
-                $this->drawHLine($line['x1'], $line['y1'], $line['x2'], $line['arrow']);
+                $ctx->drawHLine($line['x1'], $line['y1'], $line['x2'], $line['arrow']);
             } elseif ($line['type'] == 'V') {
-                $this->drawVLine($line['x1'], $line['y1'], $line['y2'], $line['arrow']);
+                $ctx->drawVLine($line['x1'], $line['y1'], $line['y2'], $line['arrow']);
             }
         }
         

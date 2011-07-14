@@ -228,6 +228,7 @@ class diagram extends plugin
     public function parse($diagram)
     /**/
     {
+        $ctx  = $this->getContext();
         $rows = explode("\n", $diagram);
     
         for ($y = 0, $h = count($rows); $y < $h; ++$y) {
@@ -237,15 +238,15 @@ class diagram extends plugin
 
                 if ($c == '/' && (($a == '|' && $l == '-') || ($r == '-' && $b == '|'))) {
                     // round corner (top-left or bottom-right)
-                    if ($a == '|' && $l == '-') $this->drawCorner($x, $y, 'br', true);
-                    if ($r == '-' && $b == '|') $this->drawCorner($x, $y, 'tl', true);
+                    if ($a == '|' && $l == '-') $ctx->drawCorner($x, $y, 'br', true);
+                    if ($r == '-' && $b == '|') $ctx->drawCorner($x, $y, 'tl', true);
                 } elseif ($c == '\\' && (($a == '|' && $r == '-') || ($b == '|' && $l == '-'))) {
                     // round corner (top-right or bottom-left)
-                    if ($a == '|' && $r == '-') $this->drawCorner($x, $y, 'bl', true);
-                    if ($b == '|' && $l == '-') $this->drawCorner($x, $y, 'tr', true);
+                    if ($a == '|' && $r == '-') $ctx->drawCorner($x, $y, 'bl', true);
+                    if ($b == '|' && $l == '-') $ctx->drawCorner($x, $y, 'tr', true);
                 } elseif (($c == 'x' || $c == 'o' || $c == '+') && ($a == '|' || $r == '-' || $b == '|' || $l == '-')) {
                     // marker
-                    $this->drawMarker($x, $y, $c, ($a == '|'), ($r == '-'), ($b == '|'), ($l == '-'));
+                    $ctx->drawMarker($x, $y, $c, ($a == '|'), ($r == '-'), ($b == '|'), ($l == '-'));
                 } elseif ($c == '-' || ($c == '<' && $r == '-') || ($c == '>' && $l == '-')) {
                     // horizontal line
                     $this->addLine($x, $y, $rows);
@@ -260,14 +261,14 @@ class diagram extends plugin
         }
         
         foreach ($this->strings as $string) {
-            $this->drawText($string['x'], $string['y'], $string['text']);
+            $ctx->drawText($string['x'], $string['y'], $string['text']);
         }
         
         foreach ($this->lines as $line) {
             if ($line['type'] == 'H') {
-                $this->drawHLine($line['x1'], $line['y1'], $line['x2'], $line['arrow']);
+                $ctx->drawHLine($line['x1'], $line['y1'], $line['x2'], $line['arrow']);
             } elseif ($line['type'] == 'V') {
-                $this->drawVLine($line['x1'], $line['y1'], $line['y2'], $line['arrow']);
+                $ctx->drawVLine($line['x1'], $line['y1'], $line['y2'], $line['arrow']);
             }
         }
         
