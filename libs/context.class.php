@@ -185,7 +185,7 @@ class context
     {
         foreach ($this->mvg as $cmd) {
             if (is_object($cmd) && $cmd instanceof context) {
-                $cb($context);
+                $cb($cmd);
             }
         }
     }
