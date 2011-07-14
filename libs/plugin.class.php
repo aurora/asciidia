@@ -125,7 +125,7 @@ abstract class plugin
     /**
      * Abstract method(s) to be implemented by plugins.
      *
-     * @octdoc  m:plugin/
+     * @octdoc  m:plugin/parse
      */
     abstract public function parse($content);
     /**/
