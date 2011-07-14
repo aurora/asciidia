@@ -351,6 +351,7 @@ class ebnf extends plugin
     public function parse($diagram)
     /**/
     {
+        // parse EBNF and create a syntax-tree of it.
         $tokens = $this->tokenize($diagram);
         $dom    = new DOMDocument();
         $syntax = $dom->createElement('syntax');
