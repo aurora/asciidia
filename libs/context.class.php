@@ -268,6 +268,21 @@ class context
         return $mvg;
     }
 
+    /**
+     * Clear MVG command stack.
+     *
+     * @octdoc  m:context/clearCommands
+     */
+    public function clearCommands()
+    /**/
+    {
+        $this->applyCallback(function($context) {
+            $context->clearCommands();
+            
+            unset($context);
+        });
+        
+        $this->mvg = array();
     /*
      * drawing primitives
      */
