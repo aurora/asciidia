@@ -221,22 +221,51 @@ class context
      * Return MVG commands.
      *
      * @octdoc  m:context/getCommands
+     * @return  array                           Imagemagick MVG commands.
      */
     public function getCommands()
     /**/
     {
-        return array_merge(
-            array(
-                'push graphic-context',
-                'font Courier',
-                sprintf('font-size %f', $this->ys)
-            ), 
-            $this->mvg,
-            $debug,
-            array(
-                'pop graphic-context'
-            )
+        // ---
+        $mvg = array(
+            'push graphic-context',
+            'font Courier',
+            sprintf('font-size %f', $this->ys)
         );
+        
+        // resolve child contexts
+        array_walk($this->mvg, function($cmd) use (&$mvg) {
+            if (!is_object($cmd) && $cmd instanceof context) {
+                $mvg = array_merge($mvg, $cmd->getCommands());
+            } else {
+                $mvg[] = $cmd;
+            }
+        });
+        
+        // draw debugging grid
+        if ($this->grid) {
+            for ($x = 0; $x <= $this->w; ++$x) {
+                $mvg[] = sprintf(
+                    'line %d,0 %d,%d',
+                    $x * $this->xs,
+                    $x * $this->xs,
+                    $this->h * $this->ys + $this->ys
+                );
+            }
+            for ($y = 0; $y <= $this->h; ++$y) {
+                $mvg[] = sprintf(
+                    'line 0,%d %d,%d',
+                    $y * $this->ys,
+                    $this->w * $this->xs + $this->xs,
+                    $y * $this->ys
+                );
+            }
+        }
+    
+        // ---
+        $mvg[] = 'pop graphic-context';
+
+        return $mvg;
     }
 
     /*
