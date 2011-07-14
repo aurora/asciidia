@@ -410,6 +410,26 @@ class context
     }
 
     /**
+     * Draw a path between specified points. An optional arrow head may be
+     * specified.
+     *
+     * *    false -- no arrow heads
+     * *    0 -- draw arrow heads on both sides (x1/y1 <-> x2/y2)
+     * *    1 -- draw arrow x1/y1 -> x2/y2
+     * *    -1 -- draw arrow x1/y1 <- x2/y2
+     *
+     * @octdoc  m:context/drawPath
+     * @param   array       $points             Points of path.
+     * @param   int|bool    $arrow              Optional arrow head.
+     * @param   bool        $round              Whether corners should be round.
+     */
+    public function drawPath(array $points, $arrow = false, $round = false)
+    /**/
+    {
+        // TODO
+    }
+
+    /**
      * Draw a line between two points. An optional arrow head may be specified:
      *
      * *    false -- no arrow heads
@@ -634,7 +654,7 @@ class context
             addcslashes($text, "'")
         );
     }
-    
+
     /**
      * Draw a (rounded) corner. The type of the corner is defined as follows:
      *
