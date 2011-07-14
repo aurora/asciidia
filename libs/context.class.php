@@ -412,6 +412,11 @@ class context
     /**
      * Draw a line between two points. An optional arrow head may be specified:
      *
+     * *    false -- no arrow heads
+     * *    0 -- draw arrow heads on both sides (x1/y1 <-> x2/y2)
+     * *    1 -- draw arrow x1/y1 -> x2/y2
+     * *    -1 -- draw arrow x1/y1 <- x2/y2
+     *
      * @octdoc  m:context/drawLine
      * @param   int         $x1                 x start-point.
      * @param   int         $y1                 y start-point.
