@@ -175,6 +175,22 @@ class context
     }
     
     /**
+     * Apply a callback method to the instances of sub-contexts.
+     *
+     * @octdoc  m:context/applyCallback
+     * @param   callback        $cb         Callback to apply to sub-context.   
+     */
+    protected function applyCallback($cb)
+    /**/
+    {
+        foreach ($this->mvg as $cmd) {
+            if (is_object($cmd) && $cmd instanceof context) {
+                $cb($context);
+            }
+        }
+    }
+    
+    /**
      * Return MVG commands.
      *
      * @octdoc  m:context/getCommands
