@@ -342,39 +342,129 @@ class ebnf extends plugin
     protected function render(DOMNode $node)
     /**/
     {
-        $x = 0; 
-        $y = 0;
-        
-        printf("%s\n", $node->nodeName);
-        
-        switch ($node->nodeName) {
-        case 'syntax':
-        case 'production':
-            $node = $node->firstChild;
+        $render = function(DOMNode $node, context $context, $l2r = true) use (&$render) {
+            printf("%s\n", $node->nodeName);
+
+            $x = 0; 
+            $y = 0;
+
+            // process node
+            switch ($node->nodeName) {
+            case 'syntax':
+                // first determine longest production name
+                $w = 0;
             
-            while ($node) {
-                $this->render($node);
+                $child = $node->firstChild;
+                while ($child) {
+                    $w = max($w, strlen($child->getAttribute('name')) + 1);
+                    
+                    $child = $child->nextSibling;
+                }
                 
-                $node = $node->nextSibling;
+                // render production
+                $th = 0;
+                
+                $child = $node->firstChild;
+                while ($child) {
+                    $context->translate(0, $th);
+
+                    $ctx = $context->addContext();
+                    $ctx->drawText(1, 0, $child->getAttribute('name'));
+                    $ctx->drawMarker(0, 1, 'o', false, true, false, false);
+                    $ctx->drawHLine(1, 1, $w + 0.5);
+
+                    $context->translate($w + 1, 0);
+                    $ctx = $context->addContext();
+
+                    $render($child, $ctx);
+
+                    list(, $th) = $ctx->getSize(true);
+                    $context->translate(-$w - 1, 0);
+
+                    $child = $child->nextSibling;
+                }
+                
+                break;
+            case 'production':
+                $child = $node->firstChild;
+                while ($child) {
+                    $render($child, $context);
+
+                    $child = $child->nextSibling;
+                }
+                break;
+            case 'expression':
+                $th = 0; 
+            
+                $child = $node->firstChild;
+                while ($child) {
+                    $context->translate(0, $th);
+                    
+                    $ctx = $context->addContext();
+                    
+                    $render($child, $ctx);
+                    
+                    list(, $th) = $ctx->getSize(true);
+                    
+                    $child = $child->nextSibling;
+                }
+                break;
+            case 'term':
+                $tw = 0;
+            
+                $child = $node->firstChild;
+                while ($child) {
+                    $context->translate($tw, 0);
+                    
+                    $ctx = $context->addContext();
+                    
+                    $render($child, $ctx);
+                    
+                    list($tw, ) = $ctx->getSize(true);
+
+                    print "term: $tw\n";
+
+                    $child = $child->nextSibling;
+                }
+                break;
+            case 'identifier':
+            case 'literal':
+                $text = $node->getAttribute('value');
+                $len  = strlen($text);
+
+                $context->drawRectangle(
+                    0, 0, $len + 2, $y + 2, 
+                    ($node->nodeName == 'identifier')
+                );
+                $context->drawText(1, 1, $text);
+                break;
+            case 'repetition':
+                $context->translate(2, 2);
+
+                $ctx = $context->addContext();
+                
+                $child = $node->firstChild;
+                while ($child) {
+                    $render($child, $ctx, false);
+
+                    $child = $child->nextSibling;
+                }
+                
+                $context->translate(-2, -2);
+                
+                list($tw, $th) = $ctx->getSize(true);
+                
+                $context->drawLine(0, 1, $tw + 3, 1);
+                $context->drawLine(1, 1, 1, $th);
+                $context->drawLine($tw + 2, 1, $tw + 2, $th);
+                $context->drawLine(1, $th, 2, $th);
+                $context->drawLine($tw + 1, $th, $tw + 2, $th);
+                
+                break;
             }
-            break;
-        case 'expression':
-            break;
-        case 'identifier':
-            $text = $node->getAttribute('value');
-            $len  = strlen($text);
-
-            $this->drawRectangle($x, $y, $x + $len + 1, $y + 2, true);
-            $this->drawText($x + 1, $y + 1, $text);
-            break;
-        case 'literal':
-            $text = $node->getAttribute('value');
-            $len  = strlen($text);
-
-            $this->drawRectangle($x, $y, $x + $len + 1, $y + 2);
-            $this->drawText($x + 1, $y + 1, $text);
-            break;
-        }
+        };
+        
+        $render($node, $this->getContext());
     }
     
     /**
@@ -406,6 +496,8 @@ class ebnf extends plugin
 
         // render syntax and return it's MVG commands
         $this->render($syntax);
+
+        print_r($this->getCommands());
 
         return $this->getCommands();
     }
