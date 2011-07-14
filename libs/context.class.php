@@ -68,6 +68,24 @@ class context
     /**/
     
     /**
+     * X-translation of origin.
+     *
+     * @octdoc  v:context/$tx
+     * @var     int
+     */
+    protected $tx = 0;
+    /**/
+    
+    /**
+     * Y-translation of origin.
+     *
+     * @octdoc  v:context/$ty
+     * @var     int
+     */
+    protected $ty = 0;
+    /**/
+    
+    /**
      * Width of diagram canvas.
      *
      * @octdoc  v:context/$w
@@ -191,6 +209,20 @@ class context
     }
     
     /**
+     * Calculate new size of context.
+     *
+     * @octdoc  m:context/setSize
+     * @param   int     $x                  X-value to use for calculation.
+     * @param   int     $y                  Y-value to use for calculation.
+     */
+    protected function setSize($x, $y)
+    /**/
+    {
+        $this->w = max($this->w, $this->tx + $x);
+        $this->h = max($this->h, $this->ty + $y);
+    }
+    
+    /**
      * Return size of canvas.
      *
      * @octdoc  m:context/getSize
@@ -309,6 +341,32 @@ class context
     }
 
     /*
+     * misc MVG commands
+     */
+    
+    /**
+     * Translate origin. Note that translation is always relative to the 
+     * current position of origin. While negative translation is allowed,
+     * it's not allowed to move the origin to a negative position.
+     *
+     * @octdoc  m:context/translate
+     * @param   int         $tx             x-value for translating origin.
+     * @param   int         $ty             y-value for translating origin.
+     */
+    public function translate($tx, $ty)
+    /**/
+    {
+        $this->tx = max(0, $this->tx + $tx);
+        $this->ty = max(0, $this->ty + $ty);
+        
+        $this->mvg[] = sprintf(
+            'translate %d,%d', 
+            $this->tx * $this->xs,
+            $this->ty * $this->ys
+        );
+    }
+
+    /*
      * drawing primitives
      */
 
@@ -325,8 +383,7 @@ class context
     public function drawRectangle($x1, $y1, $x2, $y2, $round = false)
     /**/
     {
-        $this->w = max($this->w, $x1, $x2);
-        $this->h = max($this->h, $y1, $y2);
+        $this->setSize(max($x1, $x2), max($x1, $y2));
         
         if ($round) {
             $this->mvg[] = sprintf(
@@ -362,8 +419,7 @@ class context
     public function drawLine($x1, $y1, $x2, $y2, $arrow = false)
     /**/
     {
-        $this->w = max($this->w, $x1, $x2);
-        $this->h = max($this->h, $y1, $y2);
+        $this->setSize(max($x1, $x2), max($y1, $y2));
 
         $this->mvg[] = sprintf(
             'line   %d,%d %d,%d',
@@ -397,8 +453,7 @@ class context
     public function drawHLine($x1, $y, $x2, $arrow = false)
     /**/
     {
-        $this->w = max($this->w, $x1, $x2);
-        $this->h = max($this->h, $y);
+        $this->setSize(max($x1, $x2), $y);
 
         $this->mvg[] = sprintf(
             'line   %d,%d %d,%d',
@@ -450,8 +505,7 @@ class context
     public function drawVLine($x, $y1, $y2, $arrow = false)
     /**/
     {
-        $this->w = max($this->w, $x);
-        $this->h = max($this->h, $y1, $y2);
+        $this->setSize($x, max($y1, $y2));
 
         $this->mvg[] = sprintf(
             'line   %d,%d %d,%d',
@@ -501,8 +555,7 @@ class context
     public function drawMarker($x, $y, $type, $ca, $cr, $cb, $cl)
     /**/
     {
-        $this->w = max($this->w, $x);
-        $this->h = max($this->h, $y);
+        $this->setSize($x, $y);
 
         // draw connectors
         $this->mvg[] = sprintf(
@@ -564,8 +617,7 @@ class context
     public function drawText($x, $y, $text)
     /**/
     {
-        $this->w = max($this->w, $x + strlen($text));
-        $this->h = max($this->h, $y);
+        $this->setSize($x + strlen($text), $y);
         
         $this->mvg[] = sprintf(
             "text %d,%d '%s'",
@@ -605,8 +657,7 @@ class context
         
         list($xf, $yf, $rs, $re) = $rotation[$type];
         
-        $this->w = max($this->w, $x);
-        $this->h = max($this->h, $y);
+        $this->setSize($x, $y);
 
         if ($round) {
             $this->mvg[] = sprintf(
