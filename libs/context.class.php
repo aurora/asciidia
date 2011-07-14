@@ -191,7 +191,7 @@ class context
      * @param   int         $y2                 y end-point.
      * @param   bool        $round              Whether corners should be round.
      */
-    protected function drawRectangle($x1, $y1, $x2, $y2, $round = false)
+    public function drawRectangle($x1, $y1, $x2, $y2, $round = false)
     /**/
     {
         $this->w = max($this->w, $x1, $x2);
@@ -228,7 +228,7 @@ class context
      * @param   int         $y2                 y end-point.
      * @param   int|bool    $arrow              Optional arrow head.
      */
-    protected function drawLine($x1, $y1, $x2, $y2, $arrow = false)
+    public function drawLine($x1, $y1, $x2, $y2, $arrow = false)
     /**/
     {
         $this->w = max($this->w, $x1, $x2);
@@ -263,7 +263,7 @@ class context
      * @param   int         $x2                 x end-point.
      * @param   int|bool    $arrow              Optional arrow head.
      */
-    protected function drawHLine($x1, $y, $x2, $arrow = false)
+    public function drawHLine($x1, $y, $x2, $arrow = false)
     /**/
     {
         $this->w = max($this->w, $x1, $x2);
@@ -316,7 +316,7 @@ class context
      * @param   int         $y2                 y end-point.
      * @param   int|bool    $arrow              Optional arrow head.
      */
-    protected function drawVLine($x, $y1, $y2, $arrow = false)
+    public function drawVLine($x, $y1, $y2, $arrow = false)
     /**/
     {
         $this->w = max($this->w, $x);
@@ -367,7 +367,7 @@ class context
      * @param   bool        $cb                 Draw bottom connector.
      * @param   bool        $cl                 Draw left connector.
      */
-    protected function drawMarker($x, $y, $type, $ca, $cr, $cb, $cl)
+    public function drawMarker($x, $y, $type, $ca, $cr, $cb, $cl)
     /**/
     {
         $this->w = max($this->w, $x);
@@ -430,7 +430,7 @@ class context
      * @param   int         $y                  y point.
      * @param   string      $text               Text to draw.
      */
-    protected function drawText($x, $y, $text)
+    public function drawText($x, $y, $text)
     /**/
     {
         $this->w = max($this->w, $x + strlen($text));
@@ -458,7 +458,7 @@ class context
      * @param   string      $type               Type of corner.
      * @param   bool        $round              Whether corner should be round.
      */
-    protected function drawCorner($x, $y, $type, $round = false)
+    public function drawCorner($x, $y, $type, $round = false)
     /**/
     {   
         $rotation = array(
