@@ -199,10 +199,17 @@ class context
     public function getSize()
     /**/
     {
-        return array(
-            ($this->w + 1) * $this->xs - 1, 
-            ($this->h + 1) * $this->ys - 1
-        );
+        $w = ($this->w + 1) * $this->xs - 1;
+        $h = ($this->h + 1) * $this->ys - 1;
+        
+        $this->applyCallback(function($context) use (&$w, &$h) {
+            list($cw, $ch) = $context->getSize();
+            
+            $w = max($w, $cw);
+            $h = max($h, $ch);
+        });
+        
+        return array($w, $h);
     }
 
     /**
