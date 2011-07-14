@@ -394,7 +394,11 @@ class ebnf extends plugin
                 }
                 break;
             case 'expression':
-                $th = 0; 
+                $indent = ($node->childNodes->length > 1);
+                $th = 0; $max_th = 0;
+                $tw = 0; $max_tw = 0;
+    
+                if ($indent) $context->translate(2, 0);
             
                 $child = $node->firstChild;
                 while ($child) {
@@ -404,9 +408,19 @@ class ebnf extends plugin
                     
                     $render($child, $ctx);
                     
-                    list(, $th) = $ctx->getSize(true);
+                    list($tw, $th) = $ctx->getSize(true);
+                    $max_th += $th;
+                    $max_tw = max($max_tw, $tw);
                     
                     $child = $child->nextSibling;
+                }
+
+                if ($indent) {
+                    $max_th -= $th;
+                    
+                    $context->translate(-2, -$max_th);
+                    $context->drawLine(1, 1, 1, $max_th);
+                    $context->drawLine($tw + 2, 1, $tw + 2, $max_th);
                 }
                 break;
             case 'term':
