@@ -218,24 +218,25 @@ class context
     protected function setSize($x, $y)
     /**/
     {
-        $this->w = max($this->w, $this->tx + $x);
-        $this->h = max($this->h, $this->ty + $y);
+        $this->w = max($this->w, $this->tx + $x + 1);
+        $this->h = max($this->h, $this->ty + $y + 1);
     }
     
     /**
      * Return size of canvas.
      *
      * @octdoc  m:context/getSize
-     * @param   array                       w,h size of canvas.
+     * @param   bool        $cells          Whether to return size in cells instead of pixels.
+     * @return  array                       w,h size of canvas.
      */
-    public function getSize()
+    public function getSize($cells = false)
     /**/
     {
-        $w = ($this->w + 1) * $this->xs - 1;
-        $h = ($this->h + 1) * $this->ys - 1;
+        $w = ($cells ? $this->w : $this->w * $this->xs - 1);
+        $h = ($cells ? $this->h : $this->h * $this->ys - 1);
         
-        $this->applyCallback(function($context) use (&$w, &$h) {
-            list($cw, $ch) = $context->getSize();
+        $this->applyCallback(function($context) use (&$w, &$h, $cells) {
+            list($cw, $ch) = $context->getSize($cells);
             
             $w = max($w, $cw);
             $h = max($h, $ch);
@@ -283,19 +284,19 @@ class context
         
         // draw debugging grid
         if ($this->grid) {
-            for ($x = 0; $x <= $this->w; ++$x) {
+            for ($x = 0; $x < $this->w; ++$x) {
                 $mvg[] = sprintf(
                     'line %d,0 %d,%d',
                     $x * $this->xs,
                     $x * $this->xs,
-                    $this->h * $this->ys + $this->ys
+                    $this->h * $this->ys
                 );
             }
-            for ($y = 0; $y <= $this->h; ++$y) {
+            for ($y = 0; $y < $this->h; ++$y) {
                 $mvg[] = sprintf(
                     'line 0,%d %d,%d',
                     $y * $this->ys,
-                    $this->w * $this->xs + $this->xs,
+                    $this->w * $this->xs,
                     $y * $this->ys
                 );
             }
