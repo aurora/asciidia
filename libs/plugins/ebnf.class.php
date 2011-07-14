@@ -367,9 +367,10 @@ class ebnf extends plugin
         if (count($tokens) > 1 || $this->chkToken($token, self::T_OPERATOR, '}')) {
             $this->error('EBNF must end with "}"');
         }
-        
-        $diagram = $this->render($syntax);
 
-        return parent::parse($diagram);
+        // render syntax and return it's MVG commands
+        $this->render($syntax);
+
+        return $this->getCommands();
     }
 }
