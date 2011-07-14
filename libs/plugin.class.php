@@ -383,6 +383,43 @@ abstract class plugin
      */
 
     /**
+     * Draw a rectangle.
+     *
+     * @octdoc  m:plugin/drawRectangle
+     * @param   int         $x1                 x start-point.
+     * @param   int         $y1                 y start-point.
+     * @param   int         $x2                 x end-point.
+     * @param   int         $y2                 y end-point.
+     * @param   bool        $round              Whether corners should be round.
+     */
+    protected function drawRectangle($x1, $y1, $x2, $y2, $round = false)
+    /**/
+    {
+        $this->w = max($this->w, $x1, $x2);
+        $this->h = max($this->h, $y1, $y2);
+        
+        if ($round) {
+            $this->mvg[] = sprintf(
+                'rectangle  %d,%d %d,%d',
+                $x1 * $this->xs + $this->xf,
+                $y1 * $this->ys + $this->yf,
+                $x2 * $this->xs + $this->xf,
+                $y2 * $this->ys + $this->yf
+            );
+        } else {
+            $this->mvg[] = sprintf(
+                'roundrectangle  %d,%d %d,%d %d,%d',
+                $x1 * $this->xs + $this->xf,
+                $y1 * $this->ys + $this->yf,
+                $x2 * $this->xs + $this->xf,
+                $y2 * $this->ys + $this->yf,
+                $this->xf,
+                $this->yf
+            );
+        }
+    }
+
+    /**
      * Draw a line between two points. An optional arrow head may be specified:
      *
      * @octdoc  m:plugin/drawLine
