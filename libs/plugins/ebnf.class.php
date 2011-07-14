@@ -23,7 +23,7 @@
 
 /*
  * The asciidia EBNF parser is -- in creating of the syntax-tree -- inspired 
- * by the EBNF parser of Vincent Tscherter: http://pamela.karmin.ch/ebnf/index
+ * by the EBNF parser of Vincent Tscherter: http://pamela.karmin.ch/ebnf/
  */
 
 // definition      =
@@ -334,16 +334,47 @@ class ebnf extends plugin
     }
     
     /**
-     * Render syntax document to ASCII diagram.
+     * Render syntax to imagemagick MVG commands.
      *
      * @octdoc  m:ebnf/render
      * @param   DOMNode     $node           Node to render.
-     * @return  string                      Rendered ASCII diagram.
      */
     protected function render(DOMNode $node)
     /**/
     {
-        return '';
+        $x = 0; 
+        $y = 0;
+        
+        printf("%s\n", $node->nodeName);
+        
+        switch ($node->nodeName) {
+        case 'syntax':
+        case 'production':
+            $node = $node->firstChild;
+            
+            while ($node) {
+                $this->render($node);
+                
+                $node = $node->nextSibling;
+            }
+            break;
+        case 'expression':
+            break;
+        case 'identifier':
+            $text = $node->getAttribute('value');
+            $len  = strlen($text);
+
+            $this->drawRectangle($x, $y, $x + $len + 1, $y + 2, true);
+            $this->drawText($x + 1, $y + 1, $text);
+            break;
+        case 'literal':
+            $text = $node->getAttribute('value');
+            $len  = strlen($text);
+
+            $this->drawRectangle($x, $y, $x + $len + 1, $y + 2);
+            $this->drawText($x + 1, $y + 1, $text);
+            break;
+        }
     }
     
     /**
