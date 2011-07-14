@@ -315,7 +315,7 @@ class context
     /**
      * Draw a rectangle.
      *
-     * @octdoc  m:plugin/drawRectangle
+     * @octdoc  m:context/drawRectangle
      * @param   int         $x1                 x start-point.
      * @param   int         $y1                 y start-point.
      * @param   int         $x2                 x end-point.
@@ -352,7 +352,7 @@ class context
     /**
      * Draw a line between two points. An optional arrow head may be specified:
      *
-     * @octdoc  m:plugin/drawLine
+     * @octdoc  m:context/drawLine
      * @param   int         $x1                 x start-point.
      * @param   int         $y1                 y start-point.
      * @param   int         $x2                 x end-point.
@@ -388,7 +388,7 @@ class context
      * *    1 -- draw arrow x1/y1 -> x2/y2
      * *    -1 -- draw arrow x1/y1 <- x2/y2
      *
-     * @octdoc  m:plugin/drawLine
+     * @octdoc  m:context/drawLine
      * @param   int         $x1                 x start-point.
      * @param   int         $y                  y start-point.
      * @param   int         $x2                 x end-point.
@@ -441,7 +441,7 @@ class context
      * *    1 -- draw arrow x1/y1 -> x2/y2
      * *    -1 -- draw arrow x1/y1 <- x2/y2
      *
-     * @octdoc  m:plugin/drawLine
+     * @octdoc  m:context/drawLine
      * @param   int         $x                  x start-point.
      * @param   int         $y1                 y start-point.
      * @param   int         $y2                 y end-point.
@@ -489,7 +489,7 @@ class context
     /**
      * Draw a marker.
      *
-     * @octdoc  m:plugin/drawMarker
+     * @octdoc  m:context/drawMarker
      * @param   int         $x                  x point.
      * @param   int         $y                  y point.
      * @param   string      $type               Type of marker (x, o).
@@ -556,7 +556,7 @@ class context
     /**
      * Draw a text string.
      *
-     * @octdoc  m:plugin/drawText
+     * @octdoc  m:context/drawText
      * @param   int         $x                  x point.
      * @param   int         $y                  y point.
      * @param   string      $text               Text to draw.
@@ -583,7 +583,7 @@ class context
      * *    br -- Bottom-Right
      * *    bl -- Bottom-Left
      *
-     * @octdoc  m:plugin/drawCorner
+     * @octdoc  m:context/drawCorner
      * @param   int         $x                  x point.
      * @param   int         $y                  y point.
      * @param   string      $type               Type of corner.
