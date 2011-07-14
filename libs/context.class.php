@@ -191,6 +191,21 @@ class context
     }
     
     /**
+     * Return size of canvas.
+     *
+     * @octdoc  m:context/getSize
+     * @param   array                       w,h size of canvas.
+     */
+    public function getSize()
+    /**/
+    {
+        return array(
+            ($this->w + 1) * $this->xs - 1, 
+            ($this->h + 1) * $this->ys - 1
+        );
+    }
+
+    /**
      * Return MVG commands.
      *
      * @octdoc  m:context/getCommands
