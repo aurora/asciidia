@@ -267,9 +267,7 @@ class ebnf extends plugin
         
         do {
             $return->appendChild($this->parseFact($dom, $tokens, $token));
-        } while (($token = current($tokens)) && !in_array($token['value'], array(';', '=', '|', ')', ']', '}'))); 
-    // } while (($this->getToken($tokens, self::T_OPERATOR, null, false)) && !in_array($token['value'], array(';', '=', '|', ')', ']', '}'))); 
-         // && $this->eatToken($tokens));
+        } while (!$this->getToken($tokens, null, array(';', '=', '|', ')', ']', '}'), false)); 
         
         return $return;
     }
