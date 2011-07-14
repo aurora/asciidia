@@ -156,6 +156,25 @@ class context
     }
     
     /**
+     * Add child context to current one. The new context will inherit the
+     * cell scaling setting of current context.
+     *
+     * @octdoc  m:context/addContext
+     * @return  context                     New graphic context.
+     */
+    public function addContext()
+    /**/
+    {
+        $this->mvg[] = $context = new context();
+        $context->xs = $this->xs;
+        $context->ys = $this->ys;
+        
+        $context->enableGrid($this->grid);
+        
+        return $context;
+    }
+    
+    /**
      * Return MVG commands.
      *
      * @octdoc  m:context/getCommands
