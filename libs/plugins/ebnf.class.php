@@ -21,6 +21,11 @@
  * https://github.com/aurora/asciidia
  */
 
+/*
+ * The asciidia EBNF parser is -- in creating of the syntax-tree -- inspired 
+ * by the EBNF parser of Vincent Tscherter: http://pamela.karmin.ch/ebnf/index
+ */
+
 // definition      =
 // termination     ;
 // alternation     |
