@@ -354,7 +354,7 @@ class ebnf extends plugin
         // parse EBNF and create a syntax-tree of it.
         $tokens = $this->tokenize($diagram);
         $dom    = new DOMDocument();
-        $syntax = $dom->createElement('syntax');
+        $syntax = $dom->appendChild($dom->createElement('syntax'));
         
         if (!($token = $this->getToken($tokens, self::T_OPERATOR, '{'))) {
             $this->error('EBNF must start with "{"');
