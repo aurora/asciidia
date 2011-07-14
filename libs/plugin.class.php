@@ -33,6 +33,15 @@ abstract class plugin
 /**/
 {
     /**
+     * Instance of main graphic context.
+     *
+     * @octdoc  v:plugin/$context
+     * @var     context
+     */
+    private $context = null;
+    /**/
+    
+    /**
      * Abstract method(s) to be implemented by plugins.
      *
      * @octdoc  m:plugin/parse
@@ -51,30 +60,21 @@ abstract class plugin
     }
 
     /**
-     * Return size of canvas.
+     * Return instance of main context.
      *
-     * @octdoc  m:plugin/getSize
-     * @param   array                       w,h size of canvas.
+     * @octdoc  m:plugin/getContext
+     * @return  context                     Instance of main context.
      */
-    public function getSize()
+    protected function getContext()
     /**/
     {
-        return array(
-            ($this->w + 1) * $this->xs - 1, 
-            ($this->h + 1) * $this->ys - 1
-        );
-    }
-
-    /**
-     * Add MVG command to command-list.
-     *
-     * @octdoc  m:plugin/addCommand
-     * @param   string      $command        Command to at.
-     */
-    public function addCommand($command)
-    /**/
-    {
-        $this->mvg[] = $command;
+        if (is_null($this->context)) {
+            require_once(__DIR__ . '/context.class.php');
+            
+            $this->context = new context();
+        }
+        
+        return $this->context;
     }
 
     /**
@@ -86,51 +86,19 @@ abstract class plugin
     public function getCommands()
     /**/
     {
-        $debug = array();
-        
-        if ($this->grid) {
-            // draw debugging grid
-            for ($x = 0; $x <= $this->w; ++$x) {
-                $debug[] = sprintf(
-                    'line %d,0 %d,%d',
-                    $x * $this->xs,
-                    $x * $this->xs,
-                    $this->h * $this->ys + $this->ys
-                );
-            }
-            for ($y = 0; $y <= $this->h; ++$y) {
-                $debug[] = sprintf(
-                    'line 0,%d %d,%d',
-                    $y * $this->ys,
-                    $this->w * $this->xs + $this->xs,
-                    $y * $this->ys
-                );
-            }
-        }
-        
-        return array_merge(
-            array(
-                'push graphic-context',
-                'font Courier',
-                sprintf('font-size %f', $this->ys)
-            ), 
-            $this->mvg,
-            $debug,
-            array(
-                'pop graphic-context'
-            )
-        );
+        return $this->getContext()->getCommands();
     }
 
     /**
-     * Clear MVG command stack.
+     * Get size of bitmap to render.
      *
-     * @octdoc  m:plugin/clearCommands
+     * @octdoc  m:plugin/getSize
+     * @return  array                       w, h of bitmap to be rendered.   
      */
-    public function clearCommands()
+    public function getSize()
     /**/
     {
-        $this->mvg = array();
+        return $this->getContext()->getSize();
     }
 
     /**
@@ -142,7 +110,7 @@ abstract class plugin
     public function enableGrid($enable)
     /**/
     {
-        $this->grid = $enable;
+        $this->getContext()->enableGrid($enable);
     }
 
     /**
