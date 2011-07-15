@@ -183,7 +183,12 @@ class context
     public function addContext()
     /**/
     {
-        $this->mvg[] = $context = new context();
+        $this->mvg[] = array(
+            'tx'        => $this->tx,
+            'ty'        => $this->ty,
+            'context'   => ($context = new context())
+        );
+        
         $context->xs = $this->xs;
         $context->ys = $this->ys;
 
@@ -203,8 +208,8 @@ class context
     /**/
     {
         foreach ($this->mvg as $cmd) {
-            if (is_object($cmd) && $cmd instanceof context) {
-                $cb($cmd);
+            if (is_array($cmd) && isset($cmd['context'])) {
+                $cb($cmd['context'], $cmd['tx'], $cmd['ty']);
             }
         }
     }
@@ -233,14 +238,17 @@ class context
     public function getSize($cells = false)
     /**/
     {
+        $xs = $this->xs;
+        $ys = $this->ys;
+        
         $w = ($cells ? $this->w : $this->w * $this->xs - 1);
         $h = ($cells ? $this->h : $this->h * $this->ys - 1);
         
-        $this->applyCallback(function($context) use (&$w, &$h, $cells) {
+        $this->applyCallback(function($context, $tx, $ty) use (&$w, &$h, $xs, $ys, $cells) {
             list($cw, $ch) = $context->getSize($cells);
             
-            $w = max($w, $cw);
-            $h = max($h, $ch);
+            $w = max($w, ($cells ? $tx + $cw : $tx * $xs + $cw));
+            $h = max($h, ($cells ? $ty + $ch : $ty * $ys + $ch));
         });
         
         return array($w, $h);
@@ -276,8 +284,8 @@ class context
         
         // resolve child contexts
         foreach ($this->mvg as $cmd) {
-            if (is_object($cmd) && $cmd instanceof context) {
-                $mvg = array_merge($mvg, $cmd->getCommands());
+            if (is_array($cmd) && isset($cmd['context'])) {
+                $mvg = array_merge($mvg, $cmd['context']->getCommands());
             } else {
                 $mvg[] = $cmd;
             }
