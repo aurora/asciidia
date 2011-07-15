@@ -449,10 +449,8 @@ class ebnf extends plugin
                 $context->drawLabel(0, 0, $text, ($node->nodeName == 'identifier'));
                 break;
             case 'repetition':
-                // $context->translate(2, 2);
-            
                 $ctx = $context->addContext();
-                $ctx->translate(2, 2);
+                $ctx->translate(3, 2);
                 
                 $child = $node->firstChild;
                 while ($child) {
@@ -461,11 +459,15 @@ class ebnf extends plugin
                     $child = $child->nextSibling;
                 }
                 
-                // $context->translate(-2, -2);
-                
                 list($tw, $th) = $ctx->getSize(true);
                 
-                // $context->drawLine(0, 1, $tw + 3, 1);
+                $context->drawLine(0, 1, $tw + 2, 1);
+                $context->drawPath(
+                    array(
+                        array(0, 1), array(1, 1), array(1, 3), array(3, 3)
+                    ),
+                    false, true
+                );
                 // $context->drawLine(1, 1, 1, $th);
                 // $context->drawLine($tw + 2, 1, $tw + 2, $th);
                 // $context->drawLine(1, $th, 2, $th);
