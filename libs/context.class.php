@@ -37,7 +37,7 @@ class context
      * @octdoc  v:context/$xs
      * @var     float
      */
-    protected $xs = 15.0;
+    protected $xs = 9.0;
     /**/
     
     /**
