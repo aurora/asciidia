@@ -380,7 +380,7 @@ class context
         $this->tx = max(0, $this->tx + $tx);
         $this->ty = max(0, $this->ty + $ty);
     
-        $this->setSize($this->tx, $this->ty);
+        $this->setSize(1, 1);
         
         $this->mvg[] = sprintf(
             'translate %d,%d', 
