@@ -293,14 +293,14 @@ class context
         
         // draw debugging grid and context boundaries
         if ($this->debug) {
-            $mvg[] = sprintf('translate %d,%d', -$this->tx * $this->xs, -$this->ty * $this->ys);
+            $mvg[] = sprintf('translate %f,%f', -$this->tx * $this->xs, -$this->ty * $this->ys);
             $mvg[] = 'push graphic-context';
             
             list($cw, $ch) = $this->getSize(true);
             
             for ($x = 0; $x < $cw; ++$x) {
                 $mvg[] = sprintf(
-                    'line %d,0 %d,%d',
+                    'line %f,0 %f,%f',
                     $x * $this->xs,
                     $x * $this->xs,
                     $ch * $this->ys
@@ -308,20 +308,20 @@ class context
             }
             for ($y = 0; $y < $ch; ++$y) {
                 $mvg[] = sprintf(
-                    'line 0,%d %d,%d',
+                    'line 0,%f %f,%f',
                     $y * $this->ys,
                     $cw * $this->xs,
                     $y * $this->ys
                 );
             }
             $mvg[] = sprintf(
-                'rectangle 0,0, %d,%d', 
+                'rectangle 0,0, %f,%f', 
                 $cw * $this->xs, 
                 $ch * $this->ys
             );
             
             $this->mvg[] = sprintf(
-                "text 0,%d '%d,%d'", $this->ys - ($this->yf / 2), $cw, $ch
+                "text 0,%f '%d,%d'", $this->ys - ($this->yf / 2), $cw, $ch
             );
             
             $mvg[] = 'pop graphic-context';
@@ -391,7 +391,7 @@ class context
         $this->setSize(1, 1);
         
         $this->mvg[] = sprintf(
-            'translate %d,%d', 
+            'translate %f,%f', 
             $tx * $this->xs,
             $ty * $this->ys
         );
@@ -418,7 +418,7 @@ class context
         
         if ($round) {
             $this->mvg[] = sprintf(
-                'rectangle  %d,%d %d,%d',
+                'rectangle  %f,%f %f,%f',
                 $x1 * $this->xs + $this->xf,
                 $y1 * $this->ys + $this->yf,
                 $x2 * $this->xs + $this->xf,
@@ -426,7 +426,7 @@ class context
             );
         } else {
             $this->mvg[] = sprintf(
-                'roundrectangle  %d,%d %d,%d %d,%d',
+                'roundrectangle  %f,%f %f,%f %f,%f',
                 $x1 * $this->xs + $this->xf,
                 $y1 * $this->ys + $this->yf,
                 $x2 * $this->xs + $this->xf,
@@ -586,7 +586,7 @@ class context
         $this->setSize(max($x1, $x2), max($y1, $y2));
 
         $this->mvg[] = sprintf(
-            'line   %d,%d %d,%d',
+            'line   %f,%f %f,%f',
             $x1 * $this->xs + $this->xf,
             $y1 * $this->ys + $this->yf,
             $x2 * $this->xs + $this->xf,
@@ -620,7 +620,7 @@ class context
         $this->setSize(max($x1, $x2), $y);
 
         $this->mvg[] = sprintf(
-            'line   %d,%d %d,%d',
+            'line   %f,%f %f,%f',
             $x1 * $this->xs,
             $y * $this->ys + $this->yf,
             $x2 * $this->xs + $this->xs,
@@ -633,7 +633,7 @@ class context
             
             if ($arrow <= 0) {
                 $this->mvg[] = sprintf(
-                    "fill %s path 'M %d,%d %d,%d %d,%d Z'",
+                    "fill %s path 'M %f,%f %f,%f %f,%f Z'",
                     $this->stroke,
                     $x1 * $this->xs, $y * $this->ys + $this->yf,
                     $x1 * $this->xs + $this->xf, $y * $this->ys + $f,
@@ -642,7 +642,7 @@ class context
             }
             if ($arrow >= 0) {
                 $this->mvg[] = sprintf(
-                    "fill %s path 'M %d,%d %d,%d %d,%d Z'",
+                    "fill %s path 'M %f,%f %f,%f %f,%f Z'",
                     $this->stroke,
                     $x2 * $this->xs + $this->xs, $y * $this->ys + $this->yf,
                     $x2 * $this->xs + $this->xf, $y * $this->ys + $f,
@@ -672,7 +672,7 @@ class context
         $this->setSize($x, max($y1, $y2));
 
         $this->mvg[] = sprintf(
-            'line   %d,%d %d,%d',
+            'line   %f,%f %f,%f',
             $x * $this->xs + $this->xf,
             $y1 * $this->ys,
             $x * $this->xs + $this->xf,
@@ -685,7 +685,7 @@ class context
             
             if ($arrow <= 0) {
                 $this->mvg[] = sprintf(
-                    "fill %s path 'M %d,%d %d,%d %d,%d Z'",
+                    "fill %s path 'M %f,%f %f,%f %f,%f Z'",
                     $this->stroke,
                     $x * $this->xs + $this->xf, $y1 * $this->ys,
                     $x * $this->xs + $f, $y1 * $this->ys + $this->yf,
@@ -694,7 +694,7 @@ class context
             }
             if ($arrow >= 0) {
                 $this->mvg[] = sprintf(
-                    "fill %s path 'M %d,%d %d,%d %d,%d Z'",
+                    "fill %s path 'M %f,%f %f,%f %f,%f Z'",
                     $this->stroke,
                     $x * $this->xs + $f, $y2 * $this->ys + $this->yf,
                     $x * $this->xs + $this->xf, $y2 * $this->ys + $this->ys,
@@ -723,14 +723,14 @@ class context
 
         // draw connectors
         $this->mvg[] = sprintf(
-            'line   %d,%d %d,%d',
+            'line   %f,%f %f,%f',
             $x * $this->xs + ((1 - (int)$cl) * $this->xf),
             $y * $this->ys + $this->yf,
             $x * $this->xs + $this->xf + ((int)$cr * $this->xf),
             $y * $this->ys + $this->yf
         );
         $this->mvg[] = sprintf(
-            'line   %d,%d %d,%d',
+            'line   %f,%f %f,%f',
             $x * $this->xs + $this->xf,
             $y * $this->ys + ((1 - (int)$ca) * $this->yf),
             $x * $this->xs + $this->xf,
@@ -744,14 +744,14 @@ class context
         switch ($type) {
         case 'x':
             $this->mvg[] = sprintf(
-                'line   %d,%d %d,%d',
+                'line   %f,%f %f,%f',
                 $x * $this->xs + $hxf,
                 $y * $this->ys + $hyf,
                 $x * $this->xs + $this->xs - $hxf,
                 $y * $this->ys + $this->ys - $hyf
             );
             $this->mvg[] = sprintf(
-                'line   %d,%d %d,%d',
+                'line   %f,%f %f,%f',
                 $x * $this->xs + $this->xs - $hxf,
                 $y * $this->ys + $hyf,
                 $x * $this->xs + $hxf,
@@ -763,7 +763,7 @@ class context
             $y = $y * $this->ys + $this->yf;
 
             $this->mvg[] = sprintf(
-                'fill %s ellipse %d,%d %d,%d 0,360',
+                'fill %s ellipse %f,%f %f,%f 0,360',
                 $this->bg, $x, $y, $hxf, $hyf
             );
             break;
@@ -784,7 +784,7 @@ class context
         $this->setSize($x + strlen($text), $y);
         
         $this->mvg[] = sprintf(
-            "text %d,%d '%s'",
+            "text %f,%f '%s'",
             $x * $this->xs,
             ($y + 1) * $this->ys - ($this->yf / 2),
             addcslashes($text, "'")
@@ -848,7 +848,7 @@ class context
 
         if ($round) {
             $this->mvg[] = sprintf(
-                'fill transparent ellipse %d,%d %d,%d %d,%d',
+                'fill transparent ellipse %f,%f %f,%f %f,%f',
                 $x * $this->xs + $xf, 
                 $y * $this->ys + $yf,
                 $this->xf,
