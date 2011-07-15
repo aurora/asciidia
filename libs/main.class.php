@@ -110,7 +110,7 @@ class main
             if (!$status) $this->usage($msg);
             
             // plugin setup
-            $this->plugin->enableGrid($debug);
+            $this->plugin->enableDebug($debug);
             
             if ($cell) {
                 $this->plugin->xs = $cell[0];

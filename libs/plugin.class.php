@@ -102,15 +102,15 @@ abstract class plugin
     }
 
     /**
-     * Enable a grid overlay useful for debugging asciidia.
+     * Enable a debugging mode for context.
      *
-     * @octdoc  m:plugin/enableGrid
-     * @param   bool        $enable             Whether to enable / disable grid.
+     * @octdoc  m:plugin/enableDebug
+     * @param   bool        $enable             Whether to enable / disable debugging.
      */
-    public function enableGrid($enable)
+    public function enableDebug($enable)
     /**/
     {
-        $this->getContext()->enableGrid($enable);
+        $this->getContext()->enableDebug($enable);
     }
 
     /**

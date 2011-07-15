@@ -104,12 +104,12 @@ class context
     /**/
     
     /**
-     * Whether grid overlay is enabled
+     * Whether debugging is enabled
      *
-     * @octdoc  v:context/$grid
+     * @octdoc  v:context/$debug
      * @var     bool
      */
-    protected $grid = false;
+    protected $debug = false;
     /**/
     
     /**
@@ -187,7 +187,7 @@ class context
         $context->xs = $this->xs;
         $context->ys = $this->ys;
         
-        $context->enableGrid($this->grid);
+        $context->enableDebug($this->debug);
         
         return $context;
     }
@@ -283,7 +283,7 @@ class context
         }
         
         // draw debugging grid
-        if ($this->grid) {
+        if ($this->debug) {
             for ($x = 0; $x < $this->w; ++$x) {
                 $mvg[] = sprintf(
                     'line %d,0 %d,%d',
@@ -326,19 +326,19 @@ class context
     }
 
     /**
-     * Enable a grid overlay useful for debugging asciidia.
-     *
-     * @octdoc  m:context/enableGrid
-     * @param   bool        $enable             Whether to enable / disable grid.
+    * Enable a debugging mode for context.
+    *
+     * @octdoc  m:context/enableDebug
+     * @param   bool        $enable             Whether to enable / disable debugging.
      */
-    public function enableGrid($enable)
+    public function enableDebug($enable)
     /**/
     {
         $this->applyCallback(function($context) use ($enable) {
-            $context->enableGrid($enable);
+            $context->enableDebug($enable);
         });
         
-        $this->grid = $enable;
+        $this->debug = $enable;
     }
 
     /*
