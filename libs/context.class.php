@@ -282,7 +282,7 @@ class context
             }
         }
         
-        // draw debugging grid
+        // draw debugging grid and context boundaries
         if ($this->debug) {
             for ($x = 0; $x < $this->w; ++$x) {
                 $mvg[] = sprintf(
@@ -300,6 +300,11 @@ class context
                     $y * $this->ys
                 );
             }
+            $mvg[] = sprintf(
+                'rectangle 0,0, %d,%d', 
+                $this->w * $this->xs, 
+                $this->h * $this->ys
+            );
         }
     
         // ---
