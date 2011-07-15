@@ -783,4 +783,38 @@ class context
             );
         }
     }
+    
+    /*
+     * misc tools
+     */
+     
+    /**
+     * Return metrics for font.
+     *
+     * @octdoc  m:context/getFontMetrics
+     * @param   string      $font           Font to return metrics for.
+     * @param   string      $text           Text to return metrics for.
+     * @param   float       $pointsize      Pointsize to return metrics for.
+     * @return  array                       Font metrics.
+     */
+    public static function getFontMetrics($font, $text, $pointsize)
+    /**/
+    {
+        $return = false;
+        
+        $cmd = sprintf(
+            "convert -size 100x150 xc:lightblue -font %s \
+                     -pointsize %f -fill none -undercolor white \
+                     -annotate +20+100 %s -trim info:",
+            escapeshellarg($font),
+            escapeshellarg($pointsize),
+            escapeshellarg($text)
+        );
+        
+        if (preg_match('/XC (\d+)x(\d/+)/', `$cmd`, $m)) {
+           $return = array('width' => $m[1], 'height' => $m[2]);
+        }
+        
+        return $return;
+    }
 }
