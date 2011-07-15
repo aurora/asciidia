@@ -468,10 +468,12 @@ class ebnf extends plugin
                     ),
                     false, true
                 );
-                // $context->drawLine(1, 1, 1, $th);
-                // $context->drawLine($tw + 2, 1, $tw + 2, $th);
-                // $context->drawLine(1, $th, 2, $th);
-                // $context->drawLine($tw + 1, $th, $tw + 2, $th);
+                $context->drawPath(
+                    array(
+                        array($tw, 3), array($tw + 1, 3), array($tw + 1, 1), array($tw + 2, 1)
+                    ),
+                    false, true
+                );
                 
                 break;
             }
