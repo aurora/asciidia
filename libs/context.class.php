@@ -104,10 +104,10 @@ class context
     /**/
     
     /**
-     * Whether debugging is enabled
+     * Whether debugging is enabled. 1: enabled, 2: propagate to sub-contexts.
      *
      * @octdoc  v:context/$debug
-     * @var     bool
+     * @var     int|bool
      */
     protected $debug = false;
     /**/
@@ -186,8 +186,9 @@ class context
         $this->mvg[] = $context = new context();
         $context->xs = $this->xs;
         $context->ys = $this->ys;
-        
-        $context->enableDebug($this->debug);
+
+        $debug = ((int)$this->debug == 2);
+        $context->enableDebug($debug, $debug);
         
         return $context;
     }
@@ -335,15 +336,18 @@ class context
     *
      * @octdoc  m:context/enableDebug
      * @param   bool        $enable             Whether to enable / disable debugging.
+     * @param   bool        $propagate          Whether debug setting should be propagated to sub-contexts.
      */
-    public function enableDebug($enable)
+    public function enableDebug($enable, $propagate = false)
     /**/
     {
-        $this->applyCallback(function($context) use ($enable) {
-            $context->enableDebug($enable);
-        });
+        if ($propagate) {
+            $this->applyCallback(function($context) use ($enable, $propagate) {
+                $context->enableDebug($enable, $propagate);
+            });
+        }
         
-        $this->debug = $enable;
+        $this->debug = ($enable ? (int)$enable + (int)$propagate : false);
     }
 
     /*
