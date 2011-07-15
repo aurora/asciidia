@@ -426,7 +426,60 @@ class context
     public function drawPath(array $points, $arrow = false, $round = false)
     /**/
     {
-        // TODO
+        // callback for fetching next point from list
+        $get_next = function() use (&$points) {
+            return (($return = (list(, $p) = each($points) && 
+                        count($p) == 2 && 
+                        list($x, $y) = $p &&
+                        is_int($x) &&
+                        is_int($y)))
+                    ? array()
+                    : false);
+        };
+
+        // corner definitions
+        $corners = array(
+            'bl' => sprintf('A %d,%d 90 0,0 %%d,%%d', $this->xs, $this->ys),    // bottom left: A 15,15 90 0,0 15,15
+            'br' => sprintf('A %d,%d 90 0,0 %%d,%%d', $this->xs, $this->ys),    // bottom right: A 15,15 90 0,0 15,0
+            'tr' => sprintf('A %d,%d 90 0,0 %%d,%%d', $this->xs, $this->ys),    // top right: A 15,15 90 0,0 0,0
+            'tl' => sprintf('A %d,%d 90 0,1 %%d,%%d', $this->xs, $this->ys)     // top left: A 15,15 90 0,1 15,0
+        );
+
+        // create MVG path command
+        if (!(list($x1, $y1) = $get_next())) return;
+
+        $x_max = $x1; 
+        $y_max = $y1;
+        
+        $path = array(sprintf(
+            'M %d,%d', 
+            $x1 * $this->xs + $this->xf, 
+            $y1 * $this->ys + $this->yf
+        ));
+        
+        while (list($x2, $y2) = $get_next()) {
+            $x_max = max($x_max, $x2);
+            $y_max = max($y_max, $y2);
+        
+            if ($x2 != $x1 && $y2 != $y1) {
+                // insert a point, because one of the points must always be equal
+                $path[] = sprintf(
+                    'L %d,%d', 
+                    $x1 * $this->xs + $this->xf,
+                    $y2 * $this->ys + $this->yf
+                );
+            }
+            
+            $path[] = sprintf(
+                'L %d,%d',
+                $x2 * $this->xs + $this->xf,
+                $y2 * $this->ys + $this->yf
+            );
+        }
+
+        $this->setSize($x_max, $y_max);
+        
+        $this->mvg[] = sprintf("path '%s'", implode(' ', $path));
     }
 
     /**
