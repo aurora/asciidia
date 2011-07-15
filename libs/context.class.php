@@ -446,6 +446,11 @@ class context
      * *    1 -- draw arrow x1/y1 -> x2/y2
      * *    -1 -- draw arrow x1/y1 <- x2/y2
      *
+     * Before drawing a path, point normalization is performed: invalid points 
+     * (points with missing x or y value) will be removed and required additional
+     * points are inserted (path drawing is only allowed for horizontals and 
+     * verticals)
+     *
      * @octdoc  m:context/drawPath
      * @param   array       $points             Points of path.
      * @param   int|bool    $arrow              Optional arrow head.
@@ -454,55 +459,103 @@ class context
     public function drawPath(array $points, $arrow = false, $round = false)
     /**/
     {
-        // callback for fetching next point from list
+        // normalize points
+        // $_tmp = array();
+        // 
+        // foreach ($points as $point) {
+        //     if (!is_array($point) || count($point) != 2) continue;
+        //     
+        // }
+
+        // misc initialization
+        $corners = array(
+            'blyx' => sprintf('A %f,%f 90 0,0 %%f,%%f', $this->xf, $this->yf),    // ok
+            'bryx' => sprintf('A %f,%f 90 0,1 %%f,%%f', $this->xf, $this->yf),    // ok
+            'tryx' => sprintf('A %f,%f 90 0,0 %%f,%%f', $this->xf, $this->yf),    // ok
+            'tlyx' => sprintf('A %f,%f 90 0,1 %%f,%%f', $this->xf, $this->yf),    // ok
+
+            'blxy' => sprintf('A %f,%f 90 0,1 %%f,%%f', $this->xf, $this->yf),    // ok
+            'brxy' => sprintf('A %f,%f 90 0,0 %%f,%%f', $this->xf, $this->yf),    // ok
+            'trxy' => sprintf('A %f,%f 90 0,1 %%f,%%f', $this->xf, $this->yf),    // ok
+            'tlxy' => sprintf('A %f,%f 90 0,0 %%f,%%f', $this->xf, $this->yf)     // ok
+        );
+        $order = '--';
+
+        // helper functions
         $get_next = function() use (&$points) {
-            return (($return = (list(, $p) = each($points) && 
-                        count($p) == 2 && 
-                        list($x, $y) = $p &&
+            return ((list(, $p) = each($points)) && 
+                        (count($p) == 2) && 
+                        (list($x, $y) = $p) &&
                         is_int($x) &&
-                        is_int($y)))
-                    ? array()
+                        is_int($y)
+                    ? $p
                     : false);
         };
-
-        // corner definitions
-        $corners = array(
-            'bl' => sprintf('A %d,%d 90 0,0 %%d,%%d', $this->xs, $this->ys),    // bottom left: A 15,15 90 0,0 15,15
-            'br' => sprintf('A %d,%d 90 0,0 %%d,%%d', $this->xs, $this->ys),    // bottom right: A 15,15 90 0,0 15,0
-            'tr' => sprintf('A %d,%d 90 0,0 %%d,%%d', $this->xs, $this->ys),    // top right: A 15,15 90 0,0 0,0
-            'tl' => sprintf('A %d,%d 90 0,1 %%d,%%d', $this->xs, $this->ys)     // top left: A 15,15 90 0,1 15,0
-        );
+        $get_point = function($p1, $p2) use ($round) {
+            return ($round && $p1 != $p2
+                    ? ($p1 > $p2 ? $p2 + 0.5 : $p2 - 0.5)
+                    : $p2);
+        };
+        $get_corner = function($x_dir, $y_dir) use ($corners, &$order) {
+            if ($x_dir < 0 && $y_dir < 0) {
+                $c = ($order == 'xy' ? 'bl' : 'tr');
+            } elseif ($x_dir < 0 && $y_dir > 0) { 
+                $c = ($order == 'xy' ? 'tl' : 'br'); 
+            } elseif ($x_dir > 0 && $y_dir > 0) {
+                $c = ($order == 'xy' ? 'tr' : 'bl');
+            } elseif ($x_dir > 0 && $y_dir < 0) {
+                $c = ($order == 'xy' ? 'br' : 'tl');
+            } else return '';
+            
+            return $corners[$c . $order];
+        };
+        $set_order = function($type) use (&$order) {
+            $order = substr($order . $type, 1, 2);
+        };
 
         // create MVG path command
         if (!(list($x1, $y1) = $get_next())) return;
 
         $x_max = $x1; 
         $y_max = $y1;
+        $x_dir = 0;
+        $y_dir = 0;
         
         $path = array(sprintf(
-            'M %d,%d', 
+            'M %f,%f', 
             $x1 * $this->xs + $this->xf, 
             $y1 * $this->ys + $this->yf
         ));
         
-        while (list($x2, $y2) = $get_next()) {
-            $x_max = max($x_max, $x2);
-            $y_max = max($y_max, $y2);
+        print "point          : $x1,$y1\n";
+        print $path[0] . "\n";
         
-            if ($x2 != $x1 && $y2 != $y1) {
-                // insert a point, because one of the points must always be equal
-                $path[] = sprintf(
-                    'L %d,%d', 
-                    $x1 * $this->xs + $this->xf,
-                    $y2 * $this->ys + $this->yf
-                );
+        while (list($x2, $y2) = $get_next()) {
+            if ($x2 != $x1) { $set_order('x'); $x_dir = ($x2 - $x1); }
+            if ($y2 != $y1) { $set_order('y'); $y_dir = ($y2 - $y1); }
+            
+            if ($x_dir != 0 && $y_dir != 0) {
+                // corner detected
+                print "corner detected: $x1,$y1 -> $x2,$y2 -- $x_dir,$y_dir: $order\n";
+                
+                $ax = $get_point($x2, $x1) * $this->xs + $this->xf;
+                $ay = $get_point($y2, $y1) * $this->ys + $this->yf;
+                
+                print ($path[] = $corner = sprintf($get_corner($x_dir, $y_dir), $ax, $ay)) . "\n";
             }
             
-            $path[] = sprintf(
-                'L %d,%d',
-                $x2 * $this->xs + $this->xf,
-                $y2 * $this->ys + $this->yf
-            );
+            print "point          : $x2,$y2\n";
+            print ($path[] = sprintf(
+                'L %f,%f',
+                $get_point($x1, $x2) * $this->xs + $this->xf,
+                $get_point($y1, $y2) * $this->ys + $this->yf
+            )) . "\n";
+
+            $x_max = max($x_max, $x2);
+            $y_max = max($y_max, $y2);
+            
+            $x0 = $x1; $y0 = $y1;
+            $x1 = $x2; $y1 = $y2;
         }
 
         $this->setSize($x_max, $y_max);
