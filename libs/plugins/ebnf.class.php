@@ -373,13 +373,12 @@ class ebnf extends plugin
                     $ctx->drawMarker(0, 1, 'o', false, true, false, false);
                     $ctx->drawHLine(1, 1, $w + 0.5);
 
-                    $context->translate($w + 1, 0);
                     $ctx = $context->addContext();
+                    $ctx->translate($w + 1, 0);
 
                     $render($child, $ctx);
 
                     list(, $th) = $ctx->getSize(true);
-                    $context->translate(-$w - 1, 0);
 
                     $child = $child->nextSibling;
                 }
@@ -405,6 +404,7 @@ class ebnf extends plugin
                     $context->translate(0, $th);
                     
                     $ctx = $context->addContext();
+                    $ctx->enableDebug(true);
                     
                     $render($child, $ctx);
                     
@@ -419,8 +419,8 @@ class ebnf extends plugin
                     $max_th -= $th;
                     
                     $context->translate(-2, -$max_th);
-                    $context->drawLine(1, 1, 1, $max_th);
-                    $context->drawLine($tw + 2, 1, $tw + 2, $max_th);
+                    $context->drawLine(1, 1, 1, $max_th + 1);
+                    $context->drawLine($tw + 2, 1, $tw + 2, $max_th + 1);
                 }
                 break;
             case 'term':
@@ -428,15 +428,13 @@ class ebnf extends plugin
             
                 $child = $node->firstChild;
                 while ($child) {
-                    $context->translate($tw, 0);
-                    
                     $ctx = $context->addContext();
+                    $ctx->translate($tw, 0);
                     
                     $render($child, $ctx);
                     
                     list($tw, ) = $ctx->getSize(true);
-
-                    print "term: $tw\n";
+                    printf("term: %d\n", $tw);
 
                     $child = $child->nextSibling;
                 }
@@ -446,33 +444,32 @@ class ebnf extends plugin
                 $text = $node->getAttribute('value');
                 $len  = strlen($text);
 
-                $context->drawRectangle(
-                    0, 0, $len + 2, $y + 2, 
-                    ($node->nodeName == 'identifier')
-                );
-                $context->drawText(1, 1, $text);
+                printf("   -> %s\n", $text);
+
+                $context->drawLabel(0, 0, $text, ($node->nodeName == 'identifier'));
                 break;
             case 'repetition':
-                $context->translate(2, 2);
-
+                // $context->translate(2, 2);
+            
                 $ctx = $context->addContext();
+                $ctx->translate(2, 2);
                 
                 $child = $node->firstChild;
                 while ($child) {
                     $render($child, $ctx, false);
-
+            
                     $child = $child->nextSibling;
                 }
                 
-                $context->translate(-2, -2);
+                // $context->translate(-2, -2);
                 
                 list($tw, $th) = $ctx->getSize(true);
                 
-                $context->drawLine(0, 1, $tw + 3, 1);
-                $context->drawLine(1, 1, 1, $th);
-                $context->drawLine($tw + 2, 1, $tw + 2, $th);
-                $context->drawLine(1, $th, 2, $th);
-                $context->drawLine($tw + 1, $th, $tw + 2, $th);
+                // $context->drawLine(0, 1, $tw + 3, 1);
+                // $context->drawLine(1, 1, 1, $th);
+                // $context->drawLine($tw + 2, 1, $tw + 2, $th);
+                // $context->drawLine(1, $th, 2, $th);
+                // $context->drawLine($tw + 1, $th, $tw + 2, $th);
                 
                 break;
             }
