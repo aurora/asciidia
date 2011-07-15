@@ -77,7 +77,45 @@ class test extends plugin
         
         /* insert your commands here */
 
+        $context->xs = 10;
+        $context->ys = 10;
 
+        // $context->drawPath(
+        //     array(
+        //         array(0, 1), array(1, 1), array(1, 3), array(3, 3)
+        //     ),
+        //     false, true
+        // );
+
+        // left -> right
+        $context->drawPath(
+            array(array(0, 0), array(3, 0), array(3, 3), array(0,3), array(0,1), array(2,1)),
+            false, true
+        );
+
+        // // right -> left
+        // $context->drawPath(
+        //     array(array(3, 3), array(3, 0), array(0, 0), array(0, 3), array(2,3), array(2,1)),
+        //     false, true
+        // );
+
+        // $context->addCommand("path 'M 15,15 A 15,15 90 0,0 15,15'");
+        // $context->addCommand("path 'M 15,15 A 15,15 90 0,0 15,0'");
+        // $context->addCommand("path 'M 15,15 A 15,15 90 0,0 0,0'");
+        // $context->addCommand("path 'M 15,15 A 15,15 90 0,1 15,0'");
+        
+
+        // $context->translate(20, 20);
+
+        // $context->drawPath(
+        //     array(array(5, 0), array(3, 0), array(3, 3)),
+        //     false, false
+        // );
+        // 
+        // $context->drawPath(
+        //     array(array(5, 1), array(5, 4), array(3, 4)),
+        //     false, false
+        // );
 
         /*---------------------------*/
         
