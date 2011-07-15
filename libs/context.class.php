@@ -285,27 +285,38 @@ class context
         
         // draw debugging grid and context boundaries
         if ($this->debug) {
-            for ($x = 0; $x < $this->w; ++$x) {
+            $mvg[] = sprintf('translate %d,%d', -$this->tx * $this->xs, -$this->ty * $this->ys);
+            $mvg[] = 'push graphic-context';
+            
+            list($cw, $ch) = $this->getSize(true);
+            
+            for ($x = 0; $x < $cw; ++$x) {
                 $mvg[] = sprintf(
                     'line %d,0 %d,%d',
                     $x * $this->xs,
                     $x * $this->xs,
-                    $this->h * $this->ys
+                    $ch * $this->ys
                 );
             }
-            for ($y = 0; $y < $this->h; ++$y) {
+            for ($y = 0; $y < $ch; ++$y) {
                 $mvg[] = sprintf(
                     'line 0,%d %d,%d',
                     $y * $this->ys,
-                    $this->w * $this->xs,
+                    $cw * $this->xs,
                     $y * $this->ys
                 );
             }
             $mvg[] = sprintf(
                 'rectangle 0,0, %d,%d', 
-                $this->w * $this->xs, 
-                $this->h * $this->ys
+                $cw * $this->xs, 
+                $ch * $this->ys
             );
+            
+            $this->mvg[] = sprintf(
+                "text 0,%d '%d,%d'", $this->ys - ($this->yf / 2), $cw, $ch
+            );
+            
+            $mvg[] = 'pop graphic-context';
         }
     
         // ---
