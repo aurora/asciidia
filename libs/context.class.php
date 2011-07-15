@@ -335,7 +335,7 @@ class context
     /**/
     {
         $this->applyCallback(function($context) use ($enable) {
-            $this->grid = $enable;
+            $context->enableGrid($enable);
         });
         
         $this->grid = $enable;
