@@ -709,6 +709,29 @@ class context
     }
 
     /**
+     * Draw a text-label. A text-label is a string centered inside a rectangle
+     * with optional round corners.
+     *
+     * @todo    how do we get this centered, if font-metrics do not fit grid-
+     *          metrics?
+     *
+     * @octdoc  m:context/drawLabel
+     * @param   int         $x1                 x point.
+     * @param   int         $y1                 y point.
+     * @param   string      $text               Text to draw.
+     * @param   bool        $round              Whether corners should be round.
+     */
+    public function drawLabel($x1, $y1, $text, $round = false)
+    /**/
+    {
+        $x2 = $x1 + ($w = strlen($text) + 1);
+        $y2 = $y1 + ($h = 2);
+        
+        $this->drawRectangle($x1, $y1, $x2, $y2, $round);
+        $this->drawText($x1 + 1, $y1 + 1, $text);
+    }
+
+    /**
      * Draw a (rounded) corner. The type of the corner is defined as follows:
      *
      * *    tl -- Top-Left
