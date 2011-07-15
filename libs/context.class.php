@@ -395,7 +395,7 @@ class context
     public function drawRectangle($x1, $y1, $x2, $y2, $round = false)
     /**/
     {
-        $this->setSize(max($x1, $x2), max($x1, $y2));
+        $this->setSize(max($x1, $x2), max($y1, $y2));
         
         if ($round) {
             $this->mvg[] = sprintf(
