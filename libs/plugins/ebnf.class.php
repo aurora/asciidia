@@ -376,7 +376,7 @@ class ebnf extends plugin
                     $ctx = $context->addContext();
                     $ctx->translate($w + 1, 0);
 
-                    $render($child, $ctx);
+                    $render($child, $ctx, $l2r);
 
                     list(, $th) = $ctx->getSize(true);
 
@@ -387,7 +387,7 @@ class ebnf extends plugin
             case 'production':
                 $child = $node->firstChild;
                 while ($child) {
-                    $render($child, $context);
+                    $render($child, $context, $l2r);
 
                     $child = $child->nextSibling;
                 }
@@ -408,7 +408,7 @@ class ebnf extends plugin
                     $ctx = $context->addContext();
                     $ctx->enableDebug(true);
                     
-                    $render($child, $ctx);
+                    $render($child, $ctx, $l2r);
                     
                     list($tw, $th) = $ctx->getSize(true);
                     
@@ -453,17 +453,17 @@ class ebnf extends plugin
             case 'term':
                 $tw = 0;
             
-                $child = $node->firstChild;
+                $child = ($l2r ? $node->firstChild : $node->lastChild);
                 while ($child) {
                     $ctx = $context->addContext();
                     $ctx->translate($tw, 0);
                     
-                    $render($child, $ctx);
+                    $render($child, $ctx, $l2r);
                     
                     list($tw, ) = $ctx->getSize(true);
                     printf("term: %d\n", $tw);
 
-                    $child = $child->nextSibling;
+                    $child = ($l2r ? $child->nextSibling : $child->previousSibling);
                 }
                 break;
             case 'identifier':
@@ -481,7 +481,7 @@ class ebnf extends plugin
                 
                 $child = $node->firstChild;
                 while ($child) {
-                    $render($child, $ctx, false);
+                    $render($child, $ctx, !$l2r);
             
                     $child = $child->nextSibling;
                 }
