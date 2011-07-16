@@ -491,13 +491,13 @@ class ebnf extends plugin
                 $context->drawLine(0, 1, $tw + 2, 1);
                 $context->drawPath(
                     array(
-                        array(0, 1), array(1, 1), array(1, 3), array(3, 3)
+                        array(3, 1), array(1, 1), array(1, 3), array(3, 3)
                     ),
                     false, true
                 );
                 $context->drawPath(
                     array(
-                        array($tw, 3), array($tw + 1, 3), array($tw + 1, 1), array($tw + 2, 1)
+                        array($tw, 3), array($tw + 1, 3), array($tw + 1, 1), array($tw, 1)
                     ),
                     false, true
                 );
