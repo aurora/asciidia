@@ -410,8 +410,8 @@ class ebnf extends plugin
                 break;
             case 'expression':
                 $indent = (int)($node->childNodes->length > 1) * 3;
-                $th = 0; $max_th = 0;
-                $tw = 0; $max_tw = 0;
+                $max_th = $th = 0;
+                $max_tw = $tw = 0;
     
                 $twh = array();
     
@@ -422,7 +422,6 @@ class ebnf extends plugin
                     $context->translate(0, $th);
                     
                     $ctx = $context->addContext();
-                    $ctx->enableDebug(true);
                     
                     $render($child, $ctx, $l2r);
                     
