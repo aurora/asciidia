@@ -362,8 +362,11 @@ class ebnf extends plugin
                 }
                 
                 // render production
-                $th = 0;
+                $max_th = $th = 0;
+                $max_tw = $tw = 0;
                 
+                $twh = array();
+    
                 $child = $node->firstChild;
                 while ($child) {
                     $context->translate(0, $th);
@@ -378,9 +381,22 @@ class ebnf extends plugin
 
                     $render($child, $ctx, $l2r);
 
-                    list(, $th) = $ctx->getSize(true);
+                    list($tw, $th) = $ctx->getSize(true);
 
+                    $twh[] = array('h' => $max_th, 'w' => $tw);
+                    
+                    $max_th += $th;
+                    $max_tw = max($max_tw, $tw);
+                    
                     $child = $child->nextSibling;
+                }
+                
+                $max_th -= $th;
+                $context->translate(0, -$max_th);
+
+                foreach ($twh as $tmp) {
+                    $context->drawLine($tmp['w'] - 1, $tmp['h'] + 1, $max_tw + 1, $tmp['h'] + 1);
+                    $context->drawMarker($max_tw + 1, $tmp['h'] + 1, '+', true, false, true, false);
                 }
                 
                 break;
