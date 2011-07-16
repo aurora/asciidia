@@ -393,11 +393,13 @@ class ebnf extends plugin
                 }
                 break;
             case 'expression':
-                $indent = ($node->childNodes->length > 1);
+                $indent = (int)($node->childNodes->length > 1) * 3;
                 $th = 0; $max_th = 0;
                 $tw = 0; $max_tw = 0;
     
-                if ($indent) $context->translate(2, 0);
+                $twh = array();
+    
+                if ($indent > 0) $context->translate($indent, 0);
             
                 $child = $node->firstChild;
                 while ($child) {
@@ -409,18 +411,43 @@ class ebnf extends plugin
                     $render($child, $ctx);
                     
                     list($tw, $th) = $ctx->getSize(true);
+                    
+                    $twh[] = array('h' => $max_th, 'w' => $tw);
+                    
                     $max_th += $th;
                     $max_tw = max($max_tw, $tw);
                     
                     $child = $child->nextSibling;
                 }
 
-                if ($indent) {
+                print_r($twh);
+
+                if ($indent > 0) {
                     $max_th -= $th;
-                    
-                    $context->translate(-2, -$max_th);
-                    $context->drawLine(1, 1, 1, $max_th + 1);
-                    $context->drawLine($tw + 2, 1, $tw + 2, $max_th + 1);
+
+                    $context->translate(-$indent, -$max_th);
+
+                    foreach ($twh as $tmp) {
+                        // draw pathes here
+                        $context->drawPath(
+                            array(
+                                array(0, 1), array(1, 1), array(1, $tmp['h'] + 1), array(3, $tmp['h'] + 1)
+                            ),
+                            false, true
+                        );
+                        $context->drawPath(
+                            array(
+                                array($tmp['w'] + $indent, $tmp['h'] + 1), 
+                                array($max_tw + $indent + 1, $tmp['h'] + 1), 
+                                array($max_tw + $indent + 1, 1), 
+                                array($max_tw + $indent + 2, 1)
+                            ),
+                            false, true
+                        );
+                        // $context->drawPath(0, 1, 1, )
+                        // $context->drawLine(1, 1, 1, $max_th + 1);
+                        // $context->drawLine($tw + 2, 1, $tw + 2, $max_th + 1);
+                    }
                 }
                 break;
             case 'term':
