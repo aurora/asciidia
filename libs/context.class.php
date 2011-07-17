@@ -438,6 +438,46 @@ class context
     }
 
     /**
+     * This is a helper function to draw an arrow head for example for a line
+     * or a path. This method is protected to prevent a direct call. Use one of
+     * the line- or path-drawing functions to draw an arrow.
+     *
+     * @octdoc  m:context/drawArrowHead
+     * @param   int         $x              X-position of the arrow-head
+     * @param   int         $y              Y-position of the arrow-head
+     * @param   float       $angle          Rotation angle.
+     */
+    protected function drawArrowHead($x, $y, $angle)
+    /**/
+    {
+        $xs = $this->xs;
+        $ys = $this->ys;
+        $xf = $this->xf;
+        $yf = $this->yf;
+        
+        $get_xy = function($x1, $y1) use ($angle, $x, $y, $xs, $ys, $xf, $yf) {
+            $x2 = ($x1 * cos(deg2rad($angle)) - $y1 * sin(deg2rad($angle)));
+            $y2 = ($y1 * cos(deg2rad($angle)) + $x1 * sin(deg2rad($angle)));
+            
+            return sprintf(
+                '%f,%f',
+                ($x * $xs + $xf) + $x2,
+                ($y * $ys + $yf) + $y2
+            );
+        };
+
+        $this->mvg[] = 'push graphic-context';
+        $this->mvg[] = sprintf(
+            "fill %s path 'M %s L %s %s Z'",
+            $this->stroke,
+            $get_xy(-$this->xf, 0),
+            $get_xy(0, -$this->yf),
+            $get_xy($this->xf, 0)
+        );
+        $this->mvg[] = 'pop graphic-context';
+    }
+    
+    /**
      * Draw a path between specified points. An optional arrow head may be
      * specified.
      *
