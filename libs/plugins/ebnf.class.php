@@ -343,11 +343,6 @@ class ebnf extends plugin
     /**/
     {
         $render = function(DOMNode $node, context $context, $l2r = true) use (&$render) {
-            printf("%s\n", $node->nodeName);
-
-            $x = 0; 
-            $y = 0;
-
             // process node
             switch ($node->nodeName) {
             case 'syntax':
@@ -374,7 +369,7 @@ class ebnf extends plugin
                     $ctx = $context->addContext();
                     $ctx->drawText(1, 0, $child->getAttribute('name'));
                     $ctx->drawMarker(0, 1, 'o', false, true, false, false);
-                    $ctx->drawHLine(1, 1, $w + 0.5);
+                    $ctx->drawLine(0.5, 1, $w + 1, 1, 1);
 
                     $ctx = $context->addContext();
                     $ctx->translate($w + 1, 0);
@@ -435,8 +430,6 @@ class ebnf extends plugin
                     $child = $child->nextSibling;
                 }
 
-                print_r($twh);
-
                 if ($indent > 0) {
                     $max_th -= $th;
 
@@ -448,20 +441,17 @@ class ebnf extends plugin
                             array(
                                 array(0, 1), array(1, 1), array(1, $tmp['h'] + 1), array(3, $tmp['h'] + 1)
                             ),
-                            false, true
+                            1, true
                         );
                         $context->drawPath(
                             array(
-                                array($tmp['w'] + $indent, $tmp['h'] + 1), 
+                                array($tmp['w'] + $indent - 1, $tmp['h'] + 1), 
                                 array($max_tw + $indent + 1, $tmp['h'] + 1), 
                                 array($max_tw + $indent + 1, 1), 
                                 array($max_tw + $indent + 2, 1)
                             ),
-                            false, true
+                            1, true
                         );
-                        // $context->drawPath(0, 1, 1, )
-                        // $context->drawLine(1, 1, 1, $max_th + 1);
-                        // $context->drawLine($tw + 2, 1, $tw + 2, $max_th + 1);
                     }
                 }
                 break;
@@ -476,17 +466,17 @@ class ebnf extends plugin
                     $render($child, $ctx, $l2r);
                     
                     list($tw, ) = $ctx->getSize(true);
-                    printf("term: %d\n", $tw);
 
-                    $child = ($l2r ? $child->nextSibling : $child->previousSibling);
+                    if ($child = ($l2r ? $child->nextSibling : $child->previousSibling)) {
+                        $context->drawLine($tw - 1, 1, $tw + 1, 1, ($l2r ? 1 : -1));
+                        ++$tw;
+                    }
                 }
                 break;
             case 'identifier':
             case 'literal':
                 $text = $node->getAttribute('value');
                 $len  = strlen($text);
-
-                printf("   -> %s\n", $text);
 
                 $context->drawLabel(0, 0, $text, ($node->nodeName == 'identifier'));
                 break;
@@ -503,18 +493,18 @@ class ebnf extends plugin
                 
                 list($tw, $th) = $ctx->getSize(true);
                 
-                $context->drawLine(0, 1, $tw + 2, 1);
+                $context->drawLine(-1, 1, $tw + 2, 1);
                 $context->drawPath(
                     array(
-                        array(3, 1), array(1, 1), array(1, 3), array(3, 3)
+                        array(3, 3), array(1, 3), array(1, 1), array(3, 1)
                     ),
-                    false, true
+                    1, true
                 );
                 $context->drawPath(
                     array(
-                        array($tw, 3), array($tw + 1, 3), array($tw + 1, 1), array($tw, 1)
+                        array($tw - 1, 1), array($tw + 1, 1), array($tw + 1, 3), array($tw - 1, 3)
                     ),
-                    false, true
+                    1, true
                 );
                 
                 break;
@@ -553,8 +543,6 @@ class ebnf extends plugin
 
         // render syntax and return it's MVG commands
         $this->render($syntax);
-
-        print_r($this->getCommands());
 
         return $this->getCommands();
     }
