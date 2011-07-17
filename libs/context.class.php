@@ -508,8 +508,8 @@ class context
                     ? $p
                     : false);
         };
-        $get_point = function($p1, $p2) use ($round) {
-            return ($round && $p1 != $p2
+        $get_point = function($p1, $p2, $not_end = true) use ($round) {
+            return ($round && $p1 != $p2 && $not_end
                     ? ($p1 > $p2 ? $p2 + 0.5 : $p2 - 0.5)
                     : $p2);
         };
