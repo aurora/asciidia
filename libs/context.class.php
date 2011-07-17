@@ -548,8 +548,8 @@ class context
         };
         $get_angle = function($x_dir, $y_dir) {
             return ($x_dir != 0
-                    ? ($x_dir < 0 ? 90 : -90)
-                    : ($y_dir < 0 ? 180 : 0));
+                    ? ($x_dir < 0 ? -90 : 90)
+                    : ($y_dir < 0 ? 0 : 180));
         };
         $set_order = function($type) use (&$order) {
             $order = substr($order . $type, 1, 2);
@@ -633,8 +633,8 @@ class context
 
             $angle = rad2deg(atan2(($y2 - $y1), ($x2 - $x1))) - 90;
             
-            if ($arrow <= 0) $this->drawArrow($x1, $y1, $angle + 180);
-            if ($arrow >= 0) $this->drawArrow($x2, $y2, $angle);
+            if ($arrow <= 0) drawArrowHead($x1, $y1, $angle + 180);
+            if ($arrow >= 0) drawArrowHead($x2, $y2, $angle);
         }
     }
     
@@ -668,8 +668,8 @@ class context
         if ($arrow !== false) {
             if ($x1 > $x2) $x1 ^= $x2 ^= $x1 ^= $x2;
             
-            if ($arrow <= 0) $this->drawArrow($x1, $y,  90);
-            if ($arrow >= 0) $this->drawArrow($x2, $y, -90);
+            if ($arrow <= 0) $this->drawArrowHead($x1 + 0.5, $y, -90);
+            if ($arrow >= 0) $this->drawArrowHead($x2 - 0.5, $y,  90);
         }
     }
     
@@ -703,8 +703,8 @@ class context
         if ($arrow !== false) {
             if ($y1 > $y2) $y1 ^= $y2 ^= $y1 ^= $y2;
             
-            if ($arrow <= 0) $this->drawArrow($x1, $y, 180);
-            if ($arrow >= 0) $this->drawArrow($x2, $y,   0);
+            if ($arrow <= 0) $this->drawArrowHead($x, $y1,   0);
+            if ($arrow >= 0) $this->drawArrowHead($x, $y2, 180);
         }
     }
 
