@@ -485,17 +485,6 @@ class context
         $points = $_tmp;
 
         // misc initialization
-        $corners = array(
-            'blyx' => sprintf('A %f,%f 90 0,0 %%f,%%f', $this->xf, $this->yf),    // ok
-            'bryx' => sprintf('A %f,%f 90 0,1 %%f,%%f', $this->xf, $this->yf),    // ok
-            'tryx' => sprintf('A %f,%f 90 0,0 %%f,%%f', $this->xf, $this->yf),    // ok
-            'tlyx' => sprintf('A %f,%f 90 0,1 %%f,%%f', $this->xf, $this->yf),    // ok
-
-            'blxy' => sprintf('A %f,%f 90 0,1 %%f,%%f', $this->xf, $this->yf),    // ok
-            'brxy' => sprintf('A %f,%f 90 0,0 %%f,%%f', $this->xf, $this->yf),    // ok
-            'trxy' => sprintf('A %f,%f 90 0,1 %%f,%%f', $this->xf, $this->yf),    // ok
-            'tlxy' => sprintf('A %f,%f 90 0,0 %%f,%%f', $this->xf, $this->yf)     // ok
-        );
         $order = '--';
 
         // helper functions
@@ -515,7 +504,7 @@ class context
                 $c = ($order == 'xy' ? 'br' : 'tl');
             } else return '';
             
-            return $corners[$c . $order];
+            return $c;
         };
         $get_angle = function($x_dir, $y_dir) {
             return ($x_dir != 0
@@ -534,12 +523,6 @@ class context
         $x_dir = 0;
         $y_dir = 0;
         
-        $path = array(sprintf(
-            'M %f,%f', 
-            $x1 * $this->xs + $this->xf, 
-            $y1 * $this->ys + $this->yf
-        ));
-        
         for ($i = 1, $cnt = count($points); $i < $cnt; ++$i) {
             list($x2, $y2) = $points[$i];
             
@@ -547,33 +530,32 @@ class context
             if ($y2 != $y1) { $set_order('y'); $y_dir = ($y2 - $y1); }
             
             if ($i == 1 && $arrow !== false && $arrow <= 0) $this->drawArrow($x1, $y1, $get_angle($x_dir, $y_dir));
-            
+
             if ($x_dir != 0 && $y_dir != 0) {
                 // corner detected
-                $ax = $get_point($x2, $x1) * $this->xs + $this->xf;
-                $ay = $get_point($y2, $y1) * $this->ys + $this->yf;
-                
-                $path[] = $corner = sprintf($get_corner($x_dir, $y_dir), $ax, $ay);
+                $this->drawCorner(
+                    $x1, $y1,
+                    $get_corner($x_dir, $y_dir),
+                    true
+                );
             }
-            
-            $path[] = sprintf(
-                'L %f,%f',
-                $get_point($x1, $x2, ($i + 1 < $cnt)) * $this->xs + $this->xf,
-                $get_point($y1, $y2, ($i + 1 < $cnt)) * $this->ys + $this->yf
-            );
 
+            $this->drawLine(
+                $get_point($x2, $x1),
+                $get_point($y2, $y1),
+                $get_point($x1, $x2, ($i + 1 < $cnt)),
+                $get_point($y1, $y2, ($i + 1 < $cnt))
+            );
+            
             $x_max = max($x_max, $x2);
             $y_max = max($y_max, $y2);
             
-            $x0 = $x1; $y0 = $y1;
             $x1 = $x2; $y1 = $y2;
         }
 
         if ($arrow !== false && $arrow >= 0) $this->drawArrow($x2, $y2, $get_angle($x_dir, $y_dir));
 
         $this->setSize($x_max, $y_max);
-        
-        $this->mvg[] = sprintf("path '%s'", implode(' ', $path));
     }
 
     /**
