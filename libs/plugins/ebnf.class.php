@@ -369,7 +369,7 @@ class ebnf extends plugin
                     $ctx = $context->addContext();
                     $ctx->drawText(1, 0, $child->getAttribute('name'));
                     $ctx->drawMarker(0, 1, 'o', false, true, false, false);
-                    $ctx->drawLine(0.5, 1, $w + 1, 1, 1);
+                    $ctx->drawLine(0.5, 1, $w + 1, 1);
 
                     $ctx = $context->addContext();
                     $ctx->translate($w + 1, 0);
@@ -441,7 +441,7 @@ class ebnf extends plugin
                             array(
                                 array(0, 1), array(1, 1), array(1, $tmp['h'] + 1), array(3, $tmp['h'] + 1)
                             ),
-                            1, true
+                            false, true
                         );
                         $context->drawPath(
                             array(
@@ -450,7 +450,7 @@ class ebnf extends plugin
                                 array($max_tw + $indent + 1, 1), 
                                 array($max_tw + $indent + 2, 1)
                             ),
-                            1, true
+                            false, true
                         );
                     }
                 }
@@ -468,7 +468,7 @@ class ebnf extends plugin
                     list($tw, ) = $ctx->getSize(true);
 
                     if ($child = ($l2r ? $child->nextSibling : $child->previousSibling)) {
-                        $context->drawLine($tw - 1, 1, $tw + 1, 1, ($l2r ? 1 : -1));
+                        $context->drawLine($tw - 1, 1, $tw + 1, 1); //, ($l2r ? 1 : -1));
                         ++$tw;
                     }
                 }
@@ -478,7 +478,16 @@ class ebnf extends plugin
                 $text = $node->getAttribute('value');
                 $len  = strlen($text);
 
-                $context->drawLabel(0, 0, $text, ($node->nodeName == 'identifier'));
+                $ctx = $context->addContext();
+                $ctx->drawLabel((int)$l2r, 0, $text, ($node->nodeName == 'identifier'));
+
+                if ($l2r) {
+                    // $ctx->drawArrow(0, 1, -90);
+                } else {
+                    list($tw, ) = $ctx->getSize(true);
+                    // $ctx->drawArrow($tw - 1, 1, 90);                    
+                }
+
                 break;
             case 'repetition':
                 $ctx = $context->addContext();
@@ -493,18 +502,21 @@ class ebnf extends plugin
                 
                 list($tw, $th) = $ctx->getSize(true);
                 
-                $context->drawLine(-1, 1, $tw + 2, 1);
+                $twf = ($tw + 3) / 2;
+                
+                $context->drawLine(0, 1, $twf, 1, ($l2r ? 1 : -1));
+                $context->drawLine($twf, 1, $tw + 2, 1);
                 $context->drawPath(
                     array(
                         array(3, 3), array(1, 3), array(1, 1), array(3, 1)
                     ),
-                    1, true
+                    false, true
                 );
                 $context->drawPath(
                     array(
                         array($tw - 1, 1), array($tw + 1, 1), array($tw + 1, 3), array($tw - 1, 3)
                     ),
-                    1, true
+                    false, true
                 );
                 
                 break;
