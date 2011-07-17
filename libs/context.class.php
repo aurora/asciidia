@@ -460,12 +460,29 @@ class context
     /**/
     {
         // normalize points
-        // $_tmp = array();
-        // 
-        // foreach ($points as $point) {
-        //     if (!is_array($point) || count($point) != 2) continue;
-        //     
-        // }
+        if (count($points) == 0) return;
+        
+        $_tmp = array();
+        $x = $y = null;
+        
+        foreach ($points as $p) {
+            $ox = $x; $oy = $y;
+            
+            if (!is_array($p) || count($p) != 2 || !is_int($p[0]) || !is_int($p[1])) continue;
+            
+            list($x, $y) = $p;
+            
+            if (!is_null($ox) && !is_null($oy)) {
+                if ($ox != $x && $oy != $y) {
+                    // insert point
+                    $_tmp[] = array($ox, $y);
+                }
+            }
+
+            $_tmp[] = array($x, $y);
+        }
+
+        $points = $_tmp;
 
         // misc initialization
         $corners = array(
