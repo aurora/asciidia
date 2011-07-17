@@ -631,10 +631,10 @@ class context
         if ($arrow !== false) {
             if ($x1 > $x2) $x1 ^= $x2 ^= $x1 ^= $x2;
 
-            $angle = rad2deg(atan2(($y2 - $y1), ($x2 - $x1))) - 90;
+            $angle = rad2deg(atan2(($y2 - $y1), ($x2 - $x1)));
             
-            if ($arrow <= 0) $this->drawArrowHead($x1, $y1, $angle + 180);
-            if ($arrow >= 0) $this->drawArrowHead($x2, $y2, $angle);
+            if ($arrow <= 0) $this->drawArrowHead($x1, $y1, $angle - 90);
+            if ($arrow >= 0) $this->drawArrowHead($x2, $y2, $angle + 90);
         }
     }
     
