@@ -709,32 +709,6 @@ class context
     }
 
     /**
-     * Draw arrow head for specified direction.
-     *
-     * @octdoc  m:context/drawArrow
-     * @param   int         $x                  X-position to draw arrow head at.
-     * @patam   int         $y                  Y-position to draw arrow head at.
-     * @param   string      $rotete             Rotate arrow.
-     */
-    public function drawArrow($x, $y, $rotate)
-    /**/
-    {
-        $this->mvg[] = 'push graphic-context';
-        $this->mvg[] = sprintf(
-            'translate %f, %f', 
-            $x * $this->xs + $this->xf,
-            $y * $this->ys + $this->yf
-        );
-        $this->mvg[] = sprintf('rotate %f', $rotate);
-        $this->mvg[] = sprintf(
-            "fill %s path 'M %f,%f %f,%f %f,%f Z'",
-            $this->stroke,
-            -$this->yf, -$this->xf, 0, 0, $this->yf, -$this->xf
-        );
-        $this->mvg[] = 'pop graphic-context';
-    }
-    
-    /**
      * Draw a marker.
      *
      * @octdoc  m:context/drawMarker
