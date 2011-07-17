@@ -499,15 +499,6 @@ class context
         $order = '--';
 
         // helper functions
-        $get_next = function() use (&$points) {
-            return ((list(, $p) = each($points)) && 
-                        (count($p) == 2) && 
-                        (list($x, $y) = $p) &&
-                        is_int($x) &&
-                        is_int($y)
-                    ? $p
-                    : false);
-        };
         $get_point = function($p1, $p2, $not_end = true) use ($round) {
             return ($round && $p1 != $p2 && $not_end
                     ? ($p1 > $p2 ? $p2 + 0.5 : $p2 - 0.5)
@@ -531,7 +522,7 @@ class context
         };
 
         // create MVG path command
-        if (!(list($x1, $y1) = $get_next())) return;
+        list($x1, $y1) = $points[0];
 
         $x_max = $x1; 
         $y_max = $y1;
@@ -544,29 +535,25 @@ class context
             $y1 * $this->ys + $this->yf
         ));
         
-        print "point          : $x1,$y1\n";
-        print $path[0] . "\n";
-        
-        while (list($x2, $y2) = $get_next()) {
+        for ($i = 1, $cnt = count($points); $i < $cnt; ++$i) {
+            list($x2, $y2) = $points[$i];
+            
             if ($x2 != $x1) { $set_order('x'); $x_dir = ($x2 - $x1); }
             if ($y2 != $y1) { $set_order('y'); $y_dir = ($y2 - $y1); }
             
             if ($x_dir != 0 && $y_dir != 0) {
                 // corner detected
-                print "corner detected: $x1,$y1 -> $x2,$y2 -- $x_dir,$y_dir: $order\n";
-                
                 $ax = $get_point($x2, $x1) * $this->xs + $this->xf;
                 $ay = $get_point($y2, $y1) * $this->ys + $this->yf;
                 
-                print ($path[] = $corner = sprintf($get_corner($x_dir, $y_dir), $ax, $ay)) . "\n";
+                $path[] = $corner = sprintf($get_corner($x_dir, $y_dir), $ax, $ay);
             }
             
-            print "point          : $x2,$y2\n";
-            print ($path[] = sprintf(
+            $path[] = sprintf(
                 'L %f,%f',
-                $get_point($x1, $x2) * $this->xs + $this->xf,
-                $get_point($y1, $y2) * $this->ys + $this->yf
-            )) . "\n";
+                $get_point($x1, $x2, ($i + 1 < $cnt)) * $this->xs + $this->xf,
+                $get_point($y1, $y2, ($i + 1 < $cnt)) * $this->ys + $this->yf
+            );
 
             $x_max = max($x_max, $x2);
             $y_max = max($y_max, $y2);
