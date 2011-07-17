@@ -569,7 +569,7 @@ class context
             if ($x2 != $x1) { $set_order('x'); $x_dir = ($x2 - $x1); }
             if ($y2 != $y1) { $set_order('y'); $y_dir = ($y2 - $y1); }
             
-            if ($i == 1 && $arrow !== false && $arrow <= 0) $this->drawArrow($x1, $y1, $get_angle($x_dir, $y_dir));
+            if ($i == 1 && $arrow !== false && $arrow <= 0) $this->drawArrowHead($x1, $y1, $get_angle($x_dir, $y_dir));
 
             if ($x_dir != 0 && $y_dir != 0) {
                 // corner detected
@@ -593,7 +593,7 @@ class context
             $x1 = $x2; $y1 = $y2;
         }
 
-        if ($arrow !== false && $arrow >= 0) $this->drawArrow($x2, $y2, $get_angle($x_dir, $y_dir));
+        if ($arrow !== false && $arrow >= 0) $this->drawArrowHead($x2, $y2, $get_angle($x_dir, $y_dir));
 
         $this->setSize($x_max, $y_max);
     }
@@ -633,8 +633,8 @@ class context
 
             $angle = rad2deg(atan2(($y2 - $y1), ($x2 - $x1))) - 90;
             
-            if ($arrow <= 0) drawArrowHead($x1, $y1, $angle + 180);
-            if ($arrow >= 0) drawArrowHead($x2, $y2, $angle);
+            if ($arrow <= 0) $this->drawArrowHead($x1, $y1, $angle + 180);
+            if ($arrow >= 0) $this->drawArrowHead($x2, $y2, $angle);
         }
     }
     
