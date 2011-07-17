@@ -437,21 +437,26 @@ class ebnf extends plugin
 
                     foreach ($twh as $tmp) {
                         // draw pathes here
-                        $context->drawPath(
-                            array(
-                                array(0, 1), array(1, 1), array(1, $tmp['h'] + 1), array(3, $tmp['h'] + 1)
-                            ),
-                            false, true
-                        );
-                        $context->drawPath(
-                            array(
-                                array($tmp['w'] + $indent - 1, $tmp['h'] + 1), 
-                                array($max_tw + $indent + 1, $tmp['h'] + 1), 
-                                array($max_tw + $indent + 1, 1), 
-                                array($max_tw + $indent + 2, 1)
-                            ),
-                            false, true
-                        );
+                        if ($tmp['h'] == 0) {
+                            $context->drawLine(0, 1, 3, 1);
+                            $context->drawLine($tmp['w'] + $indent - 1, 1, $max_tw + $indent + 2, 1);
+                        } else {
+                            $context->drawPath(
+                                array(
+                                    array(0, 1), array(1, 1), array(1, $tmp['h'] + 1), array(3, $tmp['h'] + 1)
+                                ),
+                                false, true
+                            );
+                            $context->drawPath(
+                                array(
+                                    array($tmp['w'] + $indent - 1, $tmp['h'] + 1), 
+                                    array($max_tw + $indent + 1, $tmp['h'] + 1), 
+                                    array($max_tw + $indent + 1, 1), 
+                                    array($max_tw + $indent + 2, 1)
+                                ),
+                                false, true
+                            );
+                        }
                     }
                 }
                 break;
@@ -468,8 +473,8 @@ class ebnf extends plugin
                     list($tw, ) = $ctx->getSize(true);
 
                     if ($child = ($l2r ? $child->nextSibling : $child->previousSibling)) {
-                        $context->drawLine($tw - 1, 1, $tw + 1, 1); //, ($l2r ? 1 : -1));
-                        ++$tw;
+                        $context->drawLine($tw - 1, 1, $tw + 2, 1); //, ($l2r ? 1 : -1));
+                        $tw += (int)(!$l2r) + 1;
                     }
                 }
                 break;
@@ -482,10 +487,10 @@ class ebnf extends plugin
                 $ctx->drawLabel((int)$l2r, 0, $text, ($node->nodeName == 'identifier'));
 
                 if ($l2r) {
-                    // $ctx->drawArrow(0, 1, -90);
+                    $ctx->drawLine(0, 1, 0, 1, 1);
                 } else {
                     list($tw, ) = $ctx->getSize(true);
-                    // $ctx->drawArrow($tw - 1, 1, 90);                    
+                    $ctx->drawLine($tw, 1, $tw, 1, -1);
                 }
 
                 break;
