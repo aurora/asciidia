@@ -517,6 +517,11 @@ class context
             
             return $corners[$c . $order];
         };
+        $get_angle = function($x_dir, $y_dir) {
+            return ($x_dir != 0
+                    ? ($x_dir < 0 ? 90 : -90)
+                    : ($y_dir < 0 ? 180 : 0));
+        };
         $set_order = function($type) use (&$order) {
             $order = substr($order . $type, 1, 2);
         };
@@ -541,6 +546,8 @@ class context
             if ($x2 != $x1) { $set_order('x'); $x_dir = ($x2 - $x1); }
             if ($y2 != $y1) { $set_order('y'); $y_dir = ($y2 - $y1); }
             
+            if ($i == 1 && $arrow !== false && $arrow <= 0) $this->drawArrow($x1, $y1, $get_angle($x_dir, $y_dir));
+            
             if ($x_dir != 0 && $y_dir != 0) {
                 // corner detected
                 $ax = $get_point($x2, $x1) * $this->xs + $this->xf;
@@ -561,6 +568,8 @@ class context
             $x0 = $x1; $y0 = $y1;
             $x1 = $x2; $y1 = $y2;
         }
+
+        if ($arrow !== false && $arrow >= 0) $this->drawArrow($x2, $y2, $get_angle($x_dir, $y_dir));
 
         $this->setSize($x_max, $y_max);
         
