@@ -1,52 +1,54 @@
 asciidia
 ========
 
-Note
-----
-
-**This branch is work in progress. Readme will be updated, when branch is merged into 
-master**
+Version
+-------
+    
+    v0.2, 2011-07-17
 
 Usage
 -----
 
-    $ ./asciidia.php [-t ...] [-r] [-c ...] [-s ...] -i ... -o ...
+    $ ./asciidia.php -h
+    $ ./asciidia.php -t ... -h
+    $ ./asciidia.php -t ... -i ... -o ... [-c ...] [-s ...]
 
 Description
 -----------
 
 Asciidia generates bitmap files (png) from simple ASCII diagrams. In that it is similar
-to programs like [ditaa](http://ditaa.sourceforge.net/). However: motivation for writing
-asciidia was not to replace ditaa or similar tools. Instead i was not satisfied with some 
-diagrams produced with ditaa especially i was not able to render nice looking directory 
-trees with it.
+to programs like [ditaa](http://ditaa.sourceforge.net/). It's build on top of a plugin
+architecture to make it easy to enhance it with additional diagram plugins. Currently
+supported diagram types are:
 
-Because of this, asciidia is more a quick hack with very limited functionality compared 
-to a full-featured application like ditaa. For large diagrams asciidia might have 
-performance issues. It's not recommended to render very large directory trees with it.
+- simple ASCII diagrams, currently not as many features as what ditaa provides, though
+- directory tree diagrams
+- syntax-diagrams (railroad diagrams) by specifying an EBNF
 
 Asciidia requires and uses imagemagick to render it's diagrams to a bitmap.
 
 ### Parameters
 
-    -t  Optional type: "tree" or "diagram". Default is: "diagram".
-    
-    -r  Optional flag to output the imagemagick draw commands instead of creating a bitmap.
-    
-    -c  Optional cell size. It defines the widht/height of each cell / character on the canvas in 
-        pixel. Notation is ...x... (width x height) or ... (width x width). Defaults to: "10x15".
-    
-    -s  Optional scaling parameter is only used, if '-r' is not specified. Notation is ...x...
-        (width x height). Either of width or height may be omited. In this case the image will 
-        be scaled to width or height by keeping aspect ratio. 
-        
-        Sometimes the final bitmap will look better, if a larger cell size is specified and the 
-        bitmap is scaled down using this parameter.
-        
-    -i  Required input filename. If "-" is specified, input is read from STDIN. If a 
-        directory is specified, the directory will be drawn as tree-diagram instead.
-        
-    -o  Required output filename. If "-" is specified, output is written to STDOUT.
+    -h  show information about command-line arguments. provide a diagram type
+        with '-t' to show help about the plugin
+
+    -t  plugin type to load. available plugins are:
+
+        diagram
+        ebnf
+        test
+        tree
+
+    -i  input filename or '-' for STDIN
+
+    -o  output filename or '-' for STDOUT
+
+    -c  defines the widht/height of each cell / character on the canvas in 
+        pixel. Notation is ...x... (width x height) or ... (width x width).
+
+    -s  scales image. notation is ...x... (width x height) whereas ... is a 
+        number to scale to. if width or height are ommited, image will be 
+        scaled by keeping aspect ratio.\n", 
 
 Requirements
 ------------
