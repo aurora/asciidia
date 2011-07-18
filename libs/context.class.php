@@ -543,8 +543,8 @@ class context
             }
 
             $this->drawLine(
-                $get_point($x2, $x1),
-                $get_point($y2, $y1),
+                $get_point($x2, $x1, ($i > 1)),
+                $get_point($y2, $y1, ($i > 1)),
                 $get_point($x1, $x2, ($i + 1 < $cnt)),
                 $get_point($y1, $y2, ($i + 1 < $cnt))
             );
