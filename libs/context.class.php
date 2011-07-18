@@ -490,8 +490,8 @@ class context
         $order = '--';
 
         // helper functions
-        $get_point = function($p1, $p2, $not_end = true) use ($round) {
-            return ($round && $p1 != $p2 && $not_end
+        $get_point = function($p1, $p2, $middle = true) use ($round) {
+            return ($round && $p1 != $p2 && $middle
                     ? ($p1 > $p2 ? $p2 + 0.5 : $p2 - 0.5)
                     : $p2);
         };
