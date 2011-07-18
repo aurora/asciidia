@@ -471,6 +471,8 @@ class context
             if (!is_array($p) || count($p) != 2 || !is_int($p[0]) || !is_int($p[1])) continue;
             
             list($x, $y) = $p;
+
+            if ($x == $ox && $y == $oy) continue;       // remove point, if it's same position as previous point
             
             if (!is_null($ox) && !is_null($oy)) {
                 if ($ox != $x && $oy != $y) {
