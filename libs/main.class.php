@@ -107,7 +107,10 @@ class main
             // process command line args of a loaded plugin
             list($status, $msg) = $this->plugin->checkArgs();
             
-            if (!$status) $this->usage($msg);
+            if (!$status) {
+                $this->usage($msg);
+                return;
+            }
             
             // plugin setup
             $this->plugin->enableDebug($debug);
