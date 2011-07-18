@@ -4,7 +4,7 @@ asciidia
 Version
 -------
     
-    v0.2, 2011-07-17
+    v0.2, 2011-07-18
 
 Usage
 -----
@@ -18,12 +18,13 @@ Description
 
 Asciidia generates bitmap files (png) from simple ASCII diagrams. In that it is similar
 to programs like [ditaa](http://ditaa.sourceforge.net/). It's build on top of a plugin
-architecture to make it easy to enhance it with additional diagram plugins. Currently
-supported diagram types are:
+architecture to make it easy to enhance it with additional diagram or drawing plugins. 
+Currently available plugin types are:
 
 - simple ASCII diagrams, currently not as many features as what ditaa provides, though
 - directory tree diagrams
 - syntax-diagrams (railroad diagrams) by specifying an EBNF
+- identicon generator
 
 Asciidia requires and uses imagemagick to render it's diagrams to a bitmap.
 
@@ -36,6 +37,7 @@ Asciidia requires and uses imagemagick to render it's diagrams to a bitmap.
 
         diagram
         ebnf
+        identicon
         test
         tree
 
