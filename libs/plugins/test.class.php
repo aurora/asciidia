@@ -24,7 +24,7 @@
 require_once(__DIR__ . '/../plugin.class.php');
 
 /**
- * Class for creating "nice"-looking directory-trees from ASCII representation.
+ * Dummy-class for testing purpose only.
  *
  * @octdoc      c:plugin/test
  * @copyright   copyright (c) 2011 by Harald Lapp
@@ -36,7 +36,7 @@ class test extends plugin
     /**
      * Overwrite loadFile of plugin class -- to load nothing.
      *
-     * @octdoc  m:tree/loadFile
+     * @octdoc  m:test/loadFile
      * @param   string      $name               Name of file to do nothing with.
      * @return  array                           Status information.
      */
