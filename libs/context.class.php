@@ -215,13 +215,15 @@ class context
     }
     
     /**
-     * Calculate new size of context.
+     * Set new size of canvas. Note, that a canvas cannot be smaller, than the
+     * current content. Therefore the specified values are dismissed, if they 
+     * are smaller, than the current width/height of the canvas.
      *
      * @octdoc  m:context/setSize
      * @param   int     $x                  X-value to use for calculation.
      * @param   int     $y                  Y-value to use for calculation.
      */
-    protected function setSize($x, $y)
+    public function setSize($x, $y)
     /**/
     {
         $this->w = max($this->w, $this->tx + $x + 1);
