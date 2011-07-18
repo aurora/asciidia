@@ -69,7 +69,7 @@ class main
     /**/
     {
         $this->getPlugins();
-        
+
         // process standard command-line parameters
         $scale = '';
         $cell  = '';
@@ -104,6 +104,14 @@ class main
         $debug = array_key_exists('d', $opt);
 
         if (!is_null($this->plugin)) {
+            // test environment
+            list($status, $msg) = $this->plugin->testEnv();
+            
+            if (!$status) {
+                $this->usage($msg);
+                return;
+            }
+            
             // process command line args of a loaded plugin
             list($status, $msg) = $this->plugin->checkArgs();
             
