@@ -390,8 +390,9 @@ class ebnf extends plugin
                 $context->translate(0, -$max_th);
 
                 foreach ($twh as $tmp) {
-                    $context->drawLine($tmp['w'] - 1, $tmp['h'] + 1, $max_tw + 1, $tmp['h'] + 1);
-                    $context->drawMarker($max_tw + 1, $tmp['h'] + 1, '+', true, false, true, false);
+                    $context->drawLine($tmp['w'] - 1, $tmp['h'] + 1, $max_tw + 1, $tmp['h'] + 1, 1);
+                    $context->drawLine($max_tw + 1, $tmp['h'] + 1, $max_tw + 4, $tmp['h'] + 1);
+                    $context->drawMarker($max_tw + 4, $tmp['h'] + 1, '+', true, false, true, false);
                 }
                 
                 break;
