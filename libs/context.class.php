@@ -468,7 +468,7 @@ class context
         foreach ($points as $p) {
             $ox = $x; $oy = $y;
             
-            if (!is_array($p) || count($p) != 2 || !is_int($p[0]) || !is_int($p[1])) continue;
+            if (!is_array($p) || count($p) != 2 || !is_int($p[0]) || !is_int($p[1])) continue;      // remove invalid point
             
             list($x, $y) = $p;
 
@@ -476,7 +476,7 @@ class context
             
             if (!is_null($ox) && !is_null($oy)) {
                 if ($ox != $x && $oy != $y) {
-                    // insert point
+                    // insert additional point if both x and y are different
                     $_tmp[] = array($ox, $y);
                 }
             }
