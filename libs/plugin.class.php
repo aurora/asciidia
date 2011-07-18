@@ -189,6 +189,36 @@ abstract class plugin
     }
 
     /**
+     * Method to perform environment checks for example, if imagemagick 
+     * is found through the path.
+     *
+     * @octdoc  m:plugin/testEnv
+     * @return  array                           Status information.
+     */
+    public function testEnv()
+    /**/
+    {
+        $status = true;
+        $msg    = '';
+        $out    = array();
+        $err    = 0;
+        
+        // test if imagemagick is available
+        exec('which convert', $out, $err);
+        $mh = getenv('MAGICK_HOME');
+        
+        if ($err != 0) {
+            $status = false;
+            $msg    = 'imagemagick "convert" is not found in path';
+        } elseif ($mh == '') {
+            $status = false;
+            $msg    = '"MAGICK_HOME" environment variable is not set';
+        }
+        
+        return array($status, $msg);
+    }
+
+    /**
      * Load a file.
      *
      * @octdoc  m:plugin/loadFile
