@@ -116,8 +116,10 @@ class main
             $this->plugin->enableDebug($debug);
             
             if ($cell) {
-                $this->plugin->xs = $cell[0];
-                $this->plugin->ys = $cell[1];
+                $this->plugin->setCellSize($cell[0], $cell[1]);
+            }
+            if ($scale) {
+                $this->plugin->setScaleTo($scale);
             }
             
             // execute plugin
