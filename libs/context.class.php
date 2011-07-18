@@ -438,46 +438,6 @@ class context
     }
 
     /**
-     * This is a helper function to draw an arrow head for example for a line
-     * or a path. This method is protected to prevent a direct call. Use one of
-     * the line- or path-drawing functions to draw an arrow.
-     *
-     * @octdoc  m:context/drawArrowHead
-     * @param   int         $x              X-position of the arrow-head
-     * @param   int         $y              Y-position of the arrow-head
-     * @param   float       $angle          Rotation angle.
-     */
-    protected function drawArrowHead($x, $y, $angle)
-    /**/
-    {
-        $xs = $this->xs;
-        $ys = $this->ys;
-        $xf = $this->xf;
-        $yf = $this->yf;
-        
-        $get_xy = function($x1, $y1) use ($angle, $x, $y, $xs, $ys, $xf, $yf) {
-            $x2 = ($x1 * cos(deg2rad($angle)) - $y1 * sin(deg2rad($angle)));
-            $y2 = ($y1 * cos(deg2rad($angle)) + $x1 * sin(deg2rad($angle)));
-            
-            return sprintf(
-                '%f,%f',
-                ($x * $xs + $xf) + $x2,
-                ($y * $ys + $yf) + $y2
-            );
-        };
-
-        $this->mvg[] = 'push graphic-context';
-        $this->mvg[] = sprintf(
-            "fill %s path 'M %s L %s %s Z'",
-            $this->stroke,
-            $get_xy(-$this->xf, 0),
-            $get_xy(0, -$this->yf),
-            $get_xy($this->xf, 0)
-        );
-        $this->mvg[] = 'pop graphic-context';
-    }
-    
-    /**
      * Draw a path between specified points. An optional arrow head may be
      * specified.
      *
@@ -569,7 +529,7 @@ class context
             if ($x2 != $x1) { $set_order('x'); $x_dir = ($x2 - $x1); }
             if ($y2 != $y1) { $set_order('y'); $y_dir = ($y2 - $y1); }
             
-            if ($i == 1 && $arrow !== false && $arrow <= 0) $this->drawArrowHead($x1, $y1, $get_angle($x_dir, $y_dir));
+            if ($i == 1 && $arrow !== false && $arrow <= 0) $this->_drawArrowHead($x1, $y1, $get_angle($x_dir, $y_dir));
 
             if ($x_dir != 0 && $y_dir != 0) {
                 // corner detected
@@ -593,7 +553,7 @@ class context
             $x1 = $x2; $y1 = $y2;
         }
 
-        if ($arrow !== false && $arrow >= 0) $this->drawArrowHead($x2, $y2, $get_angle($x_dir, $y_dir));
+        if ($arrow !== false && $arrow >= 0) $this->_drawArrowHead($x2, $y2, $get_angle($x_dir, $y_dir));
 
         $this->setSize($x_max, $y_max);
     }
@@ -633,8 +593,8 @@ class context
 
             $angle = rad2deg(atan2(($y2 - $y1), ($x2 - $x1)));
             
-            if ($arrow <= 0) $this->drawArrowHead($x1, $y1, $angle - 90);
-            if ($arrow >= 0) $this->drawArrowHead($x2, $y2, $angle + 90);
+            if ($arrow <= 0) $this->_drawArrowHead($x1, $y1, $angle - 90);
+            if ($arrow >= 0) $this->_drawArrowHead($x2, $y2, $angle + 90);
         }
     }
     
@@ -668,8 +628,8 @@ class context
         if ($arrow !== false) {
             if ($x1 > $x2) $x1 ^= $x2 ^= $x1 ^= $x2;
             
-            if ($arrow <= 0) $this->drawArrowHead($x1 + 0.5, $y, -90);
-            if ($arrow >= 0) $this->drawArrowHead($x2 - 0.5, $y,  90);
+            if ($arrow <= 0) $this->_drawArrowHead($x1 + 0.5, $y, -90);
+            if ($arrow >= 0) $this->_drawArrowHead($x2 - 0.5, $y,  90);
         }
     }
     
@@ -703,8 +663,8 @@ class context
         if ($arrow !== false) {
             if ($y1 > $y2) $y1 ^= $y2 ^= $y1 ^= $y2;
             
-            if ($arrow <= 0) $this->drawArrowHead($x, $y1,   0);
-            if ($arrow >= 0) $this->drawArrowHead($x, $y2, 180);
+            if ($arrow <= 0) $this->_drawArrowHead($x, $y1,   0);
+            if ($arrow >= 0) $this->_drawArrowHead($x, $y2, 180);
         }
     }
 
@@ -871,6 +831,22 @@ class context
         }
     }
     
+    /**
+     * Draw the head of an arrow.
+     *
+     * @octdoc  m:context/drawArrowHead
+     * @param   int         $x              X-position of the arrow-head
+     * @param   int         $y              Y-position of the arrow-head
+     * @param   float       $angle          Rotation angle.
+     */
+    public function drawArrowHead($x, $y, $angle)
+    /**/
+    {
+        $this->setSize($x, $y);
+        
+        $this->_drawArrowHead($x, $y, $angle);
+    }
+
     /*
      * misc tools
      */
@@ -903,5 +879,49 @@ class context
         }
         
         return $return;
+    }
+    
+    /*
+     * misc helper functions
+     */
+     
+    /**
+     * This is a helper function to draw an arrow head for example for a line
+     * or a path. This method is protected to prevent a direct call. Use one of
+     * the line- or path-drawing functions to draw an arrow.
+     *
+     * @octdoc  m:context/_drawArrowHead
+     * @param   int         $x              X-position of the arrow-head
+     * @param   int         $y              Y-position of the arrow-head
+     * @param   float       $angle          Rotation angle.
+     */
+    protected function _drawArrowHead($x, $y, $angle)
+    /**/
+    {
+        $xs = $this->xs;
+        $ys = $this->ys;
+        $xf = $this->xf;
+        $yf = $this->yf;
+        
+        $get_xy = function($x1, $y1) use ($angle, $x, $y, $xs, $ys, $xf, $yf) {
+            $x2 = ($x1 * cos(deg2rad($angle)) - $y1 * sin(deg2rad($angle)));
+            $y2 = ($y1 * cos(deg2rad($angle)) + $x1 * sin(deg2rad($angle)));
+            
+            return sprintf(
+                '%f,%f',
+                ($x * $xs + $xf) + $x2,
+                ($y * $ys + $yf) + $y2
+            );
+        };
+
+        $this->mvg[] = 'push graphic-context';
+        $this->mvg[] = sprintf(
+            "fill %s path 'M %s L %s %s Z'",
+            $this->stroke,
+            $get_xy(-$this->xf, 0),
+            $get_xy(0, -$this->yf),
+            $get_xy($this->xf, 0)
+        );
+        $this->mvg[] = 'pop graphic-context';
     }
 }
