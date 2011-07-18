@@ -297,6 +297,7 @@ class context
         if ($this->debug) {
             $mvg[] = sprintf('translate %f,%f', -$this->tx * $this->xs, -$this->ty * $this->ys);
             $mvg[] = 'push graphic-context';
+            $mvg[] = 'fill transparent';
             
             list($cw, $ch) = $this->getSize(true);
             
