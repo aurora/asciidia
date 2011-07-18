@@ -42,6 +42,15 @@ abstract class plugin
     /**/
     
     /**
+     * Size of the final bitmap.
+     *
+     * @octdoc  v:plugin/$scale_to
+     * @var     string
+     */
+    private $scale_to = null;
+    /**/
+    
+    /**
      * Abstract method(s) to be implemented by plugins.
      *
      * @octdoc  m:plugin/parse
@@ -251,7 +260,7 @@ abstract class plugin
                 'convert -size %dx%d xc:white -stroke black -fill none -draw %s %s png:%s',
                 $w, $h,
                 escapeshellarg(implode(' ', $commands)),
-                '', // TODO: ($scale ? '-scale ' . $scale : ''),
+                ($this->scale_to ? '-scale ' . $this->scale_to : ''),
                 $name
             );
 
