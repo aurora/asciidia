@@ -102,6 +102,33 @@ abstract class plugin
     }
 
     /**
+     * Set the size of the cells.
+     *
+     * @octdoc  m:plugin/setCellSize
+     * @param   float       $w                  Width of a cell.
+     * @param   float       $h                  Height of a cell.
+     */
+    final public function setCellSize($w, $h)
+    /**/
+    {
+        $context = $this->getContext();
+        $context->xs = $w;
+        $context->ys = $h;
+    }
+
+    /**
+     * Set the size of the bitmap the result should be scaled to.
+     *
+     * @octdoc  m:plugin/setScaleTo
+     * @param   float       $scale              Imagemagick scaling size.
+     */
+    final public function setScaleTo($scale)
+    /**/
+    {
+        $this->scale_to = $scale;
+    }
+
+    /**
      * Enable a debugging mode for context.
      *
      * @octdoc  m:plugin/enableDebug
