@@ -495,7 +495,7 @@ class context
                     ? ($p1 > $p2 ? $p2 + 0.5 : $p2 - 0.5)
                     : $p2);
         };
-        $get_corner = function($x_dir, $y_dir) use ($corners, &$order) {
+        $get_corner = function($x_dir, $y_dir) use (&$order) {
             if ($x_dir < 0 && $y_dir < 0) {
                 $c = ($order == 'xy' ? 'bl' : 'tr');
             } elseif ($x_dir < 0 && $y_dir > 0) { 
