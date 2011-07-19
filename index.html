@@ -8,20 +8,20 @@
   <style type="text/css">
     body {
       margin-top: 1.0em;
-      background-color: #698d2b;
+      background-color: #fff;
       font-family: Helvetica, Arial, FreeSans, san-serif;
-      color: #ffffff;
+      color: #000;
     }
     #container {
       margin: 0 auto;
       width: 700px;
     }
-    h1 { font-size: 3.8em; color: #9672d4; margin-bottom: 3px; }
+    h1 { font-size: 3.8em; color: #000; margin-bottom: 3px; }
     h1 .small { font-size: 0.4em; }
     h1 a { text-decoration: none }
-    h2 { font-size: 1.5em; color: #9672d4; }
-    h3 { text-align: center; color: #9672d4; }
-    a { color: #9672d4; }
+    h2 { font-size: 1.5em; color: #000; }
+    h3 { text-align: center; color: #000; }
+    a { color: #000; }
     .description { font-size: 1.2em; margin-bottom: 30px; margin-top: 30px; font-style: italic;}
     .download { float: right; }
     pre { background: #000; color: #fff; padding: 15px;}
@@ -49,10 +49,36 @@
       Create bitmaps from simple ASCII diagrams
     </div>
 
+    <h2>Description</h2>
+
+    <p>
+        Asciidia generates bitmap files (png) from simple ASCII diagrams. In that it is similar to programs 
+        like <a href="http://ditaa.sf.net">ditaa</a>. It's build on top of a plugin architecture to make 
+        it easy to enhance it with additional diagram or drawing plugins. 
+    </p>
+    
+    <p>
+        Currently available plugin types are:
+    </p>
+    
+    <ul>
+        <li>simple ASCII diagrams, currently not as many features as what ditaa provides, though</li>
+        <li>directory tree diagrams</li>
+        <li>syntax-diagrams (railroad diagrams) by specifying an EBNF</li>
+        <li>identicon generator</li>
+    </ul>
+    
+    <p>
+        Asciidia requires and uses imagemagick to render it's diagrams to a bitmap.
+    </p>
+
     <h2>Authors</h2>
-<p>Harald Lapp (harald.lapp@gmail.com)<br/><br/>      </p>
+<p>Harald Lapp (harald.lapp@gmail.com)
+<br/>
+<br/>      </p>
 <h2>Contact</h2>
-<p>Harald Lapp (harald.lapp@gmail.com)<br/>      </p>
+<p>Harald Lapp (harald.lapp@gmail.com)
+<br/>      </p>
 
 
     <h2>Download</h2>
