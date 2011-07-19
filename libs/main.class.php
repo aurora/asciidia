@@ -146,9 +146,13 @@ class main
     protected function getPlugins()
     /**/
     {
-        return ($this->plugins = array_map(function($name) {
-            return basename($name, '.class.php');
-        }, glob(__DIR__ . '/plugins/*.php')));
+        $this->plugins = array();
+            
+        foreach (new DirectoryIterator(__DIR__ . '/plugins/') as $file) {
+            if (!$file->isDot() && substr(($name = $file->getFilename()), -4) == '.php') {
+                $this->plugins[] = basename($name, '.class.php');
+            }
+        }
     }
     
     /**
