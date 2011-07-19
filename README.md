@@ -50,7 +50,7 @@ Asciidia requires and uses imagemagick to render it's diagrams to a bitmap.
 
     -s  scales image. notation is ...x... (width x height) whereas ... is a 
         number to scale to. if width or height are ommited, image will be 
-        scaled by keeping aspect ratio.\n", 
+        scaled by keeping aspect ratio. 
 
 Requirements
 ------------
