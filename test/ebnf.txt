@@ -9,8 +9,6 @@
                | "(" expression ")"
                | "{" expression "}" ;
     identifier = character { character } ;
-    title      = literal ;
-    comment    = literal ;
     literal    = "'" character { character } "'"
                | '"' character { character } '"' ;
 }
