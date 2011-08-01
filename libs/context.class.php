@@ -674,6 +674,42 @@ class context
     }
 
     /**
+     * Draw line crossing symbol.
+     *
+     * @octdoc  m:context/drawLineCrossing
+     * @param   int         $x                  x point.
+     * @param   int         $y                  y point.
+     */
+    public function drawLineCrossing($x, $y)
+    /**/
+    {
+        $this->setSize($x, $y);
+
+        $yf = $this->yf / 2;
+        $xf = $this->xf / 2;
+
+        // draw lines
+        $this->mvg[] = sprintf(
+            'line   %f,%f %f,%f',
+            $x * $this->xs,
+            $y * $this->ys + $this->yf,
+            $x * $this->xs + $this->xf + $this->xf,
+            $y * $this->ys + $this->yf
+        );
+
+        // draw crossing
+        $this->mvg[] = sprintf(
+            'fill transparent ellipse %f,%f %f,%f %f,%f',
+            $x * $this->xs + $this->xf, 
+            $y * $this->ys + $this->yf,
+            $this->xf,
+            $this->yf,
+            -90,
+            -270
+        );
+    }
+
+    /**
      * Draw a marker.
      *
      * @octdoc  m:context/drawMarker
