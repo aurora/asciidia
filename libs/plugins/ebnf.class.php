@@ -50,8 +50,9 @@ class ebnf extends plugin
     /**
      * Parser tokens.
      * 
-     * @octdoc  d:ebnf/T_NOP, T_OPERATOR, T_LITERAL, T_IDENTIFIER, T_WHITESPACE
+     * @octdoc  d:ebnf/T_COMMENT, T_OPERATOR, T_LITERAL, T_IDENTIFIER, T_WHITESPACE
      */
+    const T_COMMENT    = 0;
     const T_OPERATOR   = 1;
     const T_LITERAL    = 2;
     const T_IDENTIFIER = 3;
@@ -65,6 +66,7 @@ class ebnf extends plugin
      * @var     array
      */
     protected static $patterns = array(
+        self::T_COMMENT    => '\(\*.*?\*\)',
         self::T_OPERATOR   => '[=;\{\}\(\)\|\[\]]',
         self::T_LITERAL    => "([\"']).*?(?!\\\\)\\2",
         self::T_IDENTIFIER => '[a-zA-Z0-9_-]+',
@@ -79,6 +81,7 @@ class ebnf extends plugin
      * @var     array
      */
     protected static $token_names = array(
+        self::T_COMMENT    => 'T_COMMENT',
         self::T_OPERATOR   => 'T_OPERATOR',
         self::T_LITERAL    => 'T_LITERAL',
         self::T_IDENTIFIER => 'T_IDENTIFIER',
@@ -119,8 +122,8 @@ class ebnf extends plugin
         while (strlen($in) > 0) {
             foreach (self::$patterns as $token => $regexp) {
                 if (preg_match('/^(' . $regexp . ')/', $in, $m)) {
-                    // spaces between tokens are ignored but used for calculating line number
-                    if ($token == self::T_WHITESPACE) {
+                    if ($token == self::T_WHITESPACE || $token == self::T_COMMENT) {
+                        // spaces between tokens and comments are ignored but used for calculating line number
                         $line += substr_count($m[1], "\n");
                     } else {
                         $out[] = array(
