@@ -247,6 +247,9 @@ class diagram extends plugin
                 } elseif (($c == 'x' || $c == 'o' || $c == '+') && ($a == '|' || $r == '-' || $b == '|' || $l == '-')) {
                     // marker
                     $ctx->drawMarker($x, $y, $c, ($a == '|'), ($r == '-'), ($b == '|'), ($l == '-'));
+                } elseif ($c == 'C' && ($a == '|' && $r == '-' && $b == '|' && $l == '-')) {
+                    // line crossing
+                    $ctx->drawLineCrossing($x, $y);
                 } elseif ($c == '-' || ($c == '<' && $r == '-') || ($c == '>' && $l == '-')) {
                     // horizontal line
                     $this->addLine($x, $y, $rows);
