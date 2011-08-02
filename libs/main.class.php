@@ -71,8 +71,9 @@ class main
         $this->getPlugins();
 
         // process standard command-line parameters
-        $scale = '';
-        $cell  = '';
+        $scale   = '';
+        $cell    = '';
+        $out_fmt = 'png';
         
         $opt = getopt('t:i:o:s:c:dh');
 
@@ -100,6 +101,10 @@ class main
             } else {
                 $cell = array($opt['c'], $opt['c']);
             }
+        }
+        if (preg_match('/^([a-z][a-z0-9]*):(.+)$/', $opt['o'], $match)) {
+            $out_fmt  = $match[1];
+            $opt['o'] = $match[2];
         }
         $debug = array_key_exists('d', $opt);
 
@@ -131,7 +136,7 @@ class main
             }
             
             // execute plugin
-            list($status, $msg) = $this->plugin->run($opt['i'], $opt['o']);
+            list($status, $msg) = $this->plugin->run($opt['i'], $opt['o'], $out_fmt);
             
             if (!$status) $this->usage($msg);
         }

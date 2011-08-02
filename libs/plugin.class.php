@@ -287,10 +287,11 @@ abstract class plugin
             list($w, $h) = $this->getSize();
 
             $cmd = sprintf(
-                'convert -size %dx%d xc:white -stroke black -fill none -draw %s %s png:%s',
+                'convert -size %dx%d xc:white -stroke black -fill none -draw %s %s %s:%s',
                 $w, $h,
                 escapeshellarg(implode(' ', $commands)),
                 ($this->scale_to ? '-scale ' . $this->scale_to : ''),
+                $fmt,
                 $name
             );
 
