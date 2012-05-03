@@ -127,7 +127,7 @@ class identicon extends plugin
      * Overwrite parent method to additional check if loaded content is a valid
      * hash to use with this plugin.
      *
-     * @octdoc  m:plugin/loadFile
+     * @octdoc  m:identicon/loadFile
      * @param   string      $name               Name of file to load.
      * @return  array                           Status information.
      */
@@ -230,7 +230,7 @@ class identicon extends plugin
     }
 
     /**
-     * Sanbox for testing.
+     * Process hash value.
      *
      * @octdoc  m:identicon/parse
      * @param   string      $hash           Hash values to create identicons from.
