@@ -227,7 +227,7 @@ class main
             if (!is_null($this->plugin)) {
                 printf("\n%s plugin:\n\n", get_class($this->plugin));
 
-                $this->plugin->usage();
+                $this->plugin->usage($argv[0]);
             }
         }
         
