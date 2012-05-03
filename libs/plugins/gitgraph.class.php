@@ -39,18 +39,9 @@ class gitgraph extends plugin
      * @octdoc  p:gitgraph/$bar_width
      * @var     int
      */
-    protected $bar_width = 5;
+    protected $bar_width = 10;
     /**/
     
-    /**
-     * Height of image to create.
-     *
-     * @octdoc  p:gitgraph/$height
-     * @var     int
-     */
-    protected $height = 768;
-    /**/
-
     /**
      * Start date as UNIX timestamp.
      *
@@ -85,9 +76,9 @@ class gitgraph extends plugin
      * @var     array
      */
     protected $colors = array(
-        'commit' => array(  0,   0,   0),
-        'insert' => array(255,   0,   0),
-        'delete' => array(  0, 255,   0),
+        'commits' => array(  0,   0,   0),
+        'inserts' => array(127, 255,  63),
+        'deletes' => array(255,  63,   0),
     );
     /**/
 
@@ -224,6 +215,7 @@ example: %s -i /path/to/git-repository -o - -r 2012-04-01..2012-04-30\n",
 
         $pipes = array();
         $date  = '';
+        $rows  = 0;
 
         $cmd = sprintf(
             'git log --since=%s --until=%s --date=short --stat',
@@ -245,6 +237,7 @@ example: %s -i /path/to/git-repository -o - -r 2012-04-01..2012-04-30\n",
 
             if (preg_match($parse_pattern, $row, $match)) {
                 $date = $match[1];
+                ++$rows;
 
                 if (!isset($data[$date])) {
                     die("log date out of range \"$date\"\n");
@@ -266,7 +259,11 @@ example: %s -i /path/to/git-repository -o - -r 2012-04-01..2012-04-30\n",
 
         $code = proc_close($ph);
 
-        $this->graph($data);
+        if ($rows == 0) {
+            die("nothing todo\n");
+        }
+
+        return $this->graph($data);
     }
 
     /**
@@ -290,20 +287,47 @@ example: %s -i /path/to/git-repository -o - -r 2012-04-01..2012-04-30\n",
         $max['commits'] = max($max['commits']);
         $max['changes'] = max($max['changes']);
 
-        $m1 = $this->height / $max['commits'];
-        $m2 = $this->height / $max['changes'];
-
         // create imagemagick MVG commands for drawing graph
-        $commands = array();
-        $commands[] = vsprintf('fill rgb(%d,%d,%d)', $this->colors['commits']);
+        $bar_width = $this->bar_width;
+        $inc_width = $bar_width * 8;
+        $colors    = $this->colors;
 
-        foreach ($data as $date => $values) {
-            $pos = 0;
+        $width  = count($data) * $inc_width;
+        $height = $width * 0.5;
 
-            $commands[] = sprintf('translate 0,%d', $pos);
-            $commands[] = sprintf('rectangle 0,0 %f,%f', $values['commits'] * $m1, 5);
+        $context = $this->getContext();
+        $context->xs = 1;
+        $context->ys = 1;
+        $context->setSize($width, $height);
 
-            $pos += 10;
-        }
+        $m1 = $height / $max['commits'];
+        $m2 = $height / $max['changes'];
+
+        $render = function($type, $mul, $offset) use ($context, $colors, $bar_width, $inc_width, $height, $data) {
+            $ctx = $context->addContext();
+            $x   = $offset;
+
+            $ctx->addCommand(vsprintf('fill rgb(%d,%d,%d)', $colors[$type]));
+            $ctx->addCommand(vsprintf('stroke rgb(%d,%d,%d)', $colors[$type]));
+
+            foreach ($data as $date => $values) {
+                if ($values[$type] > 0) {
+                    $ctx->addCommand(sprintf(
+                        'rectangle %f,%f %f,%f', 
+                        $x, $height, $x + $bar_width, $height - $values[$type] * $mul
+                    ));
+                }
+
+                $x += $inc_width;
+            }
+        };
+
+        $render('commits', $m1, $bar_width * 0);
+        $render('inserts', $m2, $bar_width * 2);
+        $render('deletes', $m2, $bar_width * 4);
+
+        $commands = $this->getCommands();
+
+        return $commands;
     }
 }
