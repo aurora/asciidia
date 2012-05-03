@@ -142,6 +142,8 @@ class main
     public function run()
     /**/
     {
+        global $argv;
+
         $this->getPlugins();
 
         // process standard command-line parameters
@@ -192,10 +194,10 @@ class main
             }
             
             // process command line args of a loaded plugin
-            list($status, $msg) = $this->plugin->checkArgs();
+            list($status, $msg, $usage) = $this->plugin->checkArgs($argv, $opt);
             
             if (!$status) {
-                $this->usage($msg);
+                $this->usage($msg, false, $usage);
                 return;
             }
             
