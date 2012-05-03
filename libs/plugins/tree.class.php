@@ -59,8 +59,9 @@ class tree extends diagram
      * Display usage information.
      *
      * @octdoc  m:tree/usage
+     * @param   string          $script     Contains name of the script.
      */
-    public function usage()
+    public function usage($script)
     /**/
     {
         print "options:
