@@ -199,7 +199,7 @@ example: %s -i /path/to/git-repository -o - -r 2012-04-01..2012-04-30\n",
             $parse_pattern = '/^date: *(\d{4}-\d{2})/i';
             break;
         default:
-            die("invalid interval \"$interval\"\n");
+            die("invalid interval \"$this->interval\"\n");
         }
 
         $data = array();
@@ -213,8 +213,8 @@ example: %s -i /path/to/git-repository -o - -r 2012-04-01..2012-04-30\n",
                 'deletes' => 0
             );
 
-            $time = strtotime('+1 ' . $interval, $time);
         } while($time <= $this->end);
+            $time = strtotime('+1 ' . $this->interval, $time);
 
         $descriptors = array(
             array('pipe', 'r'),
