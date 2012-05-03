@@ -70,6 +70,15 @@ class gitgraph extends plugin
     /**/
     
     /**
+     * Allowed units to specify for segmentation (interval).
+     *
+     * @octdoc  p:gitgraph/$units
+     * @var     array
+     */
+    protected $units = array('day', 'month', 'week');
+    /**/
+
+    /**
      * Collection interval.
      *
      * @octdoc  p:gitgraph/$interval
@@ -120,7 +129,13 @@ class gitgraph extends plugin
     -r  this parameter is required to specify a timerange in the form of
         YYYY-MM-DD..YYYY-MM-DD
 
+    -u  optional to specify the unit for segmentating the timerange. default is
+        'day', allowed values are:
+
+        %s
+
 example: %s -i /path/to/git-repository -o - -r 2012-04-01..2012-04-30\n",
+            implode("\n        ", $this->units),
             $script
         );
     }
@@ -148,26 +163,36 @@ example: %s -i /path/to/git-repository -o - -r 2012-04-01..2012-04-30\n",
         } elseif (!array_key_exists('r', $opt)) {
             $status = false;
             $usage  = sprintf("usage: %s -t ... -i ... -o ... -r ... [-c ...] [-s ...]\n", $script);
-        } elseif (preg_match('/^(\d{4}-\d{2}-\d{2})\.\.(\d{4}-\d{2}-\d{2})$/', $opt['r'], $match)) {
-            list($y1, $m1, $d1) = explode('-', $match[1]);
-            list($y2, $m2, $d2) = explode('-', $match[2]);
+        } else {
+            if (preg_match('/^(\d{4}-\d{2}-\d{2})\.\.(\d{4}-\d{2}-\d{2})$/', $opt['r'], $match)) {
+                list($y1, $m1, $d1) = explode('-', $match[1]);
+                list($y2, $m2, $d2) = explode('-', $match[2]);
 
-            if (!checkdate($m1, $d1, $y1) || !checkdate($m2, $d2, $y2)) {
-                $status = false;
-                $msg    = 'invalid date in specified timerange';
-            } else {
-                $time1 = mktime(0, 0, 0, $m1, $d1, $y1);
-                $time2 = mktime(0, 0, 0, $m2, $d2, $y2);
-
-                if ($time1 <= $time2) {
-                    $this->start = $time1; $this->end = $time2;
+                if (!checkdate($m1, $d1, $y1) || !checkdate($m2, $d2, $y2)) {
+                    $status = false;
+                    $msg    = 'invalid date in specified timerange';
                 } else {
-                    $this->start = $time2; $this->end = $time1;
+                    $time1 = mktime(0, 0, 0, $m1, $d1, $y1);
+                    $time2 = mktime(0, 0, 0, $m2, $d2, $y2);
+
+                    if ($time1 <= $time2) {
+                        $this->start = $time1; $this->end = $time2;
+                    } else {
+                        $this->start = $time2; $this->end = $time1;
+                    }
+                }
+            } else {
+                $status = false;
+                $msg    = 'wrong timerange paramater';
+            }
+            if (array_key_exists('u', $opt)) {
+                if (!in_array($opt['u'], $this->units)) {
+                    $status = false;
+                    $msg    = 'invalid unit specified';
+                } else {
+                    $this->interval = $opt['u'];
                 }
             }
-        } else {
-            $status = false;
-            $msg    = 'wrong timerange paramater';
         }
 
         return array($status, $msg, $usage);
@@ -191,6 +216,10 @@ example: %s -i /path/to/git-repository -o - -r 2012-04-01..2012-04-30\n",
         case 'month':
             $date_pattern  = '%Y-%m';
             $parse_pattern = '/^date: *(\d{4}-\d{2})/i';
+            break;
+        case 'week':
+            $date_pattern  = '%W';
+            $parse_pattern = '/^date: *(\d{4}-\d{2}-\d{2})/i';
             break;
         default:
             die("invalid interval \"$this->interval\"\n");
@@ -239,7 +268,7 @@ example: %s -i /path/to/git-repository -o - -r 2012-04-01..2012-04-30\n",
             $row = fgets($pipes[1]);
 
             if (preg_match($parse_pattern, $row, $match)) {
-                $date = $match[1];
+                $date = strftime($date_pattern, strtotime($match[1]));
                 ++$rows;
 
                 if (!isset($data[$date])) {
