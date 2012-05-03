@@ -263,8 +263,9 @@ class main
      * @octdoc  m:main/usage
      * @param   string      $msg            Optional error message to print.
      * @param   bool        $help           Optional flag to show complete help.
+     * @param   string      $usage          Optional additional usage examples.
      */
-    protected function usage($msg = '', $help = false)
+    protected function usage($msg = '', $help = false, $usage = '')
     /**/
     {
         global $argv;
@@ -277,6 +278,10 @@ class main
         printf("usage: %s -h\n", $argv[0]);
         printf("usage: %s -t ... -h\n", $argv[0]);
         printf("usage: %s -t ... -i ... -o ... [-c ...] [-s ...]\n", $argv[0]);
+
+        if ($usage != '') {
+            print $usage;
+        }
         
         if ($help) {
             printf("default options:
