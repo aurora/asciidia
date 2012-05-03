@@ -51,14 +51,6 @@ abstract class plugin
     /**/
     
     /**
-     * Abstract method(s) to be implemented by plugins.
-     *
-     * @octdoc  m:plugin/parse
-     */
-    abstract public function parse($content);
-    /**/
-    
-    /**
      * Constructor.
      *
      * @octdoc  m:plugin/__construct
@@ -68,6 +60,26 @@ abstract class plugin
     {
     }
 
+    /**
+     * Abstract method(s) to be implemented by plugins.
+     *
+     * @octdoc  m:plugin/parse
+     */
+    abstract public function parse($content);
+    /**/
+    
+    /**
+     * Display usage information.
+     *
+     * @octdoc  m:diagram/usage
+     * @param   string          $script     Contains name of the script.
+     */
+    public function usage($script)
+    /**/
+    {
+        print "no additional help available for plugin\n";
+    }
+    
     /**
      * Return instance of main context.
      *
