@@ -140,18 +140,20 @@ example: %s -i /path/to/git-repository -o - -r 2012-04-01..2012-04-30\n",
      * Check command-line arguments.
      *
      * @octdoc  m:gitgraph/checkArgs
+     * @param   string          $script         Contains name of the script.
+     * @param   string          $opt            Commandline options.
      * @return  array                           Status information.
      */
-    public function checkArgs()
+    public function checkArgs($script, array $opt)
     /**/
     {
         $status = true;
         $msg    = '';
-
-        $opt = getopt('r:');
+        $usage  = '';
 
         if (!array_key_exists('r', $opt)) {
             $status = false;
+            $usage  = sprintf("usage: %s -t ... -i ... -o ... -r ... [-c ...] [-s ...]\n", $script);
         } elseif (preg_match('/^(\d{4}-\d{2}-\d{2})\.\.(\d{4}-\d{2}-\d{2})$/', $opt['r'], $match)) {
             list($y1, $m1, $d1) = explode('-', $match[1]);
             list($y2, $m2, $d2) = explode('-', $match[2]);
@@ -174,7 +176,7 @@ example: %s -i /path/to/git-repository -o - -r 2012-04-01..2012-04-30\n",
             $msg    = 'wrong timerange paramater';
         }
 
-        return array($status, $msg);
+        return array($status, $msg, $usage);
     }
 
     /**
@@ -197,7 +199,7 @@ example: %s -i /path/to/git-repository -o - -r 2012-04-01..2012-04-30\n",
             $parse_pattern = '/^date: *(\d{4}-\d{2})/i';
             break;
         default:
-            die('invalid interval "' . $interval . '"');
+            die("invalid interval \"$interval\"\n");
         }
 
         $data = array();
@@ -233,7 +235,7 @@ example: %s -i /path/to/git-repository -o - -r 2012-04-01..2012-04-30\n",
         fwrite(STDERR, "processing log. please wait ...\n");
 
         if (!($ph = proc_open($cmd, $descriptors, $pipes))) {
-            $this->usage('unable to execute "' . $cmd . '"');
+            die("unable to execute \"$cmd\"\n");
         }
 
         fclose($pipes[0]);
@@ -245,13 +247,13 @@ example: %s -i /path/to/git-repository -o - -r 2012-04-01..2012-04-30\n",
                 $date = $match[1];
 
                 if (!isset($data[$date])) {
-                    $this->usage('log date out of range "' . $date . '"');
+                    die("log date out of range \"$date\"\n");
                 } else {
                     ++$data[$date]['commits'];
                 }
             } elseif (preg_match('/(\d+) files changed, (\d+) insertions\(\+\), (\d+) deletions\(-\)/i', $row, $match)) {
                 if ($date == '') {
-                    $this->usage('parse error at "' . $row . '"');
+                    die("parse error at \"$row\"\n");
                 }
 
                 $data[$date]['files']   += $match[1];
