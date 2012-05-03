@@ -192,12 +192,14 @@ abstract class plugin
      * Check command-line arguments.
      *
      * @octdoc  m:plugin/checkArgs
+     * @param   string          $script         Contains name of the script.
+     * @param   string          $opt            Commandline options.
      * @return  array                           Status information.
      */
-    public function checkArgs()
+    public function checkArgs($script, array $opt)
     /**/
     {
-        return array(true, '');
+        return array(true, '', '');
     }
 
     /**
