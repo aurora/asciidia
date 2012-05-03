@@ -213,8 +213,8 @@ example: %s -i /path/to/git-repository -o - -r 2012-04-01..2012-04-30\n",
                 'deletes' => 0
             );
 
-        } while($time <= $this->end);
             $time = strtotime('+1 ' . $this->interval, $time);
+        } while($time < $this->end);
 
         $descriptors = array(
             array('pipe', 'r'),
