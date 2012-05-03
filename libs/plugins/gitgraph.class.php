@@ -203,7 +203,7 @@ example: %s -i /path/to/git-repository -o - -r 2012-04-01..2012-04-30\n",
         }
 
         $data = array();
-        $time = $thos->start;
+        $time = $this->start;
 
         do {
             $data[strftime($date_pattern, $time)] = array(#
