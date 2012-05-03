@@ -61,6 +61,80 @@ class main
     }
     
     /**
+     * Parse command line options and return Array of them. The parameters are required to have
+     * the following format:
+     *
+     * - short options: -l -a -b
+     * - short options combined: -lab
+     * - short options with value: -l val -a val -b "with whitespace"
+     * - long options: --option1 --option2
+     * - long options with value: --option=value --option value --option "with whitespace"
+     *
+     * @octdoc  m:main/getOptions
+     * @return  array                               Parsed command line parameters.
+     */
+    protected function getOptions()
+    /**/
+    {
+        global $argv;
+        static $opts = null;
+        
+        if (is_array($opts)) {
+            // already parsed
+            return $opts;
+        }
+
+        $args = $argv;
+        $opts = array();
+        $key  = '';
+        $idx  = 1;
+
+        array_shift($args);
+
+        foreach ($args as $arg) {
+            if (preg_match('/^-([a-zA-Z]+)$/', $arg, $match)) {
+                // short option, combined short options
+                $tmp  = str_split($match[1], 1);
+                $opts = array_merge(array_combine($tmp, array_fill(0, count($tmp), true)), $opts);
+                $key  = array_pop($tmp);
+                
+                continue;
+            } elseif (preg_match('/^--([a-zA-Z][a-zA-Z0-9]+)(=.*|)$/', $arg, $match)) {
+                // long option
+                $key  = $match[1];
+                $opts = array_merge(array($key => true), $opts);
+
+                if (strlen($match[2]) == 0) {
+                    continue;
+                }
+
+                $arg = substr($match[2], 1);
+            } elseif (strlen($arg) > 1 && substr($arg, 0, 1) == '-') {
+                // invalid option format
+                throw new \Exception('invalid option format "' . $arg . '"');
+            }
+
+            if ($key == '') {
+                // no option name, add as numeric option
+                $opts[$idx++] = $arg;
+            } else {
+                if (!is_bool($opts[$key])) {
+                    // multiple values for this option
+                    if (!is_array($opts[$key])) {
+                        $opts[$key] = array($opts[$key]);
+                    }
+                    
+                    $opts[$key][] = $arg;
+                } else {
+                    $opts[$key] = $arg;
+                }
+            }
+        }
+
+        return $opts;
+    }
+
+    /**
      * Run main application.
      *
      * @octdoc  m:main/run
@@ -75,7 +149,7 @@ class main
         $cell    = '';
         $out_fmt = 'png';
         
-        $opt = getopt('t:i:o:s:c:dh');
+        $opt = $this->getOptions();
 
         if (array_key_exists('t', $opt)) {
             $plugin = $this->loadPlugin($opt['t']);
