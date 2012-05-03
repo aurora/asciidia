@@ -82,16 +82,6 @@ class diagram extends plugin
     /**/
     
     /**
-     * Display usage information.
-     *
-     * @octdoc  m:diagram/usage
-     */
-    public function usage()
-    /**/
-    {
-    }
-    
-    /**
      * Add character to list of strings to determine text-strings to render.
      *
      * @octdoc  m:diagram/addChar
