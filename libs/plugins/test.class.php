@@ -50,8 +50,9 @@ class test extends plugin
      * Display usage information.
      *
      * @octdoc  m:test/usage
+     * @param   string          $script     Contains name of the script.
      */
-    public function usage()
+    public function usage($script)
     /**/
     {
         print "description:
