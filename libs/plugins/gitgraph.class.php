@@ -43,6 +43,15 @@ class gitgraph extends plugin
     /**/
     
     /**
+     * Work directory to set for git command.
+     *
+     * @octdoc  p:gitgraph/$cwd
+     * @var     string
+     */
+    protected $cwd;
+    /**/
+    
+    /**
      * Start date as UNIX timestamp.
      *
      * @octdoc  p:gitgraph/$start
@@ -84,7 +93,7 @@ class gitgraph extends plugin
 
     /**
      * Overwrite parent method, because file input is not supported by this plugin, respectively the
-     * input file has to specify a git repository.
+     * input file has to specify a git repository and is checked by the checkArgs method.
      *
      * @octdoc  m:gitgraph/loadFile
      * @param   string      $name               Name of file to load.
@@ -92,19 +101,8 @@ class gitgraph extends plugin
      */
     public function loadFile($name)
     /**/
-    {
-        $status  = true;
-        $msg     = '';
-        $content = '';
-        
-        if (!is_dir($name . '/.git')) {
-            $status = false;
-            $msg    = 'input is not a git repository';
-        } else {
-            $content = $name;
-        }
-        
-        return array($status, $msg, $content);
+    {        
+        return array(true, '', '');
     }
 
     /**
@@ -142,7 +140,12 @@ example: %s -i /path/to/git-repository -o - -r 2012-04-01..2012-04-30\n",
         $msg    = '';
         $usage  = '';
 
-        if (!array_key_exists('r', $opt)) {
+        $this->cwd = realpath($opt['i']);
+
+        if (!is_dir($this->cwd . '/.git')) {
+            $status = false;
+            $msg    = 'input is not a path to a git repository';
+        } elseif (!array_key_exists('r', $opt)) {
             $status = false;
             $usage  = sprintf("usage: %s -t ... -i ... -o ... -r ... [-c ...] [-s ...]\n", $script);
         } elseif (preg_match('/^(\d{4}-\d{2}-\d{2})\.\.(\d{4}-\d{2}-\d{2})$/', $opt['r'], $match)) {
@@ -174,7 +177,7 @@ example: %s -i /path/to/git-repository -o - -r 2012-04-01..2012-04-30\n",
      * Git log parser.
      *
      * @octdoc  m:gitgraph/parse
-     * @param   string              $content                Path to git repository.
+     * @param   string              $content                Unused.
      */
     public function parse($content)
     /**/
@@ -226,7 +229,7 @@ example: %s -i /path/to/git-repository -o - -r 2012-04-01..2012-04-30\n",
         // execute command and process output
         fwrite(STDERR, "processing log. please wait ...\n");
 
-        if (!($ph = proc_open($cmd, $descriptors, $pipes))) {
+        if (!($ph = proc_open($cmd, $descriptors, $pipes, $this->cwd))) {
             die("unable to execute \"$cmd\"\n");
         }
 
