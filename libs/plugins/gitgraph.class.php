@@ -142,6 +142,8 @@ class gitgraph extends plugin
     /**/
     {
         printf("options:
+    -g  optional comma-separated list of graphs to include in the output. default 
+
     -i  the input has to point to a git repository
 
     -r  this parameter is required to specify a timerange in the form of
@@ -150,9 +152,11 @@ class gitgraph extends plugin
     -u  optional to specify the unit for segmentating the timerange. default is
         'day', allowed values are:
 
-        %s
+        %1$s
 
-example: %s -i /path/to/git-repository -o - -r 2012-04-01..2012-04-30\n",
+example: %2$s -i /path/to/git-repository -o - -r 2012-04-01..2012-05-01
+example: %2$s -i /path/to/git-repository -o - -r 2011-01-01..2012-01-01 -u week
+example: %2$s -i /path/to/git-repository -o - -r 2011-01-01..2012-01-01 -u week -g commits,sloc\n",
             implode("\n        ", $this->units),
             $script
         );
@@ -180,7 +184,7 @@ example: %s -i /path/to/git-repository -o - -r 2012-04-01..2012-04-30\n",
             $msg    = 'input is not a path to a git repository';
         } elseif (!array_key_exists('r', $opt)) {
             $status = false;
-            $usage  = sprintf("usage: %s -t ... -i ... -o ... -r ... [-c ...] [-s ...]\n", $script);
+            $usage  = sprintf("usage: %s -t ... -i ... -o ... -r ... [-g ...] [-u ...] [-c ...] [-s ...]\n", $script);
         } else {
             if (preg_match('/^(\d{4}-\d{2}-\d{2})\.\.(\d{4}-\d{2}-\d{2})$/', $opt['r'], $match)) {
                 list($y1, $m1, $d1) = explode('-', $match[1]);
