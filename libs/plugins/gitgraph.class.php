@@ -353,8 +353,7 @@ example: %2$s -i /path/to/git-repository -o - -r 2011-01-01..2012-01-01 -u week 
 
         // create imagemagick MVG commands for drawing graph
         $bar_width = $this->bar_width;
-        $inc_width = $bar_width * 8;
-        $colors    = $this->colors;
+        $inc_width = $bar_width;
 
         $width  = count($data) * $inc_width;
         $height = $width * 0.5;
@@ -364,31 +363,44 @@ example: %2$s -i /path/to/git-repository -o - -r 2011-01-01..2012-01-01 -u week 
         $context->ys = 1;
         $context->setSize($width, $height);
 
-        $m1 = $height / $max['commits'];
-        $m2 = $height / $max['changes'];
+        $mul = $height / $max['commits'];
+        $avg = array();
 
-        $render = function($type, $mul, $offset) use ($context, $colors, $bar_width, $inc_width, $height, $data) {
+        // render commits
+        if (in_array('commits', $this->render_graphs)) {
+            // bar diagram of commits
             $ctx = $context->addContext();
-            $x   = $offset;
+            $x   = 0;
+            $i   = 0;
 
-            $ctx->addCommand(vsprintf('fill rgb(%d,%d,%d)', $colors[$type]));
-            $ctx->addCommand(vsprintf('stroke rgb(%d,%d,%d)', $colors[$type]));
+            $ctx->addCommand(vsprintf('fill rgb(%d,%d,%d)', $this->colors['commits']));
+            $ctx->addCommand(vsprintf('stroke rgb(%d,%d,%d)', $this->colors['commits']));
 
             foreach ($data as $date => $values) {
-                if ($values[$type] > 0) {
+                if ($values['commits'] > 0) {
                     $ctx->addCommand(sprintf(
                         'rectangle %f,%f %f,%f', 
-                        $x, $height, $x + $bar_width, $height - $values[$type] * $mul
+                        $x, $height, $x + $bar_width - 2, $height - $values['commits'] * $mul
                     ));
                 }
 
-                $x += $inc_width;
-            }
-        };
+                $avg[] = ($i == 0 ? 0 : ($avg[$i - 1] + $values['commits']) / 2);
 
-        $render('commits', $m1, $bar_width * 0);
-        $render('inserts', $m2, $bar_width * 2);
-        $render('deletes', $m2, $bar_width * 4);
+                $x += $inc_width;
+                ++$i;
+            }
+
+            $points = array();
+            for ($i = 0, $cnt = count($avg); $i < $cnt; ++$i) {
+                $points[] = array(
+                    $i * $inc_width, $height - $avg[$i] * $mul
+                );
+            }
+
+            $ctx = $context->addContext();
+            $ctx->addCommand('stroke rgb(0,0,0)');
+            $ctx->drawSpline($points);
+        }
 
         $commands = $this->getCommands();
 
