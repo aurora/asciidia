@@ -84,7 +84,7 @@ class gitgraph extends plugin
      * @octdoc  p:gitgraph/$graphs
      * @var     array
      */
-    protected $graphs = array('commits', 'sloc');
+    protected $graphs = array('commits');
     /**/
 
     /**
