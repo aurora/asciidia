@@ -112,7 +112,7 @@ class gitgraph extends plugin
      * @var     array
      */
     protected $colors = array(
-        'commits' => array(  0,   0,   0),
+        'commits' => array(  0, 127, 255),
         'inserts' => array(127, 255,  63),
         'deletes' => array(255,  63,   0),
     );
