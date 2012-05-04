@@ -194,7 +194,7 @@ class main
             }
             
             // process command line args of a loaded plugin
-            list($status, $msg, $usage) = $this->plugin->checkArgs($argv, $opt);
+            list($status, $msg, $usage) = $this->plugin->checkArgs($argv[0], $opt);
             
             if (!$status) {
                 $this->usage($msg, false, $usage);
