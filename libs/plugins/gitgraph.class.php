@@ -79,6 +79,24 @@ class gitgraph extends plugin
     /**/
 
     /**
+     * Supported graphs.
+     *
+     * @octdoc  p:gitgraph/$graphs
+     * @var     array
+     */
+    protected $graphs = array('commits', 'sloc');
+    /**/
+
+    /**
+     * Graphs to render.
+     *
+     * @octdoc  p:gitgraph/$render_graphs
+     * @var     array
+     */
+    protected $render_graphs = array('commits');
+    /**/
+
+    /**
      * Collection interval.
      *
      * @octdoc  p:gitgraph/$interval
@@ -191,6 +209,16 @@ example: %s -i /path/to/git-repository -o - -r 2012-04-01..2012-04-30\n",
                     $msg    = 'invalid unit specified';
                 } else {
                     $this->interval = $opt['u'];
+                }
+            }
+            if (array_key_exists('g', $opt)) {
+                $graphs = explode(',', $opt['g']);
+
+                if (count($tmp = array_diff($graphs, $this->graphs)) > 0) {
+                    $status = false;
+                    $msg    = 'invalid graph name(s) "' . implode(',', $tmp) . '"';
+                } else {
+                    $this->render_graphs = $graphs;
                 }
             }
         }
