@@ -34,14 +34,14 @@ class gitgraph extends plugin
 /**/
 {
     /**
-     * Width of a bar.
+     * X-Size of grid
      *
-     * @octdoc  p:gitgraph/$bar_width
+     * @octdoc  p:gitgraph/$grid_x
      * @var     int
      */
-    protected $bar_width = 10;
+    protected $grid_x = 20;
     /**/
-    
+
     /**
      * Work directory to set for git command.
      *
@@ -112,9 +112,10 @@ class gitgraph extends plugin
      * @var     array
      */
     protected $colors = array(
-        'commits' => array(  0, 127, 255),
-        'inserts' => array(127, 255,  63),
-        'deletes' => array(255,  63,   0),
+        'commits'     => array(191, 191, 191),
+        'commits_avg' => array(  0,   0,   0),
+        'inserts'     => array(127, 255,  63),
+        'deletes'     => array(255,  63,   0),
     );
     /**/
 
@@ -352,11 +353,11 @@ example: %2$s -i /path/to/git-repository -o - -r 2011-01-01..2012-01-01 -u week 
         $max['changes'] = max($max['changes']);
 
         // create imagemagick MVG commands for drawing graph
-        $bar_width = $this->bar_width;
-        $inc_width = $bar_width;
-
-        $width  = count($data) * $inc_width;
+        $width  = $this->grid_x * count($data);
         $height = $width * 0.5;
+
+        $inc_width = $this->grid_x;
+        $bar_width = max(5, $inc_width - 5);
 
         $context = $this->getContext();
         $context->xs = 1;
@@ -380,7 +381,7 @@ example: %2$s -i /path/to/git-repository -o - -r 2011-01-01..2012-01-01 -u week 
                 if ($values['commits'] > 0) {
                     $ctx->addCommand(sprintf(
                         'rectangle %f,%f %f,%f', 
-                        $x, $height, $x + $bar_width - 2, $height - $values['commits'] * $mul
+                        $x, $height, $x + $bar_width, $height - $values['commits'] * $mul
                     ));
                 }
 
@@ -392,13 +393,19 @@ example: %2$s -i /path/to/git-repository -o - -r 2011-01-01..2012-01-01 -u week 
 
             $points = array();
             for ($i = 0, $cnt = count($avg); $i < $cnt; ++$i) {
+                $xoffs = ($i == 0
+                            ? 0
+                            : ($i == $cnt - 1
+                                ? $bar_width
+                                : $bar_width / 2));
+
                 $points[] = array(
-                    $i * $inc_width, $height - $avg[$i] * $mul
+                    $i * $inc_width + $xoffs, $height - $avg[$i] * $mul
                 );
             }
 
             $ctx = $context->addContext();
-            $ctx->addCommand('stroke rgb(0,0,0)');
+            $ctx->addCommand(vsprintf('stroke rgb(%d,%d,%d) stroke-width 3', $this->colors['commits_avg']));
             $ctx->drawSpline($points);
         }
 
