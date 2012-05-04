@@ -21,6 +21,8 @@
  * https://github.com/aurora/asciidia
  */
 
+require_once(__DIR__ . '/util/spline.class.php');
+
 /**
  * Provides graphics context and drawing primitives.
  *
@@ -436,6 +438,46 @@ class context
                 $y2 * $this->ys + $this->yf,
                 $this->xf,
                 $this->yf
+            );
+        }
+    }
+
+    /**
+     * Draw a spline using cubic bezier primitives.
+     *
+     * @octdoc  m:context/drawSpline
+     * @param   array       $points             Points to draw spline in.
+     */
+    public function drawSpline(array $points)
+    /**/
+    {
+        if (($cnt = count($points)) < 2) return;
+
+        if ($cnt == 2) {
+            // 2 points is just a straight line
+            list($x1, $y1) = $points[0];
+            list($x2, $y2) = $points[1];
+
+            $this->drawLine($x1, $y1, $x2, $y2);
+
+            return;
+        }
+
+        list($cp1, $cp2) = spline::getControlPoints($points);
+
+        for ($i = 0, $cnt = $cnt - 1; $i < $cnt; ++$i) {
+            list($x1, $y1) = $points[$i];
+            list($x2, $y2) = $points[$i + 1];
+
+            list($cx1, $cy1) = $cp1[$i];
+            list($cx2, $cy2) = $cp2[$i];
+
+            $this->mvg[] = sprintf(
+                "path 'M %f,%f C %f,%f %f,%f %f,%f'",
+                $x1 * $this->xs + $this->xf,  $y1 * $this->ys + $this->yf,
+                $cx1 * $this->xs + $this->xf, $cy1 * $this->ys + $this->yf,
+                $cx2 * $this->xs + $this->xf, $cy2 * $this->ys + $this->yf,
+                $x2 * $this->xs + $this->xf,  $y2 * $this->ys + $this->yf
             );
         }
     }
