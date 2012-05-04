@@ -191,8 +191,8 @@ class context
             'context'   => ($context = new static())
         );
         
-        $context->xs = $this->xs;
-        $context->ys = $this->ys;
+        $context->__set('xs', $this->xs);
+        $context->__set('ys', $this->ys);
 
         $debug = ((int)$this->debug == 2);
         $context->enableDebug($debug, $debug);
