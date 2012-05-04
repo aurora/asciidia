@@ -188,7 +188,7 @@ class context
         $this->mvg[] = array(
             'tx'        => $this->tx,
             'ty'        => $this->ty,
-            'context'   => ($context = new context())
+            'context'   => ($context = new static())
         );
         
         $context->xs = $this->xs;
