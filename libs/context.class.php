@@ -531,6 +531,8 @@ class context
 
         $points = $_tmp;
 
+        if (count($points) == 0) return;
+
         // misc initialization
         $order = '--';
 
