@@ -22,6 +22,7 @@
  */
 
 require_once(__DIR__ . '/../plugin.class.php');
+// require_once(__DIR__ . '/../util/exec.class.php');
 
 /**
  * Main application class.
@@ -34,12 +35,21 @@ class gitgraph extends plugin
 /**/
 {
     /**
-     * X-Size of grid
+     * Minimum X-Size of grid
      *
      * @octdoc  p:gitgraph/$grid_x
      * @var     int
      */
-    protected $grid_x = 20;
+    protected $grid_min_x = 20;
+    /**/
+
+    /**
+     * Minimum X-Size of graph
+     *
+     * @octdoc  p:gitgraph/$grid_x
+     * @var     int
+     */
+    protected $min_x = 1000;
     /**/
 
     /**
@@ -84,7 +94,7 @@ class gitgraph extends plugin
      * @octdoc  p:gitgraph/$graphs
      * @var     array
      */
-    protected $graphs = array('commits');
+    protected $graphs = array('commits', 'commits_avg', 'files', 'files_avg', 'changes', 'changes_avg');
     /**/
 
     /**
@@ -114,6 +124,10 @@ class gitgraph extends plugin
     protected $colors = array(
         'commits'     => array(191, 191, 191),
         'commits_avg' => array(  0,   0,   0),
+        'files'       => array(  0,   0, 127),
+        'files_avg'   => array(  0,   0,   0),
+        'sloc'        => array(  0,   0, 127),
+        'sloc_avg'    => array(  0,   0,   0),
         'inserts'     => array(127, 255,  63),
         'deletes'     => array(255,  63,   0),
     );
@@ -232,12 +246,12 @@ example: %2$s -i /path/to/git-repository -o - -r 2011-01-01..2012-01-01 -u week 
     }
 
     /**
-     * Git log parser.
+     * Git log parser for commits.
      *
-     * @octdoc  m:gitgraph/parse
-     * @param   string              $content                Unused.
+     * @octdoc  m:gitgraph/collectCommits
+     * @return  array                                   Collected data.
      */
-    public function parse($content)
+    public function collectCommits()
     /**/
     {   
         // initialization
@@ -262,11 +276,12 @@ example: %2$s -i /path/to/git-repository -o - -r 2011-01-01..2012-01-01 -u week 
         $time = $this->start;
 
         do {
-            $data[strftime($date_pattern, $time)] = array(#
+            $data[strftime($date_pattern, $time)] = array(
                 'commits' => 0,
                 'files'   => 0,
                 'inserts' => 0,
-                'deletes' => 0
+                'deletes' => 0,
+                'sloc'    => 0
             );
 
             $time = strtotime('+1 ' . $this->interval, $time);
@@ -309,14 +324,6 @@ example: %2$s -i /path/to/git-repository -o - -r 2011-01-01..2012-01-01 -u week 
                 } else {
                     ++$data[$date]['commits'];
                 }
-            } elseif (preg_match('/(\d+) files changed, (\d+) insertions\(\+\), (\d+) deletions\(-\)/i', $row, $match)) {
-                if ($date == '') {
-                    die("parse error at \"$row\"\n");
-                }
-
-                $data[$date]['files']   += $match[1];
-                $data[$date]['inserts'] += $match[2];
-                $data[$date]['deletes'] += $match[3];
             }
         }
 
@@ -328,7 +335,161 @@ example: %2$s -i /path/to/git-repository -o - -r 2011-01-01..2012-01-01 -u week 
             die("nothing todo\n");
         }
 
-        return $this->graph($data);
+        return $data;
+    }
+
+    /**
+     * Git log parser for commits, files, sloc.
+     *
+     * @octdoc  m:gitgraph/collectFull
+     * @return  array                                   Collected data.
+     */
+    public function collectFull()
+    /**/
+    {   
+        // initialization
+        switch ($this->interval) {
+        case 'day':
+            $date_pattern  = '%Y-%m-%d';
+            $parse_pattern = '/^date: *(\d{4}-\d{2}-\d{2})/i';
+            break;
+        case 'month':
+            $date_pattern  = '%Y-%m';
+            $parse_pattern = '/^date: *(\d{4}-\d{2})/i';
+            break;
+        case 'week':
+            $date_pattern  = '%Y-%W';
+            $parse_pattern = '/^date: *(\d{4}-\d{2}-\d{2})/i';
+            break;
+        default:
+            die("invalid interval \"$this->interval\"\n");
+        }
+
+        $data  = array();
+        $time  = $this->start;
+        $first = null;
+
+        do {
+            $key = strftime($date_pattern, $time);
+            $data[$key] = array(
+                'commits' => 0,
+                'files'   => 0,
+                'inserts' => 0,
+                'deletes' => 0,
+                'sloc'    => 0
+            );
+
+            if (is_null($first)) $first =& $data[$key];
+
+            $time = strtotime('+1 ' . $this->interval, $time);
+        } while($time < $this->end);
+
+        $descriptors = array(
+            array('pipe', 'r'),
+            array('pipe', 'w'),
+            array('file', '/dev/stderr', 'a')
+        );
+
+        $pipes = array();
+        $date  = '';
+        $rows  = 0;
+        $prev  = '';
+
+        $cmd = sprintf(
+            'git log --reverse -p --date=short',
+            escapeshellarg($this->start), 
+            escapeshellarg($this->end)
+        );
+
+        // execute command and process output
+        fwrite(STDERR, "processing log. please wait ...\n");
+
+        if (!($ph = proc_open($cmd, $descriptors, $pipes, $this->cwd))) {
+            die("unable to execute \"$cmd\"\n");
+        }
+
+        fclose($pipes[0]);
+
+        $tmp = array(
+            'files' => 0,
+            'sloc'  => 0
+        );
+
+        while (!feof($pipes[1])) {
+            $row = fgets($pipes[1]);
+
+            if (preg_match($parse_pattern, $row, $match)) {
+                $timestamp = strtotime($match[1]);
+                $date      = strftime($date_pattern, $timestamp);
+
+                if ($timestamp >= $this->end) break;
+
+                ++$rows;
+
+                if (isset($data[$date])) {
+                    ++$data[$date]['commits'];
+                }
+            } elseif ($date != '') {
+                if (substr($row, 0, 4) == '+++ ') {
+                    if (substr($prev, 0, 13) == '--- /dev/null') {
+                        ++$tmp['files'];
+                    } elseif (substr($row, 0, 13) == '+++ /dev/null') {
+                        --$tmp['files'];
+                    }
+
+                    if (isset($data[$date])) {
+                        $data[$date]['files'] = $tmp['files'];
+                    } elseif ($timestamp < $this->start) {
+                        $first['files'] = $tmp['files'];
+                    }
+                } elseif (substr($row, 0, 4) == '--- ') {
+                } elseif (substr($row, 0, 1) == '-') {
+                    --$tmp['sloc'];
+
+                    if (isset($data[$date])) {
+                        ++$data[$date]['deletes'];
+                        $data[$date]['sloc'] = $tmp['sloc'];
+                    } elseif ($timestamp < $this->start) {
+                        $first['sloc'] = $tmp['sloc'];
+                    }
+                } elseif (substr($row, 0, 1) == '+') {
+                    ++$tmp['sloc'];
+
+                    if (isset($data[$date])) {
+                        ++$data[$date]['inserts'];
+                        $data[$date]['sloc'] = $tmp['sloc'];
+                    } elseif ($timestamp < $this->start) {
+                        $first['sloc'] = $tmp['sloc'];
+                    }
+                }
+            }
+
+            $prev = $row;
+        }
+
+        fclose($pipes[1]);
+
+        $code = proc_close($ph);
+
+        if ($rows == 0) {
+            die("nothing todo\n");
+        }
+
+        reset($data);
+        $prev = current($data);
+
+        while (next($data)) {
+            $key = key($data);
+
+            if ($data[$key]['commits'] == 0) {
+                $data[$key]['files'] = $prev['files'];
+                $data[$key]['sloc']  = $prev['sloc'];
+            }
+
+            $prev = $data[$key];
+        }
+
+        return $data;
     }
 
     /**
@@ -336,49 +497,58 @@ example: %2$s -i /path/to/git-repository -o - -r 2011-01-01..2012-01-01 -u week 
      *
      * @octdoc  m:gitgraph/graph
      * @param   array               $data                   Data to create graph from.
+     * @param   array               $types                  Array of graph types and boolen value whether to render or not to render graph.
      */
-    protected function graph($data)
+    protected function graph($data, array $types)
     /**/
     {
         // get max values and other initialization
-        $max = array('commits' => array(), 'changes' => array());
+        $max = array('commits' => array(), 'files' => array(), 'sloc' => array());
 
         foreach ($data as $date => $values) {
             $max['commits'][] = $values['commits'];
-            $max['changes'][] = $values['inserts'];
-            $max['changes'][] = $values['deletes'];
+            $max['files'][]   = $values['files'];
+            $max['sloc'][]    = $values['sloc'] + $values['inserts'];
         }
 
         $max['commits'] = max($max['commits']);
-        $max['changes'] = max($max['changes']);
+        $max['files']   = max($max['files']);
+        $max['sloc']    = max($max['sloc']);
 
         // create imagemagick MVG commands for drawing graph
-        $width  = $this->grid_x * count($data);
+        $width     = $this->grid_min_x * count($data);
+        $inc_width = $this->grid_min_x;
+
+        if ($width < $this->min_x) {
+            $width     = $this->min_x;
+            $inc_width = $width / count($data);
+        }
+
         $height = $width * 0.5;
 
-        $inc_width = $this->grid_x;
         $bar_width = max(5, $inc_width - 5);
 
         $context = $this->getContext();
         $context->xs = 1;
         $context->ys = 1;
-        $context->setSize($width, $height);
+        $context->setSize($width, $height + 50);
 
-        $mul = $height / $max['commits'];
-        $avg = array();
+        if ($types['commits'] || $types['commits_avg']) {
+            // render commits
+            $mul = $height / $max['commits'];
+            $avg = array();
 
-        // render commits
-        if (in_array('commits', $this->render_graphs)) {
-            // bar diagram of commits
             $ctx = $context->addContext();
             $x   = 0;
             $i   = 0;
 
-            $ctx->addCommand(vsprintf('fill rgb(%d,%d,%d)', $this->colors['commits']));
-            $ctx->addCommand(vsprintf('stroke rgb(%d,%d,%d)', $this->colors['commits']));
+            if ($types['commits']) {
+                $ctx->addCommand(vsprintf('fill rgb(%d,%d,%d)', $this->colors['commits']));
+                $ctx->addCommand(vsprintf('stroke rgb(%d,%d,%d)', $this->colors['commits']));
+            }
 
             foreach ($data as $date => $values) {
-                if ($values['commits'] > 0) {
+                if ($values['commits'] > 0 && $types['commits']) {
                     $ctx->addCommand(sprintf(
                         'rectangle %f,%f %f,%f', 
                         $x, $height, $x + $bar_width, $height - $values['commits'] * $mul
@@ -391,26 +561,145 @@ example: %2$s -i /path/to/git-repository -o - -r 2011-01-01..2012-01-01 -u week 
                 ++$i;
             }
 
-            $points = array();
-            for ($i = 0, $cnt = count($avg); $i < $cnt; ++$i) {
-                $xoffs = ($i == 0
-                            ? 0
-                            : ($i == $cnt - 1
-                                ? $bar_width
-                                : $bar_width / 2));
+            if ($types['commits_avg']) {
+                $points = array();
+                for ($i = 0, $cnt = count($avg); $i < $cnt; ++$i) {
+                    $xoffs = ($i == 0
+                                ? 0
+                                : ($i == $cnt - 1
+                                    ? $bar_width
+                                    : $bar_width / 2));
 
-                $points[] = array(
-                    $i * $inc_width + $xoffs, $height - $avg[$i] * $mul
-                );
+                    $points[] = array(
+                        $i * $inc_width + $xoffs, $height - $avg[$i] * $mul
+                    );
+                }
+
+                $ctx = $context->addContext();
+                $ctx->addCommand(vsprintf('stroke rgb(%d,%d,%d) stroke-width 3', $this->colors['commits_avg']));
+                $ctx->drawSpline($points);
             }
-
-            $ctx = $context->addContext();
-            $ctx->addCommand(vsprintf('stroke rgb(%d,%d,%d) stroke-width 3', $this->colors['commits_avg']));
-            $ctx->drawSpline($points);
         }
 
-        $commands = $this->getCommands();
+        if ($types['files'] || $types['files_avg']) {
+            // render files
+            $mul = $height / $max['files'];
+            $idx = 0;
+            $inc = $bar_width / 2;
+            $avg = array();
 
-        return $commands;
+            $ctx = $context->addContext();
+            $ctx->addCommand(vsprintf('stroke rgb(%d,%d,%d) stroke-width 3', $this->colors['files']));
+
+            $points = array();
+            foreach ($data as $date => $values) {
+                $points[] = array(
+                    $idx * $inc_width + $inc, $height - $values['files'] * $mul
+                );
+
+                $avg[] = ($idx == 0 ? 0 : ($avg[$idx - 1] + $values['files']) / 2);
+
+                ++$idx;
+            }
+
+            if ($types['files']) {
+                for ($i = 1, $cnt = count($points); $i < $cnt; ++$i) {
+                    list($x1, $y1) = $points[$i - 1];
+                    list($x2, $y2) = $points[$i];
+
+                    $ctx->drawLine($x1, $y1, $x2, $y2);
+                }
+            }
+
+            if ($types['files_avg']) {
+                $points = array();
+                for ($i = 0, $cnt = count($avg); $i < $cnt; ++$i) {
+                    $xoffs = ($i == 0
+                                ? 0
+                                : ($i == $cnt - 1
+                                    ? $bar_width
+                                    : $bar_width / 2));
+
+                    $points[] = array(
+                        $i * $inc_width + $xoffs, $height - $avg[$i] * $mul
+                    );
+                }
+
+                $ctx = $context->addContext();
+                $ctx->addCommand(vsprintf('stroke rgb(%d,%d,%d) stroke-width 3', $this->colors['files_avg']));
+                $ctx->drawSpline($points);
+            }
+        }
+
+        //     // render sloc
+        //     $mul = $height / $max['sloc'];
+        //     $idx = 0;
+
+        //     $ctx = $context->addContext();
+        //     $ctx->addCommand('stroke-width 3');
+
+        //     $points = array();
+        //     foreach ($data as $date => $values) {
+        //         $points[] = array(
+        //             's' => array(
+        //                 $idx * $inc_width + $inc, $height - $values['sloc'] * $mul
+        //             ),
+        //             'i' => array(
+        //                 $idx * $inc_width + $inc, $height - $values['sloc'] * $mul - $values['inserts'] * $mul,
+        //                 $idx * $inc_width + $inc, $height - $values['sloc'] * $mul
+        //             ),
+        //             'd' => array(
+        //                 $idx * $inc_width + $inc, $height - $values['sloc'] * $mul + $values['deletes'] * $mul,
+        //                 $idx * $inc_width + $inc, $height - $values['sloc'] * $mul
+        //             )
+        //         );
+
+        //         ++$idx;
+        //     }
+
+        //     for ($i = 0, $cnt = count($points); $i < $cnt; ++$i) {
+        //         if ($i > 0) {
+        //             list($x1, $y1) = $points[$i - 1]['s'];
+        //             list($x2, $y2) = $points[$i]['s'];
+
+        //             $ctx->addCommand(vsprintf('stroke rgb(%d,%d,%d)', $this->colors['files']));
+        //             $ctx->drawLine($x1, $y1, $x2, $y2);
+        //         }
+
+        //         list($x1, $y1, $x2, $y2) = $points[$i]['i'];
+
+        //         $ctx->addCommand(vsprintf('stroke rgb(%d,%d,%d)', $this->colors['inserts']));
+        //         $ctx->drawLine($x1, $y1, $x2, $y2);
+
+        //         list($x1, $y1, $x2, $y2) = $points[$i]['d'];
+
+        //         $ctx->addCommand(vsprintf('stroke rgb(%d,%d,%d)', $this->colors['deletes']));
+        //         $ctx->drawLine($x1, $y1, $x2, $y2);
+        //     }
+        // }
+
+        return $this->getCommands();
+    }
+
+    /**
+     * Executes gitlog parser.
+     *
+     * @octdoc  m:gitgraph/parse
+     */
+    public function parse($content)
+    /**/
+    {
+        if (count(array_intersect($this->render_graphs, array('files', 'files_avg', 'changes', 'changes_avg'))) > 0) {
+            $data = $this->collectFull();
+        } else {
+            $data = $this->collectCommits();
+        }
+
+        $types = array();
+        foreach ($this->graphs as $type) {
+            $types[$type] = in_array($type, $this->render_graphs);
+        }
+
+        return $this->graph($data, $types);
     }
 }
