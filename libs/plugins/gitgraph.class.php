@@ -395,11 +395,7 @@ example: %2$s -i /path/to/git-repository -o - -r 2011-01-01..2012-01-01 -u week 
         $rows  = 0;
         $prev  = '';
 
-        $cmd = sprintf(
-            'git log --reverse -p --date=short',
-            escapeshellarg($this->start), 
-            escapeshellarg($this->end)
-        );
+        $cmd = 'git log --reverse -p --date=short'
 
         // execute command and process output
         fwrite(STDERR, "processing log. please wait ...\n");
