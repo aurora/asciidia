@@ -251,7 +251,7 @@ example: %2$s -i /path/to/git-repository -o - -r 2011-01-01..2012-01-01 -u week 
             $parse_pattern = '/^date: *(\d{4}-\d{2})/i';
             break;
         case 'week':
-            $date_pattern  = '%W';
+            $date_pattern  = '%Y-%W';
             $parse_pattern = '/^date: *(\d{4}-\d{2}-\d{2})/i';
             break;
         default:
