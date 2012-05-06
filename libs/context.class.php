@@ -463,6 +463,13 @@ class context
             return;
         }
 
+        $tmp_x = array();
+        $tmp_y = array();
+        foreach ($points as $point) {
+            $tmp_x[] = $point[0]; $tmp_y[] = $point[1];
+        }
+        $this->setSize(max($tmp_x), max($tmp_y));
+
         list($cp1, $cp2) = spline::getControlPoints($points);
 
         for ($i = 0, $cnt = $cnt - 1; $i < $cnt; ++$i) {
