@@ -498,181 +498,57 @@ example: %2$s -i /path/to/git-repository -o - -r 2011-01-01..2012-01-01 -u week 
     protected function graph($data, array $types)
     /**/
     {
-        // get max values and other initialization
-        $max = array('commits' => array(), 'files' => array(), 'sloc' => array());
+        // initialization
+        $tmp  = $data;
+        $data = array('commits' => array(), 'files' => array(), 'sloc' => array(), 'inserts' => array(), 'deletes' => array());
 
-        foreach ($data as $date => $values) {
-            $max['commits'][] = $values['commits'];
-            $max['files'][]   = $values['files'];
-            $max['sloc'][]    = $values['sloc'] + $values['inserts'];
+        foreach ($tmp as $date => $values) {
+            $data['commits'][] = $values['commits'];
+            $data['files'][]   = $values['files'];
+            $data['sloc'][]    = $values['sloc'];
+            $data['inserts'][] = $values['inserts'];
+            $data['deletes'][] = $values['deletes'];
         }
-
-        $max['commits'] = max($max['commits']);
-        $max['files']   = max($max['files']);
-        $max['sloc']    = max($max['sloc']);
-
-        // create imagemagick MVG commands for drawing graph
-        $width     = $this->grid_min_x * count($data);
-        $inc_width = $this->grid_min_x;
-
-        if ($width < $this->min_x) {
-            $width     = $this->min_x;
-            $inc_width = $width / count($data);
-        }
-
-        $height = $width * 0.5;
-
-        $bar_width = max(5, $inc_width - 5);
-
-        $context = $this->getContext();
-        $context->xs = 1;
-        $context->ys = 1;
-        $context->setSize($width, $height + 50);
 
         if ($types['commits'] || $types['commits_avg']) {
             // render commits
-            $mul = $height / $max['commits'];
-            $avg = array();
+            $chart = new \chart($this->getContext(), 1000, 1000);
 
-            $ctx = $context->addContext();
-            $x   = 0;
-            $i   = 0;
+            $set     = new \chart\dataset('commits', $data['commits']);
+            $set_avg = $set->getSimpleMovingAverage('commits avg');
 
-            if ($types['commits']) {
-                $ctx->addCommand(vsprintf('fill rgb(%d,%d,%d)', $this->colors['commits']));
-                $ctx->addCommand(vsprintf('stroke rgb(%d,%d,%d)', $this->colors['commits']));
-            }
-
-            foreach ($data as $date => $values) {
-                if ($values['commits'] > 0 && $types['commits']) {
-                    $ctx->addCommand(sprintf(
-                        'rectangle %f,%f %f,%f', 
-                        $x, $height, $x + $bar_width, $height - $values['commits'] * $mul
-                    ));
-                }
-
-                $avg[] = ($i == 0 ? 0 : ($avg[$i - 1] + $values['commits']) / 2);
-
-                $x += $inc_width;
-                ++$i;
-            }
-
-            if ($types['commits_avg']) {
-                $points = array();
-                for ($i = 0, $cnt = count($avg); $i < $cnt; ++$i) {
-                    $xoffs = ($i == 0
-                                ? 0
-                                : ($i == $cnt - 1
-                                    ? $bar_width
-                                    : $bar_width / 2));
-
-                    $points[] = array(
-                        $i * $inc_width + $xoffs, $height - $avg[$i] * $mul
-                    );
-                }
-
-                $ctx = $context->addContext();
-                $ctx->addCommand(vsprintf('stroke rgb(%d,%d,%d) stroke-width 3', $this->colors['commits_avg']));
-                $ctx->drawSpline($points);
-            }
+            $chart->addGraph(new \chart\graph\bar($set));
+            $chart->addGraph(new \chart\graph\spline($set_avg));
+            $chart->create();
         }
 
         if ($types['files'] || $types['files_avg']) {
             // render files
-            $mul = $height / $max['files'];
-            $idx = 0;
-            $inc = $bar_width / 2;
-            $avg = array();
+            $chart = new \chart($this->getContext(), 1000, 1000);
 
-            $ctx = $context->addContext();
-            $ctx->addCommand(vsprintf('stroke rgb(%d,%d,%d) stroke-width 3', $this->colors['files']));
+            $set     = new \chart\dataset('files', $data['files']);
+            $set_avg = $set->getSimpleMovingAverage('files avg');
 
-            $points = array();
-            foreach ($data as $date => $values) {
-                $points[] = array(
-                    $idx * $inc_width + $inc, $height - $values['files'] * $mul
-                );
-
-                $avg[] = ($idx == 0 ? 0 : ($avg[$idx - 1] + $values['files']) / 2);
-
-                ++$idx;
-            }
-
-            if ($types['files']) {
-                for ($i = 1, $cnt = count($points); $i < $cnt; ++$i) {
-                    list($x1, $y1) = $points[$i - 1];
-                    list($x2, $y2) = $points[$i];
-
-                    $ctx->drawLine($x1, $y1, $x2, $y2);
-                }
-            }
-
-            if ($types['files_avg']) {
-                $points = array();
-                for ($i = 0, $cnt = count($avg); $i < $cnt; ++$i) {
-                    $xoffs = ($i == 0
-                                ? 0
-                                : ($i == $cnt - 1
-                                    ? $bar_width
-                                    : $bar_width / 2));
-
-                    $points[] = array(
-                        $i * $inc_width + $xoffs, $height - $avg[$i] * $mul
-                    );
-                }
-
-                $ctx = $context->addContext();
-                $ctx->addCommand(vsprintf('stroke rgb(%d,%d,%d) stroke-width 3', $this->colors['files_avg']));
-                $ctx->drawSpline($points);
-            }
+            $chart->addGraph(new \chart\graph\line($set));
+            $chart->addGraph(new \chart\graph\spline($set_avg));
+            $chart->create();
         }
 
-        //     // render sloc
-        //     $mul = $height / $max['sloc'];
-        //     $idx = 0;
+        if ($types['sloc'] || $types['sloc_avg']) {
+            // render sloc
+            $chart = new \chart($this->getContext(), 1000, 1000);
 
-        //     $ctx = $context->addContext();
-        //     $ctx->addCommand('stroke-width 3');
+            $set     = new \chart\dataset('sloc', $data['sloc']);
+            $set_avg = $set->getSimpleMovingAverage('sloc avg');
 
-        //     $points = array();
-        //     foreach ($data as $date => $values) {
-        //         $points[] = array(
-        //             's' => array(
-        //                 $idx * $inc_width + $inc, $height - $values['sloc'] * $mul
-        //             ),
-        //             'i' => array(
-        //                 $idx * $inc_width + $inc, $height - $values['sloc'] * $mul - $values['inserts'] * $mul,
-        //                 $idx * $inc_width + $inc, $height - $values['sloc'] * $mul
-        //             ),
-        //             'd' => array(
-        //                 $idx * $inc_width + $inc, $height - $values['sloc'] * $mul + $values['deletes'] * $mul,
-        //                 $idx * $inc_width + $inc, $height - $values['sloc'] * $mul
-        //             )
-        //         );
-
-        //         ++$idx;
-        //     }
-
-        //     for ($i = 0, $cnt = count($points); $i < $cnt; ++$i) {
-        //         if ($i > 0) {
-        //             list($x1, $y1) = $points[$i - 1]['s'];
-        //             list($x2, $y2) = $points[$i]['s'];
-
-        //             $ctx->addCommand(vsprintf('stroke rgb(%d,%d,%d)', $this->colors['files']));
-        //             $ctx->drawLine($x1, $y1, $x2, $y2);
-        //         }
-
-        //         list($x1, $y1, $x2, $y2) = $points[$i]['i'];
-
-        //         $ctx->addCommand(vsprintf('stroke rgb(%d,%d,%d)', $this->colors['inserts']));
-        //         $ctx->drawLine($x1, $y1, $x2, $y2);
-
-        //         list($x1, $y1, $x2, $y2) = $points[$i]['d'];
-
-        //         $ctx->addCommand(vsprintf('stroke rgb(%d,%d,%d)', $this->colors['deletes']));
-        //         $ctx->drawLine($x1, $y1, $x2, $y2);
-        //     }
-        // }
+            $chart->addGraph(new \chart\graph\line($set));
+            $chart->addGraph(new \chart\graph\spline($set_avg));
+            $chart->addGraph(new \chart\graph\layered(array(
+                new \chart\dataset('inserts', $data['inserts']),
+                new \chart\dataset('deletes', $data['deletes'])
+            )));
+            $chart->create();
+        }
 
         return $this->getCommands();
     }
