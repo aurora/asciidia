@@ -94,7 +94,7 @@ class gitgraph extends plugin
      * @octdoc  p:gitgraph/$graphs
      * @var     array
      */
-    protected $graphs = array('commits', 'commits_avg', 'files', 'files_avg', 'changes', 'changes_avg');
+    protected $graphs = array('commits', 'commits_avg', 'files', 'files_avg', 'sloc', 'sloc_avg');
     /**/
 
     /**
@@ -685,7 +685,7 @@ example: %2$s -i /path/to/git-repository -o - -r 2011-01-01..2012-01-01 -u week 
     public function parse($content)
     /**/
     {
-        if (count(array_intersect($this->render_graphs, array('files', 'files_avg', 'changes', 'changes_avg'))) > 0) {
+        if (count(array_intersect($this->render_graphs, array('files', 'files_avg', 'sloc', 'sloc_avg'))) > 0) {
             $data = $this->collectFull();
         } else {
             $data = $this->collectCommits();
