@@ -314,4 +314,23 @@ class main
         
         exit(0);
     }
+
+    /**
+     * Class Autoloader.
+     *
+     * @octdoc  m:main/autoload
+     * @param   string          $classpath              Path of class to load.
+     */
+    public static function autoload($classpath)
+    /**/
+    {
+        $pkg = preg_replace('|\\\\|', '/', ltrim($classpath, '\\\\')) . '.class.php';
+
+        try {
+            include_once(__DIR__ . '/' . $pkg);
+        } catch(\Exception $e) {
+        }
+    }
 }
+
+spl_autoload_register(array('main', 'autoload'));
