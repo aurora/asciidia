@@ -49,12 +49,14 @@ namespace chart\graph {
             $values = $this->dataset->getValues();
 
             $ctx = $context->addContext();
+            $b_w = $x_mul * 0.6;
+            $b_o = ($x_mul - $b_w) / 2;
 
             for ($i = 0, $cnt = count($values); $i < $cnt; ++$i) {
                 if ($values[$i] > 0) {
                     $ctx->addCommand(sprintf(
                         'rectangle %f,%f %f,%f', 
-                        $i * $x_mul, $zero, $i * $x_mul, $zero - $values[$i] * $y_mul
+                        $i * $x_mul + $b_o, $zero, $i * $x_mul + $b_o + $b_w, $zero - $values[$i] * $y_mul
                     ));
                 }
             }
