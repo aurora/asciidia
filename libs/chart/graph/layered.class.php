@@ -42,15 +42,12 @@ namespace chart\graph {
         /**/
 
         /**
-         * Options.
+         * Color range for calculating default colors for bars.
          *
-         * @octdoc  p:graph/$defaults
+         * @octdoc  p:graph/$color_range
          * @var     array
          */
-        protected $defaults = array(
-            'border_color'      => array(128, 128, 128),
-            'background_color'  => array(128, 128, 128)
-        );
+        protected $color_range = array(64, 164);
         /**/
 
         /**
@@ -65,13 +62,24 @@ namespace chart\graph {
         {
             $this->datasets = $datasets;
 
-            $tmp = array_fill(0, count($datasets), $this->defaults);
+            $cnt   = count($datasets);
+            $c_dec = ($this->color_range[1] - $this->color_range[0]) / $cnt;
 
-            foreach ($options as $opts) {
-                if (count($tmp = array_diff_key($opts, $this->defaults)) > 0) {
+            $tmp = array();
+            $col = $this->color_range[1];
+            for ($i = 0; $i < $cnt; ++$i) {
+                $tmp[] = array(
+                    'background_color' => array($col, $col, $col),
+                    'border_color'     => array($col, $col, $col)
+                );
+                $col  -= $c_dec;
+            }
+
+            for ($i = 0, $cnt = count($options); $i < $cnt; ++$i) {
+                if (count($tmp = array_diff_key($options[$i], array('background_color' => 0, 'border_color' => 1))) > 0) {
                     throw new \Exception('invalid option name(s) "' . implode('", "', array_keys($tmp)) . '"');
                 } else {
-                    $this->options[] = array_merge($this->defaults, $opts);
+                    $this->options[] = array_merge($tmp[$i], $opts);
                 }
             }
 
