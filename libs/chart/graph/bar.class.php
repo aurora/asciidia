@@ -33,6 +33,18 @@ namespace chart\graph {
     /**/
     {
         /**
+         * Options.
+         *
+         * @octdoc  p:graph/$options
+         * @var     array
+         */
+        protected $options = array(
+            'border_color'      => array(128, 128, 128),
+            'background_color'  => array(128, 128, 128)
+        );
+        /**/
+
+        /**
          * Create bar graph.
          *
          * @octdoc  m:bar/create
@@ -49,6 +61,9 @@ namespace chart\graph {
             $values = $this->dataset->getValues();
 
             $ctx = $context->addContext();
+            $ctx->setFill(array('color' => $this->options['background_color']));
+            $ctx->setStroke(array('color' => $this->options['border_color']));
+
             $b_w = $x_mul * 0.6;
             $b_o = ($x_mul - $b_w) / 2;
 
