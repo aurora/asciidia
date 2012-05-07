@@ -49,14 +49,16 @@ namespace chart\graph {
             $points = array();
             $values = $this->dataset->getValues();
 
+            $xoffs  = $x_mul / 2;
+
             $ctx = $context->addContext();
             $ctx->addCommand(vsprintf('stroke rgb(%d,%d,%d) stroke-width 3', array(0,0,0)));
 
             for ($i = 1, $cnt = count($values); $i < $cnt; ++$i) {
                 $ctx->drawLine(
-                	($i - 1) * $x_mul,
+                	($i - 1) * $x_mul + $xoffs,
                 	$zero - $values[$i - 1] * $y_mul,
-                	$i * $x_mul,
+                	$i * $x_mul + $xoffs,
                 	$zero - $values[$i] * $y_mul
                 );
             }
