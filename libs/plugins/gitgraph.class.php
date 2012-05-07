@@ -541,12 +541,27 @@ example: %2$s -i /path/to/git-repository -o - -r 2011-01-01..2012-01-01 -u week 
             $set     = new \chart\dataset('sloc', $data['sloc']);
             $set_avg = $set->getSimpleMovingAverage('sloc avg');
 
-            $chart->addGraph(new \chart\graph\line($set));
-            $chart->addGraph(new \chart\graph\spline($set_avg));
             $chart->addGraph(new \chart\graph\layered(array(
                 new \chart\dataset('inserts', $data['inserts']),
                 new \chart\dataset('deletes', $data['deletes'])
+            ),
+            array(
+                array(
+                    'background_color'  => array(237, 246, 216),
+                    'border_color'      => array(169, 202,  95)
+                ),
+                array(
+                    'background_color'  => array(255, 204, 204),
+                    'border_color'      => array(255,   0,   0)
+                )
             )));
+            $chart->addGraph(
+                new \chart\graph\line($set),
+                array(
+                    'color' => array( 95, 169, 202)
+                )
+            );
+            $chart->addGraph(new \chart\graph\spline($set_avg));
             $chart->create();
         }
 
