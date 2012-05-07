@@ -75,11 +75,11 @@ namespace chart\graph {
                 $col  -= $c_dec;
             }
 
-            for ($i = 0, $cnt = count($options); $i < $cnt; ++$i) {
-                if (count($tmp = array_diff_key($options[$i], array('background_color' => 0, 'border_color' => 1))) > 0) {
-                    throw new \Exception('invalid option name(s) "' . implode('", "', array_keys($tmp)) . '"');
+            for ($i = 0; $i < $cnt; ++$i) {
+                if (count($keys = array_diff_key($options[$i], array('background_color' => 0, 'border_color' => 1))) > 0) {
+                    throw new \Exception('invalid option name(s) "' . implode('", "', array_keys($keys)) . '"');
                 } else {
-                    $this->options[] = array_merge($tmp[$i], $opts);
+                    $this->options[] = array_merge($tmp[$i], $options[$i]);
                 }
             }
 
