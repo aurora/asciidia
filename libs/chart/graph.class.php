@@ -51,15 +51,31 @@ namespace chart {
         /**/
 
         /**
+         * Options.
+         *
+         * @octdoc  p:graph/$options
+         * @var     array
+         */
+        protected $options = array();
+        /**/
+
+        /**
          * Constructor.
          *
          * @octdoc  m:graph/__construct
          * @param   dataset             $dataset                Dataset to use for graph.
+         * @param   array               $options                Optional options.
          */
-        public function __construct(\chart\dataset $dataset)
+        public function __construct(\chart\dataset $dataset, array $options = array())
         /**/
         {
             $this->dataset = $dataset;
+
+            if (count($tmp = array_diff_key($options, $this->options)) > 0) {
+                throw new \Exception('invalid option name(s) "' . implode('", "', array_keys($tmp)) . '"');
+            } else {
+                $this->options = array_merge($this->options, $options);
+            }
         }
 
         /**
