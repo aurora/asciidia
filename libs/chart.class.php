@@ -260,6 +260,24 @@ class chart
     }
 
     /**
+     * Get maximum logarithmus value.
+     *
+     * @octdoc  m:chart/getMaxLog
+     * @param   int                                         Optional base.
+     * @return  float                                       Max. logarithm value.
+     */
+    public function getMaxLog($base = 10)
+    /**/
+    {
+        $tmp = array();
+        foreach ($this->graphs as $graph) {
+            $tmp[] = $graph->getMaxLog();
+        }
+
+        return max($tmp);
+    }
+
+    /**
      * Get min value.
      *
      * @octdoc  m:chart/getMin
