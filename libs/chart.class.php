@@ -98,9 +98,8 @@ class chart
         $this->width  = $width;
         $this->height = $height;
 
-        if (count($tmp = array_diff($options, $this->options)) > 0) {
-            $status = false;
-            throw new \Exception('invalid option name(s) "' . implode('", "', $tmp) . '"');
+        if (count($tmp = array_diff_key($options, $this->options)) > 0) {
+            throw new \Exception('invalid option name(s) "' . implode('", "', array_keys($tmp)) . '"');
         } else {
             $this->options = array_merge($this->options, $options);
         }
