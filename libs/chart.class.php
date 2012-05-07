@@ -152,4 +152,57 @@ class chart
             $graph->create($this->context, $this->width, $this->height, $this->height - $min * $y_mul, $x_mul, $y_mul);
         }
     }
+
+    /** proxy for dataset **/
+
+    /**
+     * Get max value.
+     *
+     * @octdoc  m:chart/getMax
+     * @return  float                                       Max value.
+     */
+    public function getMax()
+    /**/
+    {
+        $tmp = array();
+        foreach ($this->graphs as $graph) {
+            $tmp[] = $graph->getMax();
+        }
+
+        return max($tmp);
+    }
+
+    /**
+     * Get min value.
+     *
+     * @octdoc  m:chart/getMin
+     * @return  float                                       Min value.
+     */
+    public function getMin()
+    /**/
+    {
+        $tmp = array();
+        foreach ($this->graphs as $graph) {
+            $tmp[] = $graph->getMin();
+        }
+
+        return min($tmp);
+    }
+
+    /**
+     * Get number of values.
+     *
+     * @octdoc  m:chart/getCount
+     * @return  int                                         Number of values.
+     */
+    public function getCount()
+    /**/
+    {
+        $tmp = array();
+        foreach ($this->graphs as $graph) {
+            $tmp[] = $graph->getCount();
+        }
+
+        return max($tmp);
+    }
 }
