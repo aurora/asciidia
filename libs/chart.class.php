@@ -74,7 +74,9 @@ class chart
      * @var     array
      */
     protected $options = array(
-        'grid_color'    => 'transparent',
+        'grid_color'        => array(128, 128, 128),
+        'border_color'      => array(  0,   0,   0),
+        'background_color'  => array(255, 255, 255)
     );
     /**/
 
@@ -153,8 +155,21 @@ class chart
         $max = $this->getMax();
         $cnt = $this->getCount();
 
-        $y_mul = $this->height / ($max - $min);
+        $y_mul = $this->height / ($h = ($max - $min));
         $x_mul = $this->width / $cnt;
+
+        // draw border, background, grid
+//        $this->context->setFill(array('color' => $this->options['background_color']));
+        $this->context->setStroke(array('width' => 1, 'color' => $this->options['grid_color']));
+
+        for ($i = 0; $i < $cnt; ++$i) {
+            $this->context->drawLine($i * $x_mul, 0, $i * $x_mul, $this->height);
+        }
+        for ($i = 0; $i < $h; ++$i) {
+            $this->context->drawLine(0, $i * $y_mul, $this->width, $i * $y_mul);
+        }
+
+        $this->context->drawRectangle(0, 0, $this->width, $this->height);
 
         // draw graphs
         foreach ($this->graphs as $graph) {
