@@ -68,14 +68,26 @@ class chart
     /**/
 
     /**
+     * Options.
+     *
+     * @octdoc  p:chart/$options
+     * @var     array
+     */
+    protected $options = array(
+        'grid_color'    => 'transparent',
+    );
+    /**/
+
+    /**
      * Constructor.
      *
      * @octdoc  m:chart/__construct
      * @param   context             $context            Drawing context.
      * @param   int                 $width              Width of chart to create.
      * @param   int                 $height             Height of chart to create.
+     * @param   array               $options            Optional options.
      */
-    public function __construct(context $context, $width, $height)
+    public function __construct(context $context, $width, $height, array $options = array())
     /**/
     {
         $this->context = $context->addContext();
@@ -85,6 +97,13 @@ class chart
 
         $this->width  = $width;
         $this->height = $height;
+
+        if (count($tmp = array_diff($options, $this->options)) > 0) {
+            $status = false;
+            throw new \Exception('invalid option name(s) "' . implode('", "', $tmp) . '"');
+        } else {
+            $this->options = array_merge($this->options, $options);
+        }
     }
 
     /**
