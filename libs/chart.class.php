@@ -32,6 +32,15 @@ class chart
 /**/
 {
     /**
+     * Scaling types.
+     *
+     * @octdoc  d:chart/T_SCALE_LIN, T_SCALE_LOG
+     */
+    const T_SCALE_LIN = 1;
+    const T_SCALE_LOG = 2;
+    /**/
+
+    /**
      * Drawing context.
      *
      * @octdoc  p:chart/$context
@@ -74,6 +83,11 @@ class chart
      * @var     array
      */
     protected $options = array(
+        'ticks'             => 10,
+
+        'scale_type'        => self::T_SCALE_LIN,
+        'scale_base'        => 10,
+
         'grid_color'        => array(128, 128, 128),
         'border_color'      => array(  0,   0,   0),
         'background_color'  => array(255, 255, 255)
@@ -120,15 +134,74 @@ class chart
     }
 
     /**
-     * X-Axis configuration.
+     * Helper methods to create nice values for a diagram, as found in the
+     * book "Graphics Gems".
      *
-     * @octdoc  m:chart/setXAxis
-     * @param   string              $label              Label to set.
+     * @octdoc  m:chart/looseLabels
+     * @param   float           $min                Minimum value in the chart.
+     * @param   float           $max                Maximum value in the chart.
      */
-    public function setXAxis($label)
+    public function looseLabels($min, $max)
     /**/
     {
+        $nice_number = function($num, $round) {
+            $e = floor(log10($num));
+            $f = $num / pow(10, $e);
+            
+            if ($round) {
+                if ($f < 1.5) {
+                    $nf = 1;
+                } elseif ($f < 3) {
+                    $nf = 2;
+                } elseif ($f < 7) {
+                    $nf = 5;
+                } else {
+                    $nf = 10;
+                }
+            } else {
+                if ($f <= 1) {
+                    $nf = 1;
+                } elseif ($f <= 2) {
+                    $nf = 2;
+                } elseif ($f <= 5) {
+                    $nf = 5;
+                } else {
+                    $nf = 10;
+                }
+            }
+
+            return $nf * pow(10, $e);
+        };
+
+        $range = $nice_number($max - $min, false);
+        $d     = $nice_number($range / ($this->options['ticks'] - 1), true);
         
+        $g_min = floor($min / $d) * $d;
+        $g_max = ceil($max / $d) * $d;
+        
+        $nfrac = max(-floor(log10($d)), 0);
+
+        $labels = array();
+        
+        for ($i = $g_min, $to = $g_max + 0.5 * $d; $i <= $to; $i += $d) {
+            $labels[] = $i;
+        }
+
+        return $labels;
+    }
+
+    /**
+     * Set scale type.
+     *
+     * @octdoc  m:chart/setScale
+     * @param   int                 $type               Type of scale to use.
+     * @param   int                 $base               Optional type for logarithmic scale.
+     */
+    public function setScale($type, $base = 10)
+    /**/
+    {
+        $this->scale_type = $type;
+        $this->scale_base = $base;
     }
 
     /**
@@ -151,22 +224,26 @@ class chart
     public function create()
     /**/
     {
-        $min = min(0, $this->getMin());
-        $max = $this->getMax();
-        $cnt = $this->getCount();
+        $min   = min(0, $this->getMin());
+        $max   = $this->getMax();
+        $x_cnt = $this->getCount();
 
         $y_mul = $this->height / ($h = ($max - $min));
-        $x_mul = $this->width / $cnt;
+        $x_mul = $this->width / $x_cnt;
+
+        $labels = $this->looseLabels($min, $max);
+        $y_cnt  = count($labels);
+        $l_mul  = $this->height / $y_cnt;
 
         // draw border, background, grid
-//        $this->context->setFill(array('color' => $this->options['background_color']));
+        // $this->context->setFill(array('color' => $this->options['background_color']));
         $this->context->setStroke(array('width' => 1, 'color' => $this->options['grid_color']));
 
-        for ($i = 0; $i < $cnt; ++$i) {
+        for ($i = 0; $i < $x_cnt; ++$i) {
             $this->context->drawLine($i * $x_mul, 0, $i * $x_mul, $this->height);
         }
-        for ($i = 0; $i < $h; ++$i) {
-            $this->context->drawLine(0, $i * $y_mul, $this->width, $i * $y_mul);
+        for ($i = 0; $i < $y_cnt; ++$i) {
+            $this->context->drawLine(0, $i * $l_mul, $this->width, $i * $l_mul);
         }
 
         $this->context->drawRectangle(0, 0, $this->width, $this->height);
