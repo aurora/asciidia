@@ -191,20 +191,6 @@ class chart
     }
 
     /**
-     * Set scale type.
-     *
-     * @octdoc  m:chart/setScale
-     * @param   int                 $type               Type of scale to use.
-     * @param   int                 $base               Optional type for logarithmic scale.
-     */
-    public function setScale($type, $base = 10)
-    /**/
-    {
-        $this->scale_type = $type;
-        $this->scale_base = $base;
-    }
-
-    /**
      * Get drawing context.
      *
      * @octdoc  m:chart/getContext
