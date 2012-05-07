@@ -49,8 +49,10 @@ namespace chart\graph {
             $points = array();
             $values = $this->dataset->getValues();
 
+            $xoffs  = $x_mul / 2;
+
             for ($i = 0, $cnt = count($values); $i < $cnt; ++$i) {
-                $points[] = array($i * $x_mul, $zero - $values[$i] * $y_mul);
+                $points[] = array($i * $x_mul + $xoffs, $zero - $values[$i] * $y_mul);
             }
             
             $ctx = $context->addContext();
