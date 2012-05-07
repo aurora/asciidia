@@ -107,6 +107,19 @@ namespace chart {
         }
 
         /**
+         * Get maximum logarithmus value.
+         *
+         * @octdoc  m:graph/getMaxLog
+         * @param   int                                         Optional base.
+         * @return  float                                       Max. logarithm value.
+         */
+        public function getMaxLog($base = 10)
+        /**/
+        {
+            return $this->dataset->getMaxLog();
+        }
+
+        /**
          * Get min value.
          *
          * @octdoc  m:graph/getMin
