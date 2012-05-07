@@ -125,6 +125,24 @@ namespace chart {
         }
 
         /**
+         * Get maximum logarithmus value.
+         *
+         * @octdoc  m:dataset/getMaxLog
+         * @param   int                                         Optional base.
+         * @return  float                                       Max. logarithm value.
+         */
+        public function getMaxLog($base = 10)
+        /**/
+        {
+            $max = array();
+            foreach ($this->data as $v) {
+                $max[] = log($v, $base);
+            }
+
+            return max($max);
+        }
+
+        /**
          * Get values of dataset.
          *
          * @octdoc  m:dataset/getValues
