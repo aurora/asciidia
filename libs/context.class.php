@@ -402,6 +402,70 @@ class context
         );
     }
 
+    /**
+     * Change fill settings.
+     *
+     * @octdoc  m:context/setFill
+     */
+    public function setFill(array $settings)
+    /**/
+    {
+        $set = array();
+
+        foreach ($settings as $name => $value) {
+            switch ($name) {
+            case 'color':
+                if (is_string($value)) {
+                    $set[] = 'fill ' . $value;
+                } elseif (is_array($value) && count($value) == 3) {
+                    $set[] = vsprintf('fill rgb(%d,%d,%d)', $value);
+                }
+                break;
+            case 'opacity':
+                $set[] = sprintf('fill-opacity %f', $value);
+                break;
+            }
+        }
+
+        if (count($set) > 0) {
+            $this->mvg[] = implode(' ', $set);
+        }
+    }
+
+    /**
+     * Change stroke settings.
+     *
+     * @octdoc  m:context/setStroke
+     * @param   array       $settings           Stroke settings.
+     */
+    public function setStroke(array $settings)
+    /**/
+    {
+        $set = array();
+
+        foreach ($settings as $name => $value) {
+            switch ($name) {
+            case 'width':
+                $set[] = sprintf('stroke-width %f', $value);
+                break;
+            case 'color':
+                if (is_string($value)) {
+                    $set[] = 'stroke ' . $value;
+                } elseif (is_array($value) && count($value) == 3) {
+                    $set[] = vsprintf('stroke rgb(%d,%d,%d)', $value);
+                }
+                break;
+            case 'opacity':
+                $set[] = sprintf('stroke-opacity %f', $value);
+                break;
+            }
+        }
+
+        if (count($set) > 0) {
+            $this->mvg[] = implode(' ', $set);
+        }
+    }
+
     /*
      * drawing primitives
      */
