@@ -131,18 +131,9 @@ class chart
     public function create()
     /**/
     {
-        // determine maximum and minimum values, initialization
-        $tmp = array('min' => array(), 'max' => array(), 'cnt' => array());
-
-        foreach ($this->graphs as $graph) {
-            $tmp['min'][] = $graph->getMin();
-            $tmp['max'][] = $graph->getMax();
-            $tmp['cnt'][] = $graph->getCount();
-        }
-
-        $min = min(0, min($tmp['min']));
-        $max = max($tmp['max']);
-        $cnt = max($tmp['cnt']);
+        $min = min(0, $this->getMin());
+        $max = $this->getMax();
+        $cnt = $this->getCount();
 
         $y_mul = $this->height / ($max - $min);
         $x_mul = $this->width / $cnt;
