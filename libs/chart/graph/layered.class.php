@@ -42,15 +42,40 @@ namespace chart\graph {
         /**/
 
         /**
+         * Options.
+         *
+         * @octdoc  p:graph/$defaults
+         * @var     array
+         */
+        protected $defaults = array(
+            'border_color'      => array(128, 128, 128),
+            'background_color'  => array(128, 128, 128)
+        );
+        /**/
+
+        /**
          * Constructor.
          *
          * @octdoc  m:graph/__construct
          * @param   array               $datasets               Datasets to use for graph
+         * @param   array               $options                Optional options.
          */
-        public function __construct(array $datasets)
+        public function __construct(array $datasets, array $options = array())
         /**/
         {
             $this->datasets = $datasets;
+
+            $tmp = array_fill(0, count($datasets), $this->defaults);
+
+            foreach ($options as $opts) {
+                if (count($tmp = array_diff_key($opts, $this->defaults)) > 0) {
+                    throw new \Exception('invalid option name(s) "' . implode('", "', array_keys($tmp)) . '"');
+                } else {
+                    $this->options[] = array_merge($this->defaults, $opts);
+                }
+            }
+
+            $this->options = $this->options + $tmp;
         }
 
         /**
@@ -90,8 +115,11 @@ namespace chart\graph {
                 $tmp = $values[$i];
                 arsort($tmp);
 
-                foreach ($tmp as $v) {
+                foreach ($tmp as $k => $v) {
                     if ($v > 0) {
+                        $ctx->setFill(array('color' => $this->options[$k]['background_color']));
+                        $ctx->setStroke(array('color' => $this->options[$k]['border_color']));
+
                         $ctx->addCommand(sprintf(
                             'rectangle %f,%f %f,%f', 
                             $i * $x_mul + $b_o, $zero, $i * $x_mul + $b_o + $b_w, $zero - $v * $y_mul
