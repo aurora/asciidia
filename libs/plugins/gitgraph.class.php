@@ -507,11 +507,23 @@ example: %2\$s -i /path/to/git-repository -o - -r 2011-01-01..2012-01-01 -u week
             }
         }
 
-        $ticks  = min($height / 10, ($height / ($width / $cnt / 1.2)));
+        if ($width / $cnt < 10) {
+            // hide grid, if ticks in X-Axis get's too small.
+            $grid  = false;
+            $ticks = 0;
+        } else {
+            $grid  = true;
+            $ticks = min($height / 10, ($height / ($width / $cnt / 1.2)));
+        }
+
 
         if ($types['commits'] || $types['commits_avg']) {
             // render commits
-            $chart = new \chart($this->getContext(), $width, $height, array('ticks' => $ticks));
+            $chart = new \chart(
+                $this->getContext(), 
+                $width, $height, 
+                array('ticks' => $ticks, 'grid' => $grid)
+            );
 
             $set     = new \chart\dataset('commits', $data['commits']);
             $set_avg = $set->getSimpleMovingAverage('commits avg');
@@ -523,7 +535,11 @@ example: %2\$s -i /path/to/git-repository -o - -r 2011-01-01..2012-01-01 -u week
 
         if ($types['files'] || $types['files_avg']) {
             // render files
-            $chart = new \chart($this->getContext(), $width, $height, array('ticks' => $ticks));
+            $chart = new \chart(
+                $this->getContext(), 
+                $width, $height, 
+                array('ticks' => $ticks, 'grid' => $grid)
+            );
 
             $set     = new \chart\dataset('files', $data['files']);
             $set_avg = $set->getSimpleMovingAverage('files avg');
@@ -535,7 +551,11 @@ example: %2\$s -i /path/to/git-repository -o - -r 2011-01-01..2012-01-01 -u week
 
         if ($types['sloc'] || $types['sloc_avg']) {
             // render sloc
-            $chart = new \chart($this->getContext(), $width, $height, array('ticks' => $ticks));
+            $chart = new \chart(
+                $this->getContext(), 
+                $width, $height, 
+                array('ticks' => $ticks, 'grid' => $grid)
+            );
 
             $set     = new \chart\dataset('sloc', $data['sloc']);
             $set_avg = $set->getSimpleMovingAverage('sloc avg');
