@@ -403,9 +403,37 @@ class context
     }
 
     /**
+     * Change font settings.
+     *
+     * @octdoc  m:context/setFont
+     * @param   array       $settings           Font settings.
+     */
+    public function setFont(array $settings)
+    /**/
+    {
+        $set = array();
+
+        foreach ($settings as $name => $value) {
+            switch ($name) {
+            case 'font':
+                $set[] = 'font ' . $value;
+                break;
+            case 'size':
+                $set[] = sprintf('font-size %f', $value);
+                break;
+            }
+        }
+
+        if (count($set) > 0) {
+            $this->mvg[] = implode(' ', $set);
+        }
+    }
+
+    /**
      * Change fill settings.
      *
      * @octdoc  m:context/setFill
+     * @param   array       $settings           Fill settings.
      */
     public function setFill(array $settings)
     /**/

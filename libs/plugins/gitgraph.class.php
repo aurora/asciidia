@@ -151,9 +151,9 @@ class gitgraph extends plugin
 
         %1$s
 
-example: %2$s -i /path/to/git-repository -o - -r 2012-04-01..2012-05-01
-example: %2$s -i /path/to/git-repository -o - -r 2011-01-01..2012-01-01 -u week
-example: %2$s -i /path/to/git-repository -o - -r 2011-01-01..2012-01-01 -u week -g commits,sloc\n",
+example: %2\$s -i /path/to/git-repository -o - -r 2012-04-01..2012-05-01
+example: %2\$s -i /path/to/git-repository -o - -r 2011-01-01..2012-01-01 -u week
+example: %2\$s -i /path/to/git-repository -o - -r 2011-01-01..2012-01-01 -u week -g commits,sloc\n",
             implode("\n        ", $this->units),
             $script
         );
@@ -507,7 +507,7 @@ example: %2$s -i /path/to/git-repository -o - -r 2011-01-01..2012-01-01 -u week 
             }
         }
 
-        $ticks  = ($height / ($width / $cnt / 1.2));
+        $ticks  = min($height / 10, ($height / ($width / $cnt / 1.2)));
 
         if ($types['commits'] || $types['commits_avg']) {
             // render commits
