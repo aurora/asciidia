@@ -167,10 +167,12 @@ class context
         case 'xs':
             $this->xs = $value;
             $this->xf = $value / 2;
+            // $this->xf = floor($value / 2);
             break;
         case 'ys':
             $this->ys = $value;
             $this->yf = $value / 2;
+            // $this->yf = floor($value / 2);
             break;
         }
     }
