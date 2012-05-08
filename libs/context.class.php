@@ -445,6 +445,9 @@ class context
 
         foreach ($settings as $name => $value) {
             switch ($name) {
+            case 'antialias':
+                $set[] = sprintf('stroke-antialias %d', (int)$value);
+                break;
             case 'width':
                 $set[] = sprintf('stroke-width %f', $value);
                 break;
