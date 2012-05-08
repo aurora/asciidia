@@ -90,6 +90,9 @@ class chart
         'scale_type'        => self::T_SCALE_LIN,
         'scale_base'        => 10,
 
+        'grid'              => true,
+        'border'            => true,
+
         'grid_color'        => array(128, 128, 128),
         'border_color'      => array(  0,   0,   0),
         'background_color'  => array(255, 255, 255)
@@ -216,29 +219,52 @@ class chart
         $max   = $this->getMax();
         $x_cnt = $this->getCount();
 
-        $y_mul = $this->height / ($h = ($max - $min));
-        $x_mul = $this->width / $x_cnt;
+        if ($this->options['border']) {
+            $height = $this->height - 2;
+            $width  = $this->width - 2;
+        } else {
+            $height = $this->height;
+            $width  = $this->width;
+        }
+
+        $y_mul = $height / ($h = ($max - $min));
+        $x_mul = $width / $x_cnt;
 
         $labels = $this->looseLabels($min, $max);
         $y_cnt  = count($labels);
-        $l_mul  = $this->height / $y_cnt;
+        $l_mul  = $height / $y_cnt;
 
         // draw border, background, grid
-        // $this->context->setFill(array('color' => $this->options['background_color']));
         $this->context->setStroke(array('width' => 1, 'color' => $this->options['grid_color']));
+        $this->context->setFill(array('color' => $this->options['background_color']));
 
-        for ($i = 0; $i < $x_cnt; ++$i) {
-            $this->context->drawLine($i * $x_mul, 0, $i * $x_mul, $this->height);
-        }
-        for ($i = 0; $i < $y_cnt; ++$i) {
-            $this->context->drawLine(0, $i * $l_mul, $this->width, $i * $l_mul);
+        if ($this->options['border']) {
+            $this->context->drawRectangle(0, 0, $this->width - 1, $this->height - 1);
         }
 
-        $this->context->drawRectangle(0, 0, $this->width, $this->height);
+        if ($this->options['grid']) {
+            for ($i = 0; $i < $x_cnt; ++$i) {
+                $this->context->drawLine($i * $x_mul, 0, $i * $x_mul, $this->height);
+            }
+            for ($i = 0; $i < $y_cnt; ++$i) {
+                $this->context->drawLine(0, $i * $l_mul, $this->width, $i * $l_mul);
+            }
+        }
+
+        $this->context->setStroke(array('width' => 1, 'color' => $this->options['border_color']));
+        $this->context->setFill(array('color' => 'transparent'));
+
+        if ($this->options['border']) {
+            $this->context->drawRectangle(0, 0, $this->width - 1, $this->height - 1);
+        }
 
         // draw graphs
+        if ($this->options['grid']) {
+            $this->context->translate(1, 1);
+        }
+
         foreach ($this->graphs as $graph) {
-            $graph->create($this->context, $this->width, $this->height, $this->height - $min * $y_mul, $x_mul, $y_mul);
+            $graph->create($this->context, $width, $height, $height - $min * $y_mul, $x_mul, $y_mul);
         }
     }
 
