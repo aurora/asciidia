@@ -35,24 +35,6 @@ class gitgraph extends plugin
 /**/
 {
     /**
-     * Minimum X-Size of grid
-     *
-     * @octdoc  p:gitgraph/$grid_x
-     * @var     int
-     */
-    protected $grid_min_x = 20;
-    /**/
-
-    /**
-     * Minimum X-Size of graph
-     *
-     * @octdoc  p:gitgraph/$grid_x
-     * @var     int
-     */
-    protected $min_x = 1000;
-    /**/
-
-    /**
      * Work directory to set for git command.
      *
      * @octdoc  p:gitgraph/$cwd
