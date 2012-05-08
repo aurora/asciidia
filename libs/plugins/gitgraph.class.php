@@ -492,9 +492,14 @@ example: %2$s -i /path/to/git-repository -o - -r 2011-01-01..2012-01-01 -u week 
             $data['deletes'][] = $values['deletes'];
         }
 
+        $cnt    = count($data['commits']);
+        $width  = min(1000, $cnt * 20);
+        $height = min( 800, $width / 1.2);
+        $ticks  = ($height / ($width / $cnt / 1.2));
+
         if ($types['commits'] || $types['commits_avg']) {
             // render commits
-            $chart = new \chart($this->getContext(), 1000, 1000);
+            $chart = new \chart($this->getContext(), $width, $height, array('ticks' => $ticks));
 
             $set     = new \chart\dataset('commits', $data['commits']);
             $set_avg = $set->getSimpleMovingAverage('commits avg');
@@ -506,7 +511,7 @@ example: %2$s -i /path/to/git-repository -o - -r 2011-01-01..2012-01-01 -u week 
 
         if ($types['files'] || $types['files_avg']) {
             // render files
-            $chart = new \chart($this->getContext(), 1000, 1000);
+            $chart = new \chart($this->getContext(), $width, $height, array('ticks' => $ticks));
 
             $set     = new \chart\dataset('files', $data['files']);
             $set_avg = $set->getSimpleMovingAverage('files avg');
@@ -518,7 +523,7 @@ example: %2$s -i /path/to/git-repository -o - -r 2011-01-01..2012-01-01 -u week 
 
         if ($types['sloc'] || $types['sloc_avg']) {
             // render sloc
-            $chart = new \chart($this->getContext(), 1000, 1000);
+            $chart = new \chart($this->getContext(), $width, $height, array('ticks' => $ticks));
 
             $set     = new \chart\dataset('sloc', $data['sloc']);
             $set_avg = $set->getSimpleMovingAverage('sloc avg');
