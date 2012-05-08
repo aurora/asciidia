@@ -39,8 +39,9 @@ namespace chart\graph {
          * @var     array
          */
         protected $options = array(
-            'stroke_width'  => 2,
-            'color'         => array(  0,   0,   0),
+            'stroke_width'      => 2,
+            'stroke_antialias'  => true,
+            'color'             => array(  0,   0,   0),
         );
         /**/
 
@@ -68,10 +69,10 @@ namespace chart\graph {
 
             for ($i = 1, $cnt = count($values); $i < $cnt; ++$i) {
                 $ctx->drawLine(
-                	($i - 1) * $x_mul + $xoffs,
-                	$zero - $values[$i - 1] * $y_mul,
-                	$i * $x_mul + $xoffs,
-                	$zero - $values[$i] * $y_mul
+                    ($i - 1) * $x_mul + $xoffs,
+                    $zero - $values[$i - 1] * $y_mul,
+                    $i * $x_mul + $xoffs,
+                    $zero - $values[$i] * $y_mul
                 );
             }
         }
