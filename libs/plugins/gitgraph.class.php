@@ -495,7 +495,7 @@ example: %2$s -i /path/to/git-repository -o - -r 2011-01-01..2012-01-01 -u week 
         $cnt    = count($data['commits']);
         $width  = min(1000, $cnt * 20);
         $height = min( 800, $width / 1.2);
-        $ticks  = ($height / ($width / $cnt / 1.2));
+        $ticks  = min($height / 10, ($height / ($width / $cnt / 1.2)));
 
         if ($types['commits'] || $types['commits_avg']) {
             // render commits
