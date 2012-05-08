@@ -85,6 +85,8 @@ class chart
     protected $options = array(
         'ticks'             => 10,
 
+        'labels'            => true,
+
         'scale_type'        => self::T_SCALE_LIN,
         'scale_base'        => 10,
 
