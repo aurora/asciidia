@@ -33,6 +33,18 @@ namespace chart\graph {
     /**/
     {
         /**
+         * Options.
+         *
+         * @octdoc  p:graph/$options
+         * @var     array
+         */
+        protected $options = array(
+            'stroke_width'  => 2,
+            'color'         => array(  0,   0,   0),
+        );
+        /**/
+
+        /**
          * Create bar graph.
          *
          * @octdoc  m:spline/create
@@ -56,7 +68,7 @@ namespace chart\graph {
             }
             
             $ctx = $context->addContext();
-            $ctx->addCommand(vsprintf('stroke rgb(%d,%d,%d) stroke-width 3', array(0,0,0)));
+            $ctx->setStroke(array('color' => $this->options['color'], 'width' => $this->options['stroke_width']));
             $ctx->drawSpline($points);
         }
     }
