@@ -150,6 +150,18 @@ abstract class plugin
     }
 
     /**
+     * Get scaling value.
+     *
+     * @octdoc  m:plugin/getScaleTo
+     * @return  string|null                     Configured scaling parameter.
+     */
+    public function getScaleTo()
+    /**/
+    {
+        return $this->scale_to;
+    }
+
+    /**
      * Enable a debugging mode for context.
      *
      * @octdoc  m:plugin/enableDebug
