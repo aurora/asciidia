@@ -69,7 +69,7 @@ class ebnf extends plugin
         self::T_COMMENT    => '\(\*.*?\*\)',
         self::T_OPERATOR   => '[=;\{\}\(\)\|\[\]]',
         self::T_LITERAL    => "([\"']).*?(?!\\\\)\\2",
-        self::T_IDENTIFIER => '[a-zA-Z0-9_-]+',
+        self::T_IDENTIFIER => '([a-zA-Z0-9_-]+|\<[a-zA-Z0-9_-]+\>)',
         self::T_WHITESPACE => '\s+'
     );
     /**/
