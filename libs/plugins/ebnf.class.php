@@ -64,7 +64,7 @@ class ebnf extends plugin
     /**
      * Parser patterns.
      *
-     * @octdoc  v:ebnf/$patterns
+     * @octdoc  p:ebnf/$patterns
      * @type    array
      */
     protected static $patterns = array(
@@ -80,7 +80,7 @@ class ebnf extends plugin
     /**
      * Token names.
      *
-     * @octdoc  v:ebnf/$token_names
+     * @octdoc  p:ebnf/$token_names
      * @type    array
      */
     protected static $token_names = array(

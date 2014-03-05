@@ -34,7 +34,7 @@ class main
     /**
      * Instance of loaded plugin.
      *
-     * @octdoc  v:main/$plugin
+     * @octdoc  p:main/$plugin
      * @type    asciidia
      */
     protected $plugin = null;
@@ -43,7 +43,7 @@ class main
     /**
      * Available plugins.
      *
-     * @octdoc  v:main/$plugins
+     * @octdoc  p:main/$plugins
      * @type    array
      */
     protected $plugins = array();
