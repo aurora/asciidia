@@ -554,17 +554,17 @@ class ebnf extends plugin
         $dom    = new DOMDocument();
         $syntax = $dom->appendChild($dom->createElement('syntax'));
         
-        if (!($token = $this->getToken($tokens, self::T_OPERATOR, '{'))) {
-            $this->error('EBNF must start with "{"');
-        }
+        // if (!($token = $this->getToken($tokens, self::T_OPERATOR, '{'))) {
+        //     // $this->error('EBNF must start with "{"');
+        // }
 
         while (count($tokens) > 0 && ($token = $this->getToken($tokens, self::T_IDENTIFIER))) {
             $syntax->appendChild($this->parseProd($dom, $tokens, $token));
         }
         
-        if (count($tokens) > 1 || $this->chkToken($token, self::T_OPERATOR, '}')) {
-            $this->error('EBNF must end with "}"');
-        }
+        // if (count($tokens) > 1 || $this->chkToken($token, self::T_OPERATOR, '}')) {
+        //     // $this->error('EBNF must end with "}"');
+        // }
 
         // render syntax and return it's MVG commands
         $this->render($syntax);
