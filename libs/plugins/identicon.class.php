@@ -45,7 +45,7 @@ class identicon extends plugin
     /**
      * Border shapes.
      *
-     * @octdoc  v:identicon/$border
+     * @octdoc  p:identicon/$border
      * @type    array
      */
     protected static $border = array(
@@ -87,7 +87,7 @@ class identicon extends plugin
     /**
      * Center shapes.
      *
-     * @octdoc  v:identicon/$center
+     * @octdoc  p:identicon/$center
      * @type    array
      */
     protected static $center = array(
@@ -117,7 +117,7 @@ class identicon extends plugin
     /**
      * Internal size of each sprite.
      *
-     * @octdoc  v:identicon/$spriteZ
+     * @octdoc  p:identicon/$spriteZ
      * @type    int
      */
     protected $spriteZ = 128;

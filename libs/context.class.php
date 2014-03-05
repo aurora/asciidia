@@ -36,7 +36,7 @@ class context
     /**
      * X-multiplicator -- the width of a cell on the canvas.
      *
-     * @octdoc  v:context/$xs
+     * @octdoc  p:context/$xs
      * @type    float
      */
     protected $xs = 9.0;
@@ -45,7 +45,7 @@ class context
     /**
      * Y-multiplicator -- the height of a cell on the canvas.
      *
-     * @octdoc  v:context/$ys
+     * @octdoc  p:context/$ys
      * @type    float
      */
     protected $ys = 15.0;
@@ -54,7 +54,7 @@ class context
     /**
      * X-fract -- half of a cells width.
      *
-     * @octdoc  v:context/$xf
+     * @octdoc  p:context/$xf
      * @type    float
      */
     protected $xf = 0;
@@ -63,7 +63,7 @@ class context
     /**
      * Y-fract -- half of a cells height.
      *
-     * @octdoc  v:context/yf
+     * @octdoc  p:context/yf
      * @type    float
      */
     protected $yf = 0;
@@ -72,7 +72,7 @@ class context
     /**
      * X-translation of origin.
      *
-     * @octdoc  v:context/$tx
+     * @octdoc  p:context/$tx
      * @type    int
      */
     protected $tx = 0;
@@ -81,7 +81,7 @@ class context
     /**
      * Y-translation of origin.
      *
-     * @octdoc  v:context/$ty
+     * @octdoc  p:context/$ty
      * @type    int
      */
     protected $ty = 0;
@@ -90,7 +90,7 @@ class context
     /**
      * Width of diagram canvas.
      *
-     * @octdoc  v:context/$w
+     * @octdoc  p:context/$w
      * @type    int
      */
     protected $w = 0;
@@ -99,7 +99,7 @@ class context
     /**
      * Height of diagram canvas.
      *
-     * @octdoc  v:context/$h
+     * @octdoc  p:context/$h
      * @type    int
      */
     protected $h = 0;
@@ -108,7 +108,7 @@ class context
     /**
      * Whether debugging is enabled. 1: enabled, 2: propagate to sub-contexts.
      *
-     * @octdoc  v:context/$debug
+     * @octdoc  p:context/$debug
      * @type    int|bool
      */
     protected $debug = false;
@@ -117,7 +117,7 @@ class context
     /**
      * Background color.
      *
-     * @octdoc  v:context/$bg
+     * @octdoc  p:context/$bg
      * @type    string
      */
     protected $bg = 'white';
@@ -126,7 +126,7 @@ class context
     /**
      * Stroke color
      *
-     * @octdoc  v:context/$stroke
+     * @octdoc  p:context/$stroke
      * @type    string
      */
     protected $stroke = 'black';
@@ -135,7 +135,7 @@ class context
     /**
      * Imagemagick MVG commands.
      *
-     * @octdoc  v:context/$mvg
+     * @octdoc  p:context/$mvg
      * @type    array
      */
     protected $mvg = array();

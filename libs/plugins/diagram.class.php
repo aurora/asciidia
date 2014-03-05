@@ -48,7 +48,7 @@ class diagram extends plugin
     /**
      * Determined text-strings of diagram.
      *
-     * @octdoc  v:diagram/$strings
+     * @octdoc  p:diagram/$strings
      * @type    array
      */
     protected $strings = array();
@@ -57,7 +57,7 @@ class diagram extends plugin
     /**
      * Determined string positions and mapping to stored strings.
      *
-     * @octdoc  v:diagram/$strings_pos
+     * @octdoc  p:diagram/$strings_pos
      * @type    array
      */
     protected $strings_pos = array();
@@ -66,7 +66,7 @@ class diagram extends plugin
     /**
      * Determined lines in diagram.
      *
-     * @octdoc  v:diagram/$lines
+     * @octdoc  p:diagram/$lines
      * @type    array
      */
     protected $lines = array();
@@ -75,7 +75,7 @@ class diagram extends plugin
     /**
      * Determined line positions and mapping to stored lines.
      *
-     * @octdoc  v:diagram/$lines_pos
+     * @octdoc  p:diagram/$lines_pos
      * @type    array
      */
     protected $lines_pos = array(array('H' => array(), 'V' => array()));
