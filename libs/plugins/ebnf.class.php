@@ -23,7 +23,7 @@
 
 /*
  * The asciidia EBNF parser is -- in creating of the syntax-tree -- inspired 
- * by the EBNF parser of Vincent Tscherter: http://pamela.karmin.ch/ebnf/
+ * by the EBNF parser of Vincent Tscherter: http://karmin.ch/ebnf/index
  */
 
 // definition      =
