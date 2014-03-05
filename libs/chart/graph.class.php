@@ -36,7 +36,7 @@ namespace chart {
          * Dataset for graph.
          *
          * @octdoc  p:graph/$dataset
-         * @var     dataset
+         * @type    dataset
          */
         protected $dataset;
         /**/
@@ -45,7 +45,7 @@ namespace chart {
          * Context to assign to graph.
          *
          * @octdoc  p:graph/$context
-         * @var     context|null
+         * @type    context|null
          */
         protected $context = null;
         /**/
@@ -54,7 +54,7 @@ namespace chart {
          * Options.
          *
          * @octdoc  p:graph/$options
-         * @var     array
+         * @type    array
          */
         protected $options = array();
         /**/

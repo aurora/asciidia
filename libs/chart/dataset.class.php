@@ -36,7 +36,7 @@ namespace chart {
          * Name of dataset.
          *
          * @octdoc  p:dataset/$name
-         * @var     string
+         * @type    string
          */
         protected $name = '';
         /**/
@@ -45,7 +45,7 @@ namespace chart {
          * Dataset data.
          *
          * @octdoc  p:dataset/$data
-         * @var     array
+         * @type    array
          */
         protected $data = array();
         /**/

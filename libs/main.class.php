@@ -35,7 +35,7 @@ class main
      * Instance of loaded plugin.
      *
      * @octdoc  v:main/$plugin
-     * @var     asciidia
+     * @type    asciidia
      */
     protected $plugin = null;
     /**/
@@ -44,7 +44,7 @@ class main
      * Available plugins.
      *
      * @octdoc  v:main/$plugins
-     * @var     array
+     * @type    array
      */
     protected $plugins = array();
     /**/

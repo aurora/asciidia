@@ -65,7 +65,7 @@ class ebnf extends plugin
      * Parser patterns.
      *
      * @octdoc  v:ebnf/$patterns
-     * @var     array
+     * @type    array
      */
     protected static $patterns = array(
         self::T_COMMENT       => '\(\*.*?\*\)',
@@ -81,7 +81,7 @@ class ebnf extends plugin
      * Token names.
      *
      * @octdoc  v:ebnf/$token_names
-     * @var     array
+     * @type    array
      */
     protected static $token_names = array(
         self::T_COMMENT       => 'T_COMMENT',

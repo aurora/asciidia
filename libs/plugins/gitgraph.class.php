@@ -38,7 +38,7 @@ class gitgraph extends plugin
      * Work directory to set for git command.
      *
      * @octdoc  p:gitgraph/$cwd
-     * @var     string
+     * @type    string
      */
     protected $cwd;
     /**/
@@ -47,7 +47,7 @@ class gitgraph extends plugin
      * Start date as UNIX timestamp.
      *
      * @octdoc  p:gitgraph/$start
-     * @var     int
+     * @type    int
      */
     protected $start;
     /**/
@@ -56,7 +56,7 @@ class gitgraph extends plugin
      * End date as UNIX timestamp.
      *
      * @octdoc  p:gitgraph/$end
-     * @var     int
+     * @type    int
      */
     protected $end;
     /**/
@@ -65,7 +65,7 @@ class gitgraph extends plugin
      * Allowed units to specify for segmentation (interval).
      *
      * @octdoc  p:gitgraph/$units
-     * @var     array
+     * @type    array
      */
     protected $units = array('day', 'month', 'week');
     /**/
@@ -74,7 +74,7 @@ class gitgraph extends plugin
      * Supported graphs.
      *
      * @octdoc  p:gitgraph/$graphs
-     * @var     array
+     * @type    array
      */
     protected $graphs = array('commits', 'commits_avg', 'files', 'files_avg', 'sloc', 'sloc_avg');
     /**/
@@ -83,7 +83,7 @@ class gitgraph extends plugin
      * Graphs to render.
      *
      * @octdoc  p:gitgraph/$render_graphs
-     * @var     array
+     * @type    array
      */
     protected $render_graphs = array('commits');
     /**/
@@ -92,7 +92,7 @@ class gitgraph extends plugin
      * Collection interval.
      *
      * @octdoc  p:gitgraph/$interval
-     * @var     string
+     * @type    string
      */
     protected $interval = 'day';
     /**/
@@ -101,7 +101,7 @@ class gitgraph extends plugin
      * Graph colors RGB values.
      *
      * @octdoc  p:gitgraph/$colors
-     * @var     array
+     * @type    array
      */
     protected $colors = array(
         'commits'     => array(191, 191, 191),

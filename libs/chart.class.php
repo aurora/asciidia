@@ -44,7 +44,7 @@ class chart
      * Drawing context.
      *
      * @octdoc  p:chart/$context
-     * @var     context
+     * @type    context
      */
     protected $context;
     /**/
@@ -53,7 +53,7 @@ class chart
      * Width of chart to create.
      *
      * @octdoc  p:chart/$width
-     * @var     int
+     * @type    int
      */
     protected $width;
     /**/
@@ -62,7 +62,7 @@ class chart
      * Height of chart to create.
      *
      * @octdoc  p:chart/$height
-     * @var     int
+     * @type    int
      */
     protected $height;
     /**/
@@ -71,7 +71,7 @@ class chart
      * Graphs assigned to chart.
      *
      * @octdoc  p:chart/$graphs
-     * @var     array
+     * @type    array
      */
     protected $graphs = array();
     /**/
@@ -80,7 +80,7 @@ class chart
      * Options.
      *
      * @octdoc  p:chart/$options
-     * @var     array
+     * @type    array
      */
     protected $options = array(
         'ticks'             => 10,

@@ -36,7 +36,7 @@ abstract class plugin
      * Instance of main graphic context.
      *
      * @octdoc  v:plugin/$context
-     * @var     context
+     * @type    context
      */
     private $context = null;
     /**/
@@ -45,7 +45,7 @@ abstract class plugin
      * Size of the final bitmap.
      *
      * @octdoc  v:plugin/$scale_to
-     * @var     string
+     * @type    string
      */
     private $scale_to = null;
     /**/

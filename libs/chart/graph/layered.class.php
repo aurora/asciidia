@@ -36,7 +36,7 @@ namespace chart\graph {
          * Datasets.
          *
          * @octdoc  p:graph/$datasets
-         * @var     array
+         * @type    array
          */
         protected $datasets;
         /**/
@@ -45,7 +45,7 @@ namespace chart\graph {
          * Color range for calculating default colors for bars.
          *
          * @octdoc  p:graph/$color_range
-         * @var     array
+         * @type    array
          */
         protected $color_range = array(64, 164);
         /**/

@@ -36,7 +36,7 @@ namespace util {
          * Opened pipes.
          *
          * @octdoc  v:pipe/$pipes
-         * @var     array
+         * @type    array
          */
         protected $pipes = array();
         /**/
@@ -45,7 +45,7 @@ namespace util {
          * Process resource handler.
          *
          * @octdoc  v:pipe/$process
-         * @var     resource
+         * @type    resource
          */
         protected $process = null;
         /**/

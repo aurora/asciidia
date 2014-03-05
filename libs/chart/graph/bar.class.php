@@ -36,7 +36,7 @@ namespace chart\graph {
          * Options.
          *
          * @octdoc  p:graph/$options
-         * @var     array
+         * @type    array
          */
         protected $options = array(
             'border_color'      => array(128, 128, 128),
