@@ -90,6 +90,18 @@ abstract class plugin
     }
     
     /**
+     * Set output format.
+     *
+     * @octdoc  m:plugin/setOutputFormat
+     * @param   string      $fmt                Output format.
+     */
+    public function setOutputFormat($fmt)
+    /**/
+    {
+        $this->out_format = $fmt;    
+    }
+    
+    /**
      * Return instance of main context.
      *
      * @octdoc  m:plugin/getContext
@@ -195,14 +207,11 @@ abstract class plugin
      * @octdoc  m:plugin/run
      * @param   string      $inp                Name of input.
      * @param   string      $out                Name of output.
-     * @param   string      $fmt                Output format.
      * @return  array                           Status information.
      */
-    public function run($inp, $out, $fmt = 'png')
+    public function run($inp, $out)
     /**/
     {
-        $this->out_format = $fmt;
-        
         list($status, $msg, $content) = $this->loadFile($inp);
         
         if ($status) {
@@ -237,10 +246,9 @@ abstract class plugin
      * is found through the path.
      *
      * @octdoc  m:plugin/testEnv
-     * @param   string      $fmt                Output format.
      * @return  array                           Status information.
      */
-    public function testEnv($fmt)
+    public function testEnv()
     /**/
     {
         $status = true;
@@ -248,18 +256,22 @@ abstract class plugin
         $out    = array();
         $err    = 0;
         
-        if ($fmt != 'svg') {
-            // test if imagemagick is available
-            exec('which convert', $out, $err);
-            $mh = getenv('MAGICK_HOME');
+        switch ($this->out_format) {
+            case 'svg':
+                break;
+            default:
+                // test if imagemagick is available
+                exec('which convert', $out, $err);
+                $mh = getenv('MAGICK_HOME');
         
-            if ($err != 0) {
-                $status = false;
-                $msg    = 'imagemagick "convert" is not found in path';
-            } elseif ($mh == '') {
-                $status = false;
-                $msg    = '"MAGICK_HOME" environment variable is not set';
-            }
+                if ($err != 0) {
+                    $status = false;
+                    $msg    = 'imagemagick "convert" is not found in path';
+                } elseif ($mh == '') {
+                    $status = false;
+                    $msg    = '"MAGICK_HOME" environment variable is not set';
+                }
+                break;
         }
         
         return array($status, $msg);
@@ -332,7 +344,11 @@ abstract class plugin
                 );
                 break;
             case 'svg':
-                die("missing implementation\n");
+                // svg xml output
+                file_put_contents(
+                    ($name == '-' ? 'php://stdout' : $name),
+                    $commands
+                );
                 break;
             default:
                 list($w, $h) = $this->getSize();
