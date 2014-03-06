@@ -323,25 +323,31 @@ abstract class plugin
     public function saveFile($name, array $commands)
     /**/
     {
-        if ($this->out_format == 'mvg') {
-            // imagemagick mvg commands
-            file_put_contents(
-                ($name == '-' ? 'php://stdout' : $name),
-                implode("\n", $commands)
-            );
-        } else {
-            list($w, $h) = $this->getSize();
+        switch ($this->out_format) {
+            case 'mvg':
+                // imagemagick mvg commands
+                file_put_contents(
+                    ($name == '-' ? 'php://stdout' : $name),
+                    implode("\n", $commands)
+                );
+                break;
+            case 'svg':
+                die("missing implementation\n");
+                break;
+            default:
+                list($w, $h) = $this->getSize();
 
-            $cmd = sprintf(
-                'convert -size %dx%d xc:white -stroke black -fill none -draw %s %s %s:%s',
-                $w, $h,
-                escapeshellarg(implode(' ', $commands)),
-                ($this->scale_to ? '-scale ' . $this->scale_to : ''),
-                $this->out_format,
-                $name
-            );
+                $cmd = sprintf(
+                    'convert -size %dx%d xc:white -stroke black -fill none -draw %s %s %s:%s',
+                    $w, $h,
+                    escapeshellarg(implode(' ', $commands)),
+                    ($this->scale_to ? '-scale ' . $this->scale_to : ''),
+                    $this->out_format,
+                    $name
+                );
 
-            passthru($cmd);
+                passthru($cmd);
+                break;
         }
     }
 }
