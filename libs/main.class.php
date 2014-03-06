@@ -185,8 +185,10 @@ class main
         $debug = array_key_exists('d', $opt);
 
         if (!is_null($this->plugin)) {
+            $this->plugin->setOutputFormat($out_fmt);
+            
             // test environment
-            list($status, $msg) = $this->plugin->testEnv($out_fmt);
+            list($status, $msg) = $this->plugin->testEnv();
             
             if (!$status) {
                 $this->usage($msg);
@@ -212,7 +214,7 @@ class main
             }
             
             // execute plugin
-            list($status, $msg) = $this->plugin->run($opt['i'], $opt['o'], $out_fmt);
+            list($status, $msg) = $this->plugin->run($opt['i'], $opt['o']);
             
             if (!$status) $this->usage($msg);
         }
