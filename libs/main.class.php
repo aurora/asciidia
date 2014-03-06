@@ -186,7 +186,7 @@ class main
 
         if (!is_null($this->plugin)) {
             // test environment
-            list($status, $msg) = $this->plugin->testEnv();
+            list($status, $msg) = $this->plugin->testEnv($out_fmt);
             
             if (!$status) {
                 $this->usage($msg);

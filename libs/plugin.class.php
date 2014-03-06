@@ -219,9 +219,10 @@ abstract class plugin
      * is found through the path.
      *
      * @octdoc  m:plugin/testEnv
+     * @param   string      $fmt                Output format.
      * @return  array                           Status information.
      */
-    public function testEnv()
+    public function testEnv($fmt)
     /**/
     {
         $status = true;
@@ -229,16 +230,18 @@ abstract class plugin
         $out    = array();
         $err    = 0;
         
-        // test if imagemagick is available
-        exec('which convert', $out, $err);
-        $mh = getenv('MAGICK_HOME');
+        if ($fmt != 'svg') {
+            // test if imagemagick is available
+            exec('which convert', $out, $err);
+            $mh = getenv('MAGICK_HOME');
         
-        if ($err != 0) {
-            $status = false;
-            $msg    = 'imagemagick "convert" is not found in path';
-        } elseif ($mh == '') {
-            $status = false;
-            $msg    = '"MAGICK_HOME" environment variable is not set';
+            if ($err != 0) {
+                $status = false;
+                $msg    = 'imagemagick "convert" is not found in path';
+            } elseif ($mh == '') {
+                $status = false;
+                $msg    = '"MAGICK_HOME" environment variable is not set';
+            }
         }
         
         return array($status, $msg);
