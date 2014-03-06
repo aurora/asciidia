@@ -90,63 +90,54 @@ class svg extends context
     public function getCommands()
     /**/
     {
-        // ---
-        $mvg = array(
-            'push graphic-context',
-            'font Courier',
-            sprintf('font-size %f', $this->ys)
-        );
-        
-        // resolve child contexts
-        foreach ($this->mvg as $cmd) {
-            if (is_array($cmd) && isset($cmd['context'])) {
-                $mvg = array_merge($mvg, $cmd['context']->getCommands());
-            } else {
-                $mvg[] = $cmd;
-            }
-        }
+        // 
+        // // resolve child contexts
+        // foreach ($this->mvg as $cmd) {
+        //     if (is_array($cmd) && isset($cmd['context'])) {
+        //         $mvg = array_merge($mvg, $cmd['context']->getCommands());
+        //     } else {
+        //         $mvg[] = $cmd;
+        //     }
+        // }
         
         // draw debugging grid and context boundaries
-        if ($this->debug) {
-            $mvg[] = sprintf('translate %f,%f', -$this->tx * $this->xs, -$this->ty * $this->ys);
-            $mvg[] = 'push graphic-context';
-            $mvg[] = 'fill transparent';
-            
-            list($cw, $ch) = $this->getSize(true);
-            
-            for ($x = 0; $x < $cw; ++$x) {
-                $mvg[] = sprintf(
-                    'line %f,0 %f,%f',
-                    $x * $this->xs,
-                    $x * $this->xs,
-                    $ch * $this->ys
-                );
-            }
-            for ($y = 0; $y < $ch; ++$y) {
-                $mvg[] = sprintf(
-                    'line 0,%f %f,%f',
-                    $y * $this->ys,
-                    $cw * $this->xs,
-                    $y * $this->ys
-                );
-            }
-            $mvg[] = sprintf(
-                'rectangle 0,0, %f,%f', 
-                $cw * $this->xs, 
-                $ch * $this->ys
-            );
-            
-            $this->mvg[] = sprintf(
-                "text 0,%f '%d,%d'", $this->ys - ($this->yf / 2), $cw, $ch
-            );
-            
-            $mvg[] = 'pop graphic-context';
-        }
-    
-        // ---
-        $mvg[] = 'pop graphic-context';
+        // if ($this->debug) {
+        //     $mvg[] = sprintf('translate %f,%f', -$this->tx * $this->xs, -$this->ty * $this->ys);
+        //     $mvg[] = 'push graphic-context';
+        //     $mvg[] = 'fill transparent';
+        //     
+        //     list($cw, $ch) = $this->getSize(true);
+        //     
+        //     for ($x = 0; $x < $cw; ++$x) {
+        //         $mvg[] = sprintf(
+        //             'line %f,0 %f,%f',
+        //             $x * $this->xs,
+        //             $x * $this->xs,
+        //             $ch * $this->ys
+        //         );
+        //     }
+        //     for ($y = 0; $y < $ch; ++$y) {
+        //         $mvg[] = sprintf(
+        //             'line 0,%f %f,%f',
+        //             $y * $this->ys,
+        //             $cw * $this->xs,
+        //             $y * $this->ys
+        //         );
+        //     }
+        //     $mvg[] = sprintf(
+        //         'rectangle 0,0, %f,%f', 
+        //         $cw * $this->xs, 
+        //         $ch * $this->ys
+        //     );
+        //     
+        //     $this->mvg[] = sprintf(
+        //         "text 0,%f '%d,%d'", $this->ys - ($this->yf / 2), $cw, $ch
+        //     );
+        //     
+        //     $mvg[] = 'pop graphic-context';
+        // }
 
-        return $mvg;
+        return $this->doc->saveXML();
     }
 
     /**
@@ -381,13 +372,14 @@ class svg extends context
     {
         $this->setSize(max($x1, $x2), max($y1, $y2));
 
-        $this->mvg[] = sprintf(
-            'line   %f,%f %f,%f',
-            $x1 * $this->xs + $this->xf,
-            $y1 * $this->ys + $this->yf,
-            $x2 * $this->xs + $this->xf,
-            $y2 * $this->ys + $this->yf
-        );
+        $line = $this->doc->createElement('line');
+
+        $line->setAttribute('x1', $x1 * $this->xs + $this->xf);
+        $line->setAttribute('y1', $y1 * $this->ys + $this->yf);
+        $line->setAttribute('x2', $x2 * $this->xs + $this->xf);
+        $line->setAttribute('y2', $y2 * $this->ys + $this->yf);
+        
+        $this->svg->appendChild($line);
         
         if ($arrow !== false) {
             if ($x1 > $x2) $x1 ^= $x2 ^= $x1 ^= $x2;
@@ -418,13 +410,14 @@ class svg extends context
     {
         $this->setSize(max($x1, $x2), $y);
 
-        $this->mvg[] = sprintf(
-            'line   %f,%f %f,%f',
-            $x1 * $this->xs,
-            $y * $this->ys + $this->yf,
-            $x2 * $this->xs + $this->xs,
-            $y * $this->ys + $this->yf
-        );
+        $line = $this->doc->createElement('line');
+
+        $line->setAttribute('x1', $x1 * $this->xs);
+        $line->setAttribute('y1', $y * $this->ys + $this->yf);
+        $line->setAttribute('x2', $x2 * $this->xs + $this->xs);
+        $line->setAttribute('y2', $y * $this->ys + $this->yf);
+        
+        $this->svg->appendChild($line);
         
         if ($arrow !== false) {
             if ($x1 > $x2) $x1 ^= $x2 ^= $x1 ^= $x2;
@@ -453,13 +446,14 @@ class svg extends context
     {
         $this->setSize($x, max($y1, $y2));
 
-        $this->mvg[] = sprintf(
-            'line   %f,%f %f,%f',
-            $x * $this->xs + $this->xf,
-            $y1 * $this->ys,
-            $x * $this->xs + $this->xf,
-            $y2 * $this->ys + $this->ys
-        );
+        $line = $this->doc->createElement('line');
+
+        $line->setAttribute('x1', $x * $this->xs + $this->xf);
+        $line->setAttribute('y1', $y1 * $this->ys);
+        $line->setAttribute('x2', $x * $this->xs + $this->xf);
+        $line->setAttribute('y2', $y2 * $this->ys + $this->ys);
+        
+        $this->svg->appendChild($line);
         
         if ($arrow !== false) {
             if ($y1 > $y2) $y1 ^= $y2 ^= $y1 ^= $y2;
@@ -485,24 +479,27 @@ class svg extends context
         $xf = $this->xf / 2;
 
         // draw lines
-        $this->mvg[] = sprintf(
-            'line   %f,%f %f,%f',
-            $x * $this->xs,
-            $y * $this->ys + $this->yf,
-            $x * $this->xs + $this->xf + $this->xf,
-            $y * $this->ys + $this->yf
-        );
+        $line = $this->doc->createElement('line');
+
+        $line->setAttribute('x1', $x * $this->xs);
+        $line->setAttribute('y1', $y * $this->ys + $this->yf);
+        $line->setAttribute('x2', $x * $this->xs + $this->xf + $this->xf);
+        $line->setAttribute('y2', $y * $this->ys + $this->yf);
+        
+        $this->svg->appendChild($line);
 
         // draw crossing
-        $this->mvg[] = sprintf(
-            'fill transparent ellipse %f,%f %f,%f %f,%f',
-            $x * $this->xs + $this->xf, 
-            $y * $this->ys + $this->yf,
-            $this->xf,
-            $this->yf,
-            -90,
-            -270
-        );
+        trigger_error("'drawLineCrossing' not yet fully implemented for 'svg' backend\n");
+        
+        // $this->mvg[] = sprintf(
+        //     'fill transparent ellipse %f,%f %f,%f %f,%f',
+        //     $x * $this->xs + $this->xf, 
+        //     $y * $this->ys + $this->yf,
+        //     $this->xf,
+        //     $this->yf,
+        //     -90,
+        //     -270
+        // );
     }
 
     /**
@@ -523,20 +520,23 @@ class svg extends context
         $this->setSize($x, $y);
 
         // draw connectors
-        $this->mvg[] = sprintf(
-            'line   %f,%f %f,%f',
-            $x * $this->xs + ((1 - (int)$cl) * $this->xf),
-            $y * $this->ys + $this->yf,
-            $x * $this->xs + $this->xf + ((int)$cr * $this->xf),
-            $y * $this->ys + $this->yf
-        );
-        $this->mvg[] = sprintf(
-            'line   %f,%f %f,%f',
-            $x * $this->xs + $this->xf,
-            $y * $this->ys + ((1 - (int)$ca) * $this->yf),
-            $x * $this->xs + $this->xf,
-            $y * $this->ys + $this->yf + ((int)$cb * $this->yf)
-        );
+        $line = $this->doc->createElement('line');
+
+        $line->setAttribute('x1', $x * $this->xs + ((1 - (int)$cl) * $this->xf));
+        $line->setAttribute('y1', $y * $this->ys + $this->yf);
+        $line->setAttribute('x2', $x * $this->xs + $this->xf + ((int)$cr * $this->xf));
+        $line->setAttribute('y2', $y * $this->ys + $this->yf);
+        
+        $this->svg->appendChild($line);
+
+        $line = $this->doc->createElement('line');
+
+        $line->setAttribute('x1', $x * $this->xs + $this->xf);
+        $line->setAttribute('y1', $y * $this->ys + ((1 - (int)$ca) * $this->yf));
+        $line->setAttribute('x2', $x * $this->xs + $this->xf);
+        $line->setAttribute('y2', $y * $this->ys + $this->yf + ((int)$cb * $this->yf));
+        
+        $this->svg->appendChild($line);
         
         // draw marker
         $hxf = $this->xf / 2;
@@ -544,29 +544,37 @@ class svg extends context
         
         switch ($type) {
         case 'x':
-            $this->mvg[] = sprintf(
-                'line   %f,%f %f,%f',
-                $x * $this->xs + $hxf,
-                $y * $this->ys + $hyf,
-                $x * $this->xs + $this->xs - $hxf,
-                $y * $this->ys + $this->ys - $hyf
-            );
-            $this->mvg[] = sprintf(
-                'line   %f,%f %f,%f',
-                $x * $this->xs + $this->xs - $hxf,
-                $y * $this->ys + $hyf,
-                $x * $this->xs + $hxf,
-                $y * $this->ys + $this->ys - $hyf
-            );
+            $line = $this->doc->createElement('line');
+
+            $line->setAttribute('x1', $x * $this->xs + $hxf);
+            $line->setAttribute('y1', $y * $this->ys + $hyf);
+            $line->setAttribute('x2', $x * $this->xs + $this->xs - $hxf);
+            $line->setAttribute('y2', $y * $this->ys + $this->ys - $hyf);
+        
+            $this->svg->appendChild($line);
+
+            $line = $this->doc->createElement('line');
+
+            $line->setAttribute('x1', $x * $this->xs + $this->xs - $hxf);
+            $line->setAttribute('y1', $y * $this->ys + $hyf);
+            $line->setAttribute('x2', $x * $this->xs + $hxf);
+            $line->setAttribute('y2', $y * $this->ys + $this->ys - $hyf);
+        
+            $this->svg->appendChild($line);
             break;
         case 'o':
             $x = $x * $this->xs + $this->xf;
             $y = $y * $this->ys + $this->yf;
 
-            $this->mvg[] = sprintf(
-                'fill %s ellipse %f,%f %f,%f 0,360',
-                $this->bg, $x, $y, $hxf, $hyf
-            );
+            $ellipse = $this->doc->createElement('ellipse');
+            
+            $ellipse->setAttribute('cx', $x);
+            $ellipse->setAttribute('cy', $y);
+            $ellipse->setAttribute('rx', $hxf);
+            $ellipse->setAttribute('ry', $hyf);
+            $ellipse->setAttribute('style', 'fill:' . $this->bg);
+            
+            $this->svg->appendChild($ellipse);
             break;
         }
     }
@@ -583,13 +591,14 @@ class svg extends context
     /**/
     {
         $this->setSize($x + strlen($text), $y);
+     
+        $text = $this->doc->createElement('text');
         
-        $this->mvg[] = sprintf(
-            "text %f,%f '%s'",
-            $x * $this->xs,
-            ($y + 1) * $this->ys - ($this->yf / 2),
-            addcslashes($text, "'")
-        );
+        $text->setAttribute('x', $x * $this->xs);
+        $text->setAttribute('y', ($y + 1) * $this->ys - ($this->yf / 2));
+        $text->appendChild($this->doc->createTextNode($text));
+        
+        $this->svg->appendChild($text);
     }
 
     /**
@@ -685,40 +694,6 @@ class svg extends context
     }
 
     /*
-     * misc tools
-     */
-     
-    /**
-     * Return metrics for font.
-     *
-     * @octdoc  m:svg/getFontMetrics
-     * @param   string      $font           Font to return metrics for.
-     * @param   string      $text           Text to return metrics for.
-     * @param   float       $pointsize      Pointsize to return metrics for.
-     * @return  array                       Font metrics.
-     */
-    public static function getFontMetrics($font, $text, $pointsize)
-    /**/
-    {
-        $return = false;
-        
-        $cmd = sprintf(
-            "convert -size 100x150 xc:lightblue -font %s \
-                     -pointsize %f -fill none -undercolor white \
-                     -annotate +20+100 %s -trim info:",
-            escapeshellarg($font),
-            escapeshellarg($pointsize),
-            escapeshellarg($text)
-        );
-        
-        if (preg_match('/XC (\d+)x(\d/+)/', `$cmd`, $m)) {
-           $return = array('width' => $m[1], 'height' => $m[2]);
-        }
-        
-        return $return;
-    }
-    
-    /*
      * misc helper functions
      */
      
@@ -751,14 +726,20 @@ class svg extends context
             );
         };
 
-        $this->mvg[] = 'push graphic-context';
-        $this->mvg[] = sprintf(
-            "fill %s path 'M %s L %s %s Z'",
+        trigger_error("'drawArrowHead' todo for 'svg' backend: 'fill'");
+
+        $group = $this->doc->createElement('g');
+        $this->svg->appendChild($group);
+
+        $path = $this->doc->createElement('path');
+        $path->setAttribute('d', sprintf(
+            "M %s L %s %s Z",
             $this->stroke,
             $get_xy(-$this->xf, 0),
             $get_xy(0, -$this->yf),
             $get_xy($this->xf, 0)
-        );
-        $this->mvg[] = 'pop graphic-context';
+        ));
+        
+        $group->appendChild($path);
     }
 }
