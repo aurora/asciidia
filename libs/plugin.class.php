@@ -51,6 +51,15 @@ abstract class plugin
     /**/
     
     /**
+     * Output format.
+     *
+     * @octdoc  p:plugin/$out_format
+     * @type    string
+     */
+    private $out_format = '';
+    /**/
+    
+    /**
      * Constructor.
      *
      * @octdoc  m:plugin/__construct
@@ -185,6 +194,8 @@ abstract class plugin
     public function run($inp, $out, $fmt = 'png')
     /**/
     {
+        $this->out_format = $fmt;
+        
         list($status, $msg, $content) = $this->loadFile($inp);
         
         if ($status) {
@@ -193,7 +204,7 @@ abstract class plugin
             if ($status) {
                 $mvg = $this->parse($content);
                 
-                $this->saveFile($out, $fmt, $mvg);
+                $this->saveFile($out, $mvg);
             }
         }
 
@@ -300,13 +311,12 @@ abstract class plugin
      *
      * @octdoc  m:plugin/saveFile
      * @param   string      $name               Name of file to save.
-     * @param   string      $fmt                Fileformat to save file as.
      * @param   array       $commands           Imagemagick commands to save.
      */
-    public function saveFile($name, $fmt, array $commands)
+    public function saveFile($name, array $commands)
     /**/
     {
-        if ($fmt == 'mvg') {
+        if ($this->out_format == 'mvg') {
             // imagemagick mvg commands
             file_put_contents(
                 ($name == '-' ? 'php://stdout' : $name),
@@ -320,7 +330,7 @@ abstract class plugin
                 $w, $h,
                 escapeshellarg(implode(' ', $commands)),
                 ($this->scale_to ? '-scale ' . $this->scale_to : ''),
-                $fmt,
+                $this->out_format,
                 $name
             );
 
