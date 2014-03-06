@@ -290,7 +290,7 @@ class imagemagick extends context
     {
         $this->setSize(max($x1, $x2), max($y1, $y2));
         
-        if ($round) {
+        if (!$round) {
             $this->mvg[] = sprintf(
                 'rectangle  %f,%f %f,%f',
                 $x1 * $this->xs + $this->xf,
