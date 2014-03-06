@@ -21,6 +21,7 @@
  * https://github.com/aurora/asciidia
  */
 
+require_once(__DIR__ . '/../context.class.php');
 require_once(__DIR__ . '/util/spline.class.php');
 
 /**
