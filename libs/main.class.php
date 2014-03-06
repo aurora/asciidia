@@ -222,7 +222,6 @@ class main
      * Determine available "plugins".
      *
      * @octdoc  m:main/getPlugins
-     * @return  array                       Array of plugin names.
      */
     protected function getPlugins()
     /**/
