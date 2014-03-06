@@ -22,7 +22,7 @@
  */
 
 require_once(__DIR__ . '/../context.class.php');
-require_once(__DIR__ . '/util/spline.class.php');
+require_once(__DIR__ . '/../util/spline.class.php');
 
 /**
  * Provides graphics context and drawing primitives.
