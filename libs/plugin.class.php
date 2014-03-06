@@ -99,9 +99,16 @@ abstract class plugin
     /**/
     {
         if (is_null($this->context)) {
-            require_once(__DIR__ . '/context.class.php');
-            
-            $this->context = new context();
+            switch ($this->out_format) {
+                case 'svg':
+                    require_once(__DIR__ . '/backend/svg.class.php');
+                    $this->context = new svg();
+                    break;
+                default:
+                    require_once(__DIR__ . '/backend/imagemagick.class.php');
+                    $this->context = new imagemagick();
+                    break;
+            }
         }
         
         return $this->context;
