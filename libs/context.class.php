@@ -27,10 +27,10 @@ require_once(__DIR__ . '/util/spline.class.php');
  * Provides graphics context and drawing primitives.
  *
  * @octdoc      c:libs/context
- * @copyright   copyright (c) 2011 by Harald Lapp
+ * @copyright   copyright (c) 2011-2014 by Harald Lapp
  * @author      Harald Lapp <harald@octris.org>
  */
-class context
+abstract class context
 /**/
 {
     /**
