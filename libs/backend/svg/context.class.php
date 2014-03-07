@@ -66,8 +66,8 @@ namespace asciidia\backend\svg {
          * @type    array
          */
         protected $font = array(
-            'font' => 'Courier',
-            'size' => 10
+            'family' => 'Courier',
+            'size'   => null
         );
         /**/
     
@@ -211,7 +211,7 @@ namespace asciidia\backend\svg {
             foreach ($settings as $name => $value) {
                 switch ($name) {
                     case 'font':
-                        $this->font['font'] = $value;
+                        $this->font['family'] = $value;
                         break;
                     case 'size':
                         $this->font['size'] = $value;
@@ -604,6 +604,8 @@ namespace asciidia\backend\svg {
         
             $txt->setAttribute('x', $x * $this->xs);
             $txt->setAttribute('y', ($y + 1) * $this->ys - ($this->yf / 2));
+            $txt->setAttribute('font-size', (is_null($this->font['size']) ? $this->ys : $this->font['size']));
+            $txt->setAttribute('font-family', $this->font['family']);
             $txt->appendChild($this->doc->createTextNode($text));
         
             $this->svg->appendChild($txt);
