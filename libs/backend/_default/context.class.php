@@ -53,6 +53,22 @@ namespace asciidia\backend\_default {
         }
 
         /**
+         * Apply a callback method to the instances of sub-contexts.
+         *
+         * @octdoc  m:context/applyCallback
+         * @param   callback        $cb         Callback to apply to sub-context.   
+         */
+        protected function applyCallback($cb)
+        /**/
+        {
+            foreach ($this->mvg as $cmd) {
+                if (is_array($cmd) && isset($cmd['context'])) {
+                    $cb($cmd['context'], $cmd['tx'], $cmd['ty']);
+                }
+            }
+        }
+    
+        /**
          * Add child context to current one. The new context will inherit the
          * cell scaling setting of current context.
          *

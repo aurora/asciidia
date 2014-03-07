@@ -185,15 +185,8 @@ namespace asciidia {
          * @octdoc  m:context/applyCallback
          * @param   callback        $cb         Callback to apply to sub-context.   
          */
-        protected function applyCallback($cb)
+        abstract protected function applyCallback($cb);
         /**/
-        {
-            foreach ($this->mvg as $cmd) {
-                if (is_array($cmd) && isset($cmd['context'])) {
-                    $cb($cmd['context'], $cmd['tx'], $cmd['ty']);
-                }
-            }
-        }
     
         /**
          * Set new size of canvas. Note, that a canvas cannot be smaller, than the

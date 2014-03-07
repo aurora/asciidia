@@ -51,6 +51,15 @@ namespace asciidia\backend\svg {
         /**/
     
         /**
+         * Child context class instances.
+         *
+         * @octdoc  p:context/$children
+         * @type    array
+         */
+        protected $children = array();
+        /**/
+    
+        /**
          * Constructor.
          *
          * @octdoc  m:context/__construct
@@ -66,6 +75,20 @@ namespace asciidia\backend\svg {
         }
 
         /**
+         * Apply a callback method to the instances of sub-contexts.
+         *
+         * @octdoc  m:context/applyCallback
+         * @param   callback        $cb         Callback to apply to sub-context.   
+         */
+        protected function applyCallback($cb)
+        /**/
+        {
+            foreach ($this->children as $child) {
+                $cb($child['context'], $child['tx'], $child['ty']);
+            }
+        }
+    
+        /**
          * Add child context to current one. The new context will inherit the
          * cell scaling setting of current context.
          *
@@ -75,7 +98,11 @@ namespace asciidia\backend\svg {
         public function addContext()
         /**/
         {
-            $context = new static($this->svg);
+            $this->children[] = array(
+                'tx'        => $this->tx,
+                'ty'        => $this->ty,
+                'context'   => ($context = new static($this->svg))
+            );
         
             $context->__set('xs', $this->xs);
             $context->__set('ys', $this->ys);
