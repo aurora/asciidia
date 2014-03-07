@@ -60,6 +60,43 @@ namespace asciidia\backend\svg {
         /**/
     
         /**
+         * Font settings.
+         *
+         * @octdoc  p:context/$font
+         * @type    array
+         */
+        protected $font = array(
+            'font' => 'Courier',
+            'size' => 10
+        );
+        /**/
+    
+        /**
+         * Fill settings.
+         *
+         * @octdoc  p:context/$fill
+         * @type    array
+         */
+        protected $fill = array(
+            'color'   => 'transparent',
+            'opacity' => 1
+        );
+        /**/
+    
+        /**
+         * Stroke settings.
+         *
+         * @octdoc  p:context/$stroke
+         * @type    array
+         */
+        protected $stroke = array(
+            'width'   => 1,
+            'color'   => 'black',
+            'opacity' => 1
+        );
+        /**/    
+
+        /**
          * Constructor.
          *
          * @octdoc  m:context/__construct
@@ -154,7 +191,12 @@ namespace asciidia\backend\svg {
         {
             parent::translate($tx, $ty);
 
-            trigger_error("'translate' is not yet implemented for 'svg' backend\n");
+            if ($tx != 0 || $ty != 0) {
+                $g = $this->svg->appendChild($this->doc->createElement('g'));
+                $g->setAttribute('transform', sprintf('translate(%d %d)', $tx, $ty));
+            
+                $this->svg = $g;
+            }
         }
 
         /**
@@ -166,21 +208,15 @@ namespace asciidia\backend\svg {
         public function setFont(array $settings)
         /**/
         {
-            $set = array();
-
             foreach ($settings as $name => $value) {
                 switch ($name) {
-                case 'font':
-                    $set[] = 'font ' . $value;
-                    break;
-                case 'size':
-                    $set[] = sprintf('font-size %f', $value);
-                    break;
+                    case 'font':
+                        $this->font['font'] = $value;
+                        break;
+                    case 'size':
+                        $this->font['size'] = $value;
+                        break;
                 }
-            }
-
-            if (count($set) > 0) {
-                $this->mvg[] = implode(' ', $set);
             }
         }
 
@@ -193,25 +229,19 @@ namespace asciidia\backend\svg {
         public function setFill(array $settings)
         /**/
         {
-            $set = array();
-
             foreach ($settings as $name => $value) {
                 switch ($name) {
-                case 'color':
-                    if (is_string($value)) {
-                        $set[] = 'fill ' . $value;
-                    } elseif (is_array($value) && count($value) == 3) {
-                        $set[] = vsprintf('fill rgb(%d,%d,%d)', $value);
-                    }
-                    break;
-                case 'opacity':
-                    $set[] = sprintf('fill-opacity %f', $value);
-                    break;
+                    case 'color':
+                        if (is_string($value)) {
+                            $this->fill['color'] = $value;
+                        } elseif (is_array($value) && count($value) == 3) {
+                            $this->fill['color'] = vsprintf('rgb(%d,%d,%d)', $value);
+                        }
+                        break;
+                    case 'opacity':
+                        $this->fill['opacity'] = $value;
+                        break;
                 }
-            }
-
-            if (count($set) > 0) {
-                $this->mvg[] = implode(' ', $set);
             }
         }
 
@@ -224,31 +254,22 @@ namespace asciidia\backend\svg {
         public function setStroke(array $settings)
         /**/
         {
-            $set = array();
-
             foreach ($settings as $name => $value) {
                 switch ($name) {
-                case 'antialias':
-                    $set[] = sprintf('stroke-antialias %d', (int)$value);
-                    break;
-                case 'width':
-                    $set[] = sprintf('stroke-width %f', $value);
-                    break;
-                case 'color':
-                    if (is_string($value)) {
-                        $set[] = 'stroke ' . $value;
-                    } elseif (is_array($value) && count($value) == 3) {
-                        $set[] = vsprintf('stroke rgb(%d,%d,%d)', $value);
-                    }
-                    break;
-                case 'opacity':
-                    $set[] = sprintf('stroke-opacity %f', $value);
-                    break;
+                    case 'width':
+                        $this->stroke['width'] = $value;
+                        break;
+                    case 'color':
+                        if (is_string($value)) {
+                            $this->stroke['color'] = $value;
+                        } elseif (is_array($value) && count($value) == 3) {
+                            $this->stroke['color'] = vsprintf('rgb(%d,%d,%d)', $value);
+                        }
+                        break;
+                    case 'opacity':
+                        $this->stroke['opacity'] = $value;
+                        break;
                 }
-            }
-
-            if (count($set) > 0) {
-                $this->mvg[] = implode(' ', $set);
             }
         }
 
@@ -276,6 +297,8 @@ namespace asciidia\backend\svg {
             $rect->setAttribute('y', min($y1, $y2) + $this->yf);
             $rect->setAttribute('width',  abs($x2 - $x1) + (2 * $this->xf));
             $rect->setAttribute('height', abs($y2 - $y1) + (2 * $this->yf));
+            
+            $this->setStyles($rect);
         
             if ($round) {
                 $rect->setAttribute('rx', $this->xf);
@@ -681,6 +704,35 @@ namespace asciidia\backend\svg {
         /*
          * misc helper functions
          */
+     
+        /**
+         * Set styles.
+         *
+         * @octdoc  m:context/setStyles
+         * @param   \DOMNode    $node           Node to set styles for.
+         * @param   array       $values         Optional values to overwrite defaults with.
+         */
+        public function setStyles(\DOMNode $node, array $values = array())
+        /**/
+        {
+            $values = array_merge(array(
+                'fill'           => $this->fill['color'],
+                'fill-opacity'   => $this->fill['opacity'],
+                'stroke'         => $this->stroke['color'],
+                'stroke-opacity' => $this->stroke['opacity'],
+                'stroke-width'   => $this->stroke['width']
+            ), $values);
+            
+            $node->setAttribute('style', sprintf(
+                'fill: %s; fill-opacity: %f; ' .
+                'stroke: %s; stroke-opacity: %f; stroke-width: %d;',
+                $values['fill'],
+                $values['fill-opacity'],
+                $values['stroke'],
+                $values['stroke-opacity'],
+                $values['stroke-width']
+            ));
+        }
      
         /**
          * This is a helper function to draw an arrow head for example for a line
