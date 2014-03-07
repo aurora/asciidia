@@ -568,7 +568,7 @@ namespace asciidia\plugins {
             // render syntax and return it's MVG commands
             $this->render($syntax);
 
-            return $this->getCommands();
+            return $this->getDocument();
         }
     }
 }

@@ -33,6 +33,18 @@ namespace asciidia\backend {
     /**/
     {
         /**
+         * Return diagram document.
+         *
+         * @octdoc  m:svg/getDocument
+         * @return  string                      Document.
+         */
+        public function getDocument()
+        /**/
+        {
+            
+        }
+
+        /**
          * Return instance of main context.
          *
          * @octdoc  m:svg/getContext
@@ -70,15 +82,15 @@ namespace asciidia\backend {
          *
          * @octdoc  m:svg/saveFile
          * @param   string      $name               Name of file to save.
-         * @param   array       $commands           Imagemagick commands to save.
+         * @param   string      $document           Document to save.
          * @param   string      $fmt                Output file format.
          */
-        public function saveFile($name, array $commands, $fmt)
+        public function saveFile($name, $document, $fmt)
         /**/
         {
             file_put_contents(
                 ($name == '-' ? 'php://stdout' : $name),
-                $commands
+                $document
             );
         }
     }

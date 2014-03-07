@@ -97,15 +97,15 @@ namespace asciidia {
         }
 
         /**
-         * Return all commands needed for drawing diagram.
+         * Return diagram document.
          *
-         * @octdoc  m:plugin/getCommands
-         * @return  array                       Imagemagick MVG commands.
+         * @octdoc  m:plugin/getDocument
+         * @return  string                      Document.
          */
-        public function getCommands()
+        public function getDocument()
         /**/
         {
-            return $this->backend->getCommands();
+            return $this->backend->getDocument();
         }
 
         /**
@@ -187,9 +187,9 @@ namespace asciidia {
                 list($status, $msg) = $this->testFile($out);
             
                 if ($status) {
-                    $mvg = $this->parse($content);
+                    $document = $this->parse($content);
                 
-                    $this->backend->saveFile($out, $mvg, $fmt);
+                    $this->backend->saveFile($out, $document, $fmt);
                 }
             }
 

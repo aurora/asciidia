@@ -60,16 +60,13 @@ namespace asciidia {
         /**/
         
         /**
-         * Return all commands needed for drawing diagram.
+         * Return diagram document.
          *
-         * @octdoc  m:backend/getCommands
-         * @return  array                       Imagemagick MVG commands.
+         * @octdoc  m:backend/getDocument
+         * @return  string                      Document.
          */
-        public function getCommands()
+        abstract public function getDocument();
         /**/
-        {
-            return $this->getContext()->getCommands();
-        }
 
         /**
          * Get size of bitmap to render.
@@ -149,10 +146,10 @@ namespace asciidia {
          *
          * @octdoc  m:backend/saveFile
          * @param   string      $name               Name of file to save.
-         * @param   array       $commands           Imagemagick commands to save.
+         * @param   string      $document           Document to save.
          * @param   string      $fmt                Output file format.
          */
-        abstract public function saveFile($name, array $commands, $fmt);
+        abstract public function saveFile($name, $document, $fmt);
         /**/
     }
 }

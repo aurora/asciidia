@@ -33,6 +33,18 @@ namespace asciidia\backend {
     /**/
     {
         /**
+         * Return diagram document.
+         *
+         * @octdoc  m:_default/getDocument
+         * @return  string                      Document.
+         */
+        public function getDocument()
+        /**/
+        {
+            return implode(' ', $this->getContext()->getCommands());
+        }
+
+        /**
          * Return instance of main context.
          *
          * @octdoc  m:_default/getContext
@@ -82,10 +94,10 @@ namespace asciidia\backend {
          *
          * @octdoc  m:_default/saveFile
          * @param   string      $name               Name of file to save.
-         * @param   array       $commands           Imagemagick commands to save.
+         * @param   string      $document           Document to save.
          * @param   string      $fmt                Output file format.
          */
-        public function saveFile($name, array $commands, $fmt)
+        public function saveFile($name, $document, $fmt)
         /**/
         {
             list($w, $h) = $this->getSize();
@@ -93,7 +105,7 @@ namespace asciidia\backend {
             $cmd = sprintf(
                 'convert -size %dx%d xc:white -stroke black -fill none -draw %s %s %s:%s',
                 $w, $h,
-                escapeshellarg(implode(' ', $commands)),
+                escapeshellarg($document),
                 ($this->scale_to ? '-scale ' . $this->scale_to : ''),
                 $fmt,
                 $name

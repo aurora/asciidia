@@ -264,7 +264,7 @@ namespace asciidia\plugins {
                 }
             }
         
-            return $this->getCommands();
+            return $this->getDocument();
         }
     }
 }

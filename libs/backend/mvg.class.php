@@ -54,15 +54,15 @@ namespace asciidia\backend {
          *
          * @octdoc  m:mvg/saveFile
          * @param   string      $name               Name of file to save.
-         * @param   array       $commands           Imagemagick commands to save.
+         * @param   string      $document           Document to save.
          * @param   string      $fmt                Output file format.
          */
-        public function saveFile($name, array $commands, $fmt)
+        public function saveFile($name, $document, $fmt)
         /**/
         {
             file_put_contents(
                 ($name == '-' ? 'php://stdout' : $name),
-                implode("\n", $commands)
+                $document
             );
         }
     }

@@ -582,7 +582,7 @@ namespace asciidia\plugins {
                 $chart->create();
             }
 
-            return $this->getCommands();
+            return $this->getDocument();
         }
 
         /**

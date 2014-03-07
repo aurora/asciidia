@@ -290,7 +290,7 @@ namespace asciidia\plugins {
 
             $this->drawCenter($ctx, $xsh, array($cfr, $cfg, $cfb), $rgb, $this->spriteZ, $this->spriteZ);
         
-            return $this->getCommands();
+            return $this->getDocument();
         }
     }
 }
