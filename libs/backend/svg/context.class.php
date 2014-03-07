@@ -193,7 +193,11 @@ namespace asciidia\backend\svg {
 
             if ($tx != 0 || $ty != 0) {
                 $g = $this->svg->appendChild($this->doc->createElement('g'));
-                $g->setAttribute('transform', sprintf('translate(%d %d)', $tx, $ty));
+                $g->setAttribute('transform', sprintf(
+                    'translate(%d %d)', 
+                    $tx * $this->xs, 
+                    $ty * $this->ys
+                ));
             
                 $this->svg = $g;
             }
