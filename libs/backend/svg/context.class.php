@@ -54,16 +54,15 @@ namespace asciidia\backend\svg {
          * Constructor.
          *
          * @octdoc  m:context/__construct
+         * @param   \DOMNode            $parent             Parent node.
          */
-        public function __construct()
+        public function __construct(\DOMNode $parent)
         /**/
         {
             parent::__construct();
         
-            $this->doc = new \DOMDocument();
-            $this->svg = $this->doc->appendChild($this->doc->createElement('svg'));
-            $this->svg->setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-            $this->svg->setAttribute('version', '1.1');
+            $this->doc = $parent->ownerDocument;
+            $this->svg = $parent->appendChild($this->doc->createElement('g'));
         }
 
         /**
@@ -76,65 +75,6 @@ namespace asciidia\backend\svg {
         /**/
         {
             trigger_error("'addCommand' is not available for 'svg' backend\n");
-        }
-
-        /**
-         * Return MVG commands.
-         *
-         * @octdoc  m:context/getCommands
-         * @return  array                           Imagemagick MVG commands.
-         */
-        public function getCommands()
-        /**/
-        {
-            // 
-            // // resolve child contexts
-            // foreach ($this->mvg as $cmd) {
-            //     if (is_array($cmd) && isset($cmd['context'])) {
-            //         $mvg = array_merge($mvg, $cmd['context']->getCommands());
-            //     } else {
-            //         $mvg[] = $cmd;
-            //     }
-            // }
-        
-            // draw debugging grid and context boundaries
-            // if ($this->debug) {
-            //     $mvg[] = sprintf('translate %f,%f', -$this->tx * $this->xs, -$this->ty * $this->ys);
-            //     $mvg[] = 'push graphic-context';
-            //     $mvg[] = 'fill transparent';
-            //     
-            //     list($cw, $ch) = $this->getSize(true);
-            //     
-            //     for ($x = 0; $x < $cw; ++$x) {
-            //         $mvg[] = sprintf(
-            //             'line %f,0 %f,%f',
-            //             $x * $this->xs,
-            //             $x * $this->xs,
-            //             $ch * $this->ys
-            //         );
-            //     }
-            //     for ($y = 0; $y < $ch; ++$y) {
-            //         $mvg[] = sprintf(
-            //             'line 0,%f %f,%f',
-            //             $y * $this->ys,
-            //             $cw * $this->xs,
-            //             $y * $this->ys
-            //         );
-            //     }
-            //     $mvg[] = sprintf(
-            //         'rectangle 0,0, %f,%f', 
-            //         $cw * $this->xs, 
-            //         $ch * $this->ys
-            //     );
-            //     
-            //     $this->mvg[] = sprintf(
-            //         "text 0,%f '%d,%d'", $this->ys - ($this->yf / 2), $cw, $ch
-            //     );
-            //     
-            //     $mvg[] = 'pop graphic-context';
-            // }
-
-            return $this->doc->saveXML();
         }
 
         /**

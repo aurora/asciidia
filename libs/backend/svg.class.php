@@ -33,6 +33,15 @@ namespace asciidia\backend {
     /**/
     {
         /**
+         * DOMDocument.
+         *
+         * @octdoc  p:svg/$doc
+         * @type    \DOMDocument|null
+         */
+        protected $doc = null;
+        /**/
+        
+        /**
          * Return diagram document.
          *
          * @octdoc  m:svg/getDocument
@@ -41,7 +50,7 @@ namespace asciidia\backend {
         public function getDocument()
         /**/
         {
-            
+            return $this->doc->saveXML();
         }
 
         /**
@@ -54,7 +63,13 @@ namespace asciidia\backend {
         /**/
         {
             if (is_null($this->context)) {
-                $this->context = new \asciidia\backend\svg\context();
+                $this->doc = new \DOMDocument();
+                
+                $svg = $this->doc->appendChild($this->doc->createElement('svg'));
+                $svg->setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+                $svg->setAttribute('version', '1.1');
+                
+                $this->context = new \asciidia\backend\svg\context($svg);
             }
         
             return $this->context;
