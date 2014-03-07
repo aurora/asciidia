@@ -690,15 +690,19 @@ namespace asciidia\backend\svg {
             $this->setSize($x, $y);
 
             if ($round) {
-                $this->mvg[] = sprintf(
-                    'fill transparent ellipse %f,%f %f,%f %f,%f',
-                    $x * $this->xs + $xf, 
+                $path = $this->doc->createElement('path');
+                $path->setAttribute('d', $this->getArcEllipsePath(
+                    $x * $this->xs + $xf,
                     $y * $this->ys + $yf,
                     $this->xf,
                     $this->yf,
                     $rs,
                     $re
-                );
+                ));
+        
+                $this->setStyles($path);
+        
+                $this->svg->appendChild($path);
             } else {
                 $this->drawMarker(
                     $x, $y, '+', 
@@ -731,23 +735,54 @@ namespace asciidia\backend\svg {
          */
 
         /**
+         * Get path commands for drawing an arc ellipse.
+         *
+         * @octdoc  m:context/getArcEllipsePath
+         * @param   float       $cx             Center-X coordinate.
+         * @param   float       $cy             Center-Y coordinate.
+         * @param   float       $rx             X radius.
+         * @param   float       $ry             Y radius.
+         * @param   float       $start          Start angle.
+         * @param   float       $end            End angle.
+         */
+        protected function getArcEllipsePath($cx, $cy, $rx, $ry, $start, $end)
+        /**/
+        {
+            list($sx, $sy) = $this->pol2cart($cx, $cy, $rx, $ry, $end);
+            list($ex, $ey) = $this->pol2cart($cx, $cy, $rx, $ry, $start);
+
+            $sweep = (abs($end - $start) < 180 
+                        ? 0
+                        : 1);
+
+            return sprintf(
+                'M %f %f A %f %f 0 %d 0 %f %f',
+                $sx, $sy,
+                $rx, $ry,
+                $sweep,
+                $ex, $ey
+            );
+        }
+        
+        /**
          * Convert polar coordinates to cartesian coordinates.
          *
          * @octdoc  m:context/pol2cart
          * @param   float       $cx             Center-X coordinate.
          * @param   float       $cy             Center-Y coordinate.
-         * @param   float       $r              Radius.
+         * @param   float       $rx             X radius.
+         * @param   float       $ry             Y radius.
          * @param   float       $angle          Angle in degrees.
          * @return  array                       Array of x,y coordinates.
          */
-        public function pol2cart($cx, $cy, $r, $angle)
+        public function pol2cart($cx, $cy, $rx, $ry, $angle)
         /**/
         {
             $rad = $angle * M_PI / 180;
             
             return array(
-                $cx + $r * cos($rad);
-                $cy + $r * sin($rad);
+                $cx + $rx * cos($rad),
+                $cy + $ry * sin($rad)
             );
         }
 
