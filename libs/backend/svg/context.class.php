@@ -602,9 +602,8 @@ namespace asciidia\backend\svg {
                 $ellipse->setAttribute('cy', $y);
                 $ellipse->setAttribute('rx', $hxf);
                 $ellipse->setAttribute('ry', $hyf);
-                $ellipse->setAttribute('style', 'fill:' . $this->bg);
             
-                $this->setStyles($ellipse);
+                $this->setStyles($ellipse, array('fill' => $this->bg));
         
                 $this->svg->appendChild($ellipse);
                 break;
