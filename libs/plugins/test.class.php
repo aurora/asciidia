@@ -2,7 +2,7 @@
 
 /*
  * This file is part of asciidia
- * Copyright (C) 2011 by Harald Lapp <harald@octris.org>
+ * Copyright (c) by Harald Lapp <harald@octris.org>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@ namespace asciidia\plugins {
      * Dummy-class for testing purpose only.
      *
      * @octdoc      c:plugin/test
-     * @copyright   copyright (c) 2011 by Harald Lapp
+     * @copyright   copyright (c) 2011-2014 by Harald Lapp
      * @author      Harald Lapp <harald@octris.org>
      */
     class test extends \asciidia\plugin

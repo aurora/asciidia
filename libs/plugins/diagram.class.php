@@ -2,7 +2,7 @@
 
 /*
  * This file is part of asciidia
- * Copyright (C) 2011 by Harald Lapp <harald@octris.org>
+ * Copyright (c) by Harald Lapp <harald@octris.org>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,7 @@ namespace asciidia\plugins {
      * Class for converting simple ASCII diagrams.
      *
      * @octdoc      c:plugin/diagram
-     * @copyright   copyright (c) 2011 by Harald Lapp
+     * @copyright   copyright (c) 2011-2014 by Harald Lapp
      * @author      Harald Lapp <harald@octris.org>
      */
     class diagram extends \asciidia\plugin
