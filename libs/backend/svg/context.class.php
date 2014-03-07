@@ -66,6 +66,27 @@ namespace asciidia\backend\svg {
         }
 
         /**
+         * Add child context to current one. The new context will inherit the
+         * cell scaling setting of current context.
+         *
+         * @octdoc  m:context/addContext
+         * @return  \asciidia\context                     New graphic context.
+         */
+        public function addContext()
+        /**/
+        {
+            $context = new static($this->svg);
+        
+            $context->__set('xs', $this->xs);
+            $context->__set('ys', $this->ys);
+
+            $debug = ((int)$this->debug == 2);
+            $context->enableDebug($debug, $debug);
+        
+            return $context;
+        }
+    
+        /**
          * Add MVG command to command-list.
          *
          * @octdoc  m:context/addCommand
@@ -529,13 +550,13 @@ namespace asciidia\backend\svg {
         {
             $this->setSize($x + strlen($text), $y);
      
-            $text = $this->doc->createElement('text');
+            $txt = $this->doc->createElement('text');
         
-            $text->setAttribute('x', $x * $this->xs);
-            $text->setAttribute('y', ($y + 1) * $this->ys - ($this->yf / 2));
-            $text->appendChild($this->doc->createTextNode($text));
+            $txt->setAttribute('x', $x * $this->xs);
+            $txt->setAttribute('y', ($y + 1) * $this->ys - ($this->yf / 2));
+            $txt->appendChild($this->doc->createTextNode($text));
         
-            $this->svg->appendChild($text);
+            $this->svg->appendChild($txt);
         }
 
         /**

@@ -174,25 +174,10 @@ namespace asciidia {
          * cell scaling setting of current context.
          *
          * @octdoc  m:context/addContext
-         * @return  context                     New graphic context.
+         * @return  \asciidia\context                     New graphic context.
          */
-        public function addContext()
+        abstract public function addContext();
         /**/
-        {
-            $this->mvg[] = array(
-                'tx'        => $this->tx,
-                'ty'        => $this->ty,
-                'context'   => ($context = new static())
-            );
-        
-            $context->__set('xs', $this->xs);
-            $context->__set('ys', $this->ys);
-
-            $debug = ((int)$this->debug == 2);
-            $context->enableDebug($debug, $debug);
-        
-            return $context;
-        }
     
         /**
          * Apply a callback method to the instances of sub-contexts.

@@ -53,6 +53,31 @@ namespace asciidia\backend\_default {
         }
 
         /**
+         * Add child context to current one. The new context will inherit the
+         * cell scaling setting of current context.
+         *
+         * @octdoc  m:context/addContext
+         * @return  \asciidia\context                     New graphic context.
+         */
+        public function addContext()
+        /**/
+        {
+            $this->mvg[] = array(
+                'tx'        => $this->tx,
+                'ty'        => $this->ty,
+                'context'   => ($context = new static())
+            );
+        
+            $context->__set('xs', $this->xs);
+            $context->__set('ys', $this->ys);
+
+            $debug = ((int)$this->debug == 2);
+            $context->enableDebug($debug, $debug);
+        
+            return $context;
+        }
+    
+        /**
          * Add MVG command to command-list.
          *
          * @octdoc  m:context/addCommand
