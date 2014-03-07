@@ -729,7 +729,28 @@ namespace asciidia\backend\svg {
         /*
          * misc helper functions
          */
-     
+
+        /**
+         * Convert polar coordinates to cartesian coordinates.
+         *
+         * @octdoc  m:context/pol2cart
+         * @param   float       $cx             Center-X coordinate.
+         * @param   float       $cy             Center-Y coordinate.
+         * @param   float       $r              Radius.
+         * @param   float       $angle          Angle in degrees.
+         * @return  array                       Array of x,y coordinates.
+         */
+        public function pol2cart($cx, $cy, $r, $angle)
+        /**/
+        {
+            $rad = $angle * M_PI / 180;
+            
+            return array(
+                $cx + $r * cos($rad);
+                $cy + $r * sin($rad);
+            );
+        }
+
         /**
          * Set styles.
          *
