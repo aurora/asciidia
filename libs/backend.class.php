@@ -56,7 +56,7 @@ namespace asciidia {
          * @octdoc  m:backend/getContext
          * @return  \asciidia\context                       Instance of main context.
          */
-        abstract protected function getContext();
+        abstract public function getContext();
         /**/
         
         /**

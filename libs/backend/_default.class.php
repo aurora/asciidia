@@ -38,7 +38,7 @@ namespace asciidia\backend {
          * @octdoc  m:_default/getContext
          * @return  context                     Instance of main context.
          */
-        protected function getContext()
+        public function getContext()
         /**/
         {
             if (is_null($this->context)) {
