@@ -174,7 +174,7 @@ namespace asciidia\backend\svg {
         }
 
         /*
-         * misc MVG commands
+         * misc commands
          */
     
         /**
