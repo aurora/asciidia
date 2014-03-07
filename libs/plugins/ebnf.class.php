@@ -345,10 +345,10 @@ namespace asciidia\plugins {
          * @octdoc  m:ebnf/render
          * @param   DOMNode     $node           Node to render.
          */
-        protected function render(DOMNode $node)
+        protected function render(\DOMNode $node)
         /**/
         {
-            $render = function(DOMNode $node, context $context, $l2r = true) use (&$render) {
+            $render = function(\DOMNode $node, \asciidia\context $context, $l2r = true) use (&$render) {
                 // process node
                 switch ($node->nodeName) {
                 case 'syntax':
@@ -550,7 +550,7 @@ namespace asciidia\plugins {
         {
             // parse EBNF and create a syntax-tree of it.
             $tokens = $this->tokenize($diagram);
-            $dom    = new DOMDocument();
+            $dom    = new \DOMDocument();
             $syntax = $dom->appendChild($dom->createElement('syntax'));
         
             // if (!($token = $this->getToken($tokens, self::T_OPERATOR, '{'))) {
