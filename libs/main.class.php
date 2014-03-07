@@ -186,12 +186,12 @@ namespace asciidia {
             $debug = array_key_exists('d', $opt);
 
             if (!is_null($this->plugin)) {
-                $backend = '\\asciidia\\backend\\' . $out_fmt . '\\backend';
+                $backend = '\\asciidia\\backend\\' . $out_fmt;
             
                 if (class_exists($backend)) {
                     $this->plugin->setBackend(new $backend());
                 } else {
-                    $this->plugin->setBackend(new \asciidia\backend\_default\backend());
+                    $this->plugin->setBackend(new \asciidia\backend\_default());
                 }
             
                 // test environment

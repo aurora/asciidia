@@ -29,7 +29,7 @@ namespace asciidia\backend {
      * @copyright   copyright (c) 2014 by Harald Lapp
      * @author      Harald Lapp <harald@octris.org>
      */
-    class _default
+    class _default extends \asciidia\backend
     /**/
     {
         /**

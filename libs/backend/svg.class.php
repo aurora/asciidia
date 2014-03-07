@@ -29,7 +29,7 @@ namespace asciidia\backend {
      * @copyright   copyright (c) 2014 by Harald Lapp
      * @author      Harald Lapp <harald@octris.org>
      */
-    class svg
+    class svg extends \asciidia\backend
     /**/
     {
         /**
