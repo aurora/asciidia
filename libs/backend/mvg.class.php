@@ -33,6 +33,23 @@ namespace asciidia\backend {
     /**/
     {
         /**
+         * No additional tools required for this backend.
+         *
+         * @octdoc  m:mvg/testEnv
+         * @return  array                           Status information.
+         */
+        public function testEnv()
+        /**/
+        {
+            $status = true;
+            $msg    = '';
+            $out    = array();
+            $err    = 0;
+        
+            return array($status, $msg);
+        }
+
+        /**
          * Save a file or test if file can be saved to.
          *
          * @octdoc  m:mvg/saveFile
