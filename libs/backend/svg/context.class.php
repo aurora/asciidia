@@ -511,17 +511,19 @@ namespace asciidia\backend\svg {
             $this->svg->appendChild($line);
 
             // draw crossing
-            trigger_error("'drawLineCrossing' not yet fully implemented for 'svg' backend\n");
-        
-            // $this->mvg[] = sprintf(
-            //     'fill transparent ellipse %f,%f %f,%f %f,%f',
-            //     $x * $this->xs + $this->xf, 
-            //     $y * $this->ys + $this->yf,
-            //     $this->xf,
-            //     $this->yf,
-            //     -90,
-            //     -270
-            // );
+            $path = $this->doc->createElement('path');
+            $path->setAttribute('d', $this->getArcEllipsePath(
+                $x * $this->xs + $xf,
+                $y * $this->ys + $yf,
+                $this->xf,
+                $this->yf,
+                -90,
+                270
+            ));
+    
+            $this->setStyles($path);
+    
+            $this->svg->appendChild($path);
         }
 
         /**
