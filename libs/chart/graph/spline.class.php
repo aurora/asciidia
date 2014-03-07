@@ -55,7 +55,7 @@ namespace asciidia\chart\graph {
          * @param   float               $x_mul                  Point multiplicator for X-Axis.
          * @param   float               $y_mul                  Point multiplicator for Y-Axis.
          */
-        public function create(\context $context, $width, $height, $zero, $x_mul, $y_mul)
+        public function create(\asciidia\context $context, $width, $height, $zero, $x_mul, $y_mul)
         /**/
         {
             $points = array();
