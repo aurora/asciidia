@@ -27,35 +27,17 @@ namespace asciidia {
      * all other needed methods.
      *
      * @octdoc      c:libs/plugin
-     * @copyright   copyright (c) 2011 by Harald Lapp
+     * @copyright   copyright (c) 2011-2014 by Harald Lapp
      * @author      Harald Lapp <harald@octris.org>
      */
     abstract class plugin
     /**/
     {
         /**
-         * Instance of main graphic context.
-         *
-         * @octdoc  v:plugin/$context
-         * @type    context
-         */
-        private $context = null;
-        /**/
-    
-        /**
-         * Size of the final bitmap.
-         *
-         * @octdoc  v:plugin/$scale_to
-         * @type    string
-         */
-        private $scale_to = null;
-        /**/
-    
-        /**
          * Output backend.
          *
          * @octdoc  p:plugin/$backend
-         * @type    \asciidia\backend\backend|null
+         * @type    \asciidia\backend|null
          */
         private $backend = null;
         /**/
@@ -94,9 +76,9 @@ namespace asciidia {
          * Set output backend.
          *
          * @octdoc  m:plugin/setBackend
-         * @param   \asciidia\backend\backend       $backend                Output format.
+         * @param   \asciidia\backend   $backend                Output format.
          */
-        public function setBackend(\asciidia\backend\backend $backend)
+        public function setBackend(\asciidia\backend $backend)
         /**/
         {
             $this->backend = $backend;
@@ -111,20 +93,7 @@ namespace asciidia {
         protected function getContext()
         /**/
         {
-            if (is_null($this->context)) {
-                switch ($this->out_format) {
-                    case 'svg':
-                        require_once(__DIR__ . '/backend/svg.class.php');
-                        $this->context = new svg();
-                        break;
-                    default:
-                        require_once(__DIR__ . '/backend/imagemagick.class.php');
-                        $this->context = new imagemagick();
-                        break;
-                }
-            }
-        
-            return $this->context;
+            return $this->backend->getContext();
         }
 
         /**
@@ -136,7 +105,7 @@ namespace asciidia {
         public function getCommands()
         /**/
         {
-            return $this->getContext()->getCommands();
+            return $this->backend->getCommands();
         }
 
         /**
@@ -148,7 +117,7 @@ namespace asciidia {
         public function getSize()
         /**/
         {
-            return $this->getContext()->getSize();
+            return $this->backend->getSize();
         }
 
         /**
@@ -161,9 +130,7 @@ namespace asciidia {
         final public function setCellSize($w, $h)
         /**/
         {
-            $context = $this->getContext();
-            $context->xs = $w;
-            $context->ys = $h;
+            $this->backend->setCellSize($w, $h);
         }
 
         /**
@@ -175,7 +142,7 @@ namespace asciidia {
         final public function setScaleTo($scale)
         /**/
         {
-            $this->scale_to = $scale;
+            $this->backend->setScaleTo($scale);
         }
 
         /**
@@ -187,7 +154,7 @@ namespace asciidia {
         public function getScaleTo()
         /**/
         {
-            return $this->scale_to;
+            return $this->backend->getScaleTo();
         }
 
         /**
@@ -199,7 +166,7 @@ namespace asciidia {
         public function enableDebug($enable)
         /**/
         {
-            $this->getContext()->enableDebug($enable);
+            $this->backend->enableDebug($enable);
         }
 
         /**
@@ -208,9 +175,10 @@ namespace asciidia {
          * @octdoc  m:plugin/run
          * @param   string      $inp                Name of input.
          * @param   string      $out                Name of output.
+         * @param   string      $fmt                Output file format.
          * @return  array                           Status information.
          */
-        public function run($inp, $out)
+        public function run($inp, $out, $fmt)
         /**/
         {
             list($status, $msg, $content) = $this->loadFile($inp);
@@ -221,7 +189,7 @@ namespace asciidia {
                 if ($status) {
                     $mvg = $this->parse($content);
                 
-                    $this->saveFile($out, $mvg);
+                    $this->backend->saveFile($out, $mvg, $fmt);
                 }
             }
 
@@ -243,8 +211,8 @@ namespace asciidia {
         }
 
         /**
-         * Method to perform environment checks for example, if imagemagick 
-         * is found through the path.
+         * Method to perform environment checks for availability of tools the backend may
+         * require.
          *
          * @octdoc  m:plugin/testEnv
          * @return  array                           Status information.
@@ -252,30 +220,7 @@ namespace asciidia {
         public function testEnv()
         /**/
         {
-            $status = true;
-            $msg    = '';
-            $out    = array();
-            $err    = 0;
-        
-            switch ($this->out_format) {
-                case 'svg':
-                    break;
-                default:
-                    // test if imagemagick is available
-                    exec('which convert', $out, $err);
-                    $mh = getenv('MAGICK_HOME');
-        
-                    if ($err != 0) {
-                        $status = false;
-                        $msg    = 'imagemagick "convert" is not found in path';
-                    } elseif ($mh == '') {
-                        $status = false;
-                        $msg    = '"MAGICK_HOME" environment variable is not set';
-                    }
-                    break;
-            }
-        
-            return array($status, $msg);
+            return $this->backend->testEnv();
         }
 
         /**
@@ -324,48 +269,6 @@ namespace asciidia {
             }
         
             return $return;
-        }
-
-        /**
-         * Save a file or test if file can be saved to.
-         *
-         * @octdoc  m:plugin/saveFile
-         * @param   string      $name               Name of file to save.
-         * @param   array       $commands           Imagemagick commands to save.
-         */
-        public function saveFile($name, array $commands)
-        /**/
-        {
-            switch ($this->out_format) {
-                case 'mvg':
-                    // imagemagick mvg commands
-                    file_put_contents(
-                        ($name == '-' ? 'php://stdout' : $name),
-                        implode("\n", $commands)
-                    );
-                    break;
-                case 'svg':
-                    // svg xml output
-                    file_put_contents(
-                        ($name == '-' ? 'php://stdout' : $name),
-                        $commands
-                    );
-                    break;
-                default:
-                    list($w, $h) = $this->getSize();
-
-                    $cmd = sprintf(
-                        'convert -size %dx%d xc:white -stroke black -fill none -draw %s %s %s:%s',
-                        $w, $h,
-                        escapeshellarg(implode(' ', $commands)),
-                        ($this->scale_to ? '-scale ' . $this->scale_to : ''),
-                        $this->out_format,
-                        $name
-                    );
-
-                    passthru($cmd);
-                    break;
-            }
         }
     }
 }

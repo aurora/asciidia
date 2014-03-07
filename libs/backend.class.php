@@ -33,28 +33,126 @@ namespace asciidia {
     /**/
     {
         /**
+         * Instance of main graphic context.
+         *
+         * @octdoc  p:backend/$context
+         * @type    context
+         */
+        private $context = null;
+        /**/
+    
+        /**
+         * Size of the final bitmap.
+         *
+         * @octdoc  p:backend/$scale_to
+         * @type    string
+         */
+        private $scale_to = null;
+        /**/
+    
+        /**
          * Return instance of main context.
          *
          * @octdoc  m:backend/getContext
-         * @return  context                     Instance of main context.
+         * @return  \asciidia\context                       Instance of main context.
          */
-        abstract protected function getContext()
+        abstract protected function getContext();
+        /**/
+        
+        /**
+         * Return all commands needed for drawing diagram.
+         *
+         * @octdoc  m:backend/getCommands
+         * @return  array                       Imagemagick MVG commands.
+         */
+        public function getCommands()
         /**/
         {
-            if (is_null($this->context)) {
-                switch ($this->out_format) {
-                    case 'svg':
-                        require_once(__DIR__ . '/backend/svg.class.php');
-                        $this->context = new svg();
-                        break;
-                    default:
-                        require_once(__DIR__ . '/backend/imagemagick.class.php');
-                        $this->context = new imagemagick();
-                        break;
-                }
-            }
-        
-            return $this->context;
+            return $this->getContext()->getCommands();
         }
+
+        /**
+         * Get size of bitmap to render.
+         *
+         * @octdoc  m:backend/getSize
+         * @return  array                       w, h of bitmap to be rendered.   
+         */
+        public function getSize()
+        /**/
+        {
+            return $this->getContext()->getSize();
+        }
+        
+        /**
+         * Set the size of the cells.
+         *
+         * @octdoc  m:backend/setCellSize
+         * @param   float       $w                  Width of a cell.
+         * @param   float       $h                  Height of a cell.
+         */
+        final public function setCellSize($w, $h)
+        /**/
+        {
+            $context = $this->getContext();
+            $context->xs = $w;
+            $context->ys = $h;
+        }
+        
+        /**
+         * Set the size of the bitmap the result should be scaled to.
+         *
+         * @octdoc  m:backend/setScaleTo
+         * @param   float       $scale              Imagemagick scaling size.
+         */
+        final public function setScaleTo($scale)
+        /**/
+        {
+            $this->scale_to = $scale;
+        }
+
+        /**
+         * Get scaling value.
+         *
+         * @octdoc  m:backend/getScaleTo
+         * @return  string|null                     Configured scaling parameter.
+         */
+        public function getScaleTo()
+        /**/
+        {
+            return $this->scale_to;
+        }
+
+        /**
+         * Enable a debugging mode for context.
+         *
+         * @octdoc  m:backend/enableDebug
+         * @param   bool        $enable             Whether to enable / disable debugging.
+         */
+        public function enableDebug($enable)
+        /**/
+        {
+            $this->getContext()->enableDebug($enable);
+        }
+        
+        /**
+         * Method to perform environment checks for availability of tools the backend may
+         * require.
+         *
+         * @octdoc  m:backend/testEnv
+         * @return  array                           Status information.
+         */
+        abstract public function testEnv();
+        /**/
+
+        /**
+         * Save a file.
+         *
+         * @octdoc  m:backend/saveFile
+         * @param   string      $name               Name of file to save.
+         * @param   array       $commands           Imagemagick commands to save.
+         * @param   string      $fmt                Output file format.
+         */
+        abstract public function saveFile($name, array $commands, $fmt);
+        /**/
     }
 }
