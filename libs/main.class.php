@@ -221,7 +221,7 @@ namespace asciidia {
                 }
             
                 // execute plugin
-                list($status, $msg) = $this->plugin->run($opt['i'], $opt['o']);
+                list($status, $msg) = $this->plugin->run($opt['i'], $opt['o'], $out_fmt);
             
                 if (!$status) $this->usage($msg);
             }
