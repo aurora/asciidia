@@ -52,11 +52,19 @@ Asciidia requires and uses imagemagick to render it's diagrams to a bitmap.
         number to scale to. if width or height are ommited, image will be 
         scaled by keeping aspect ratio. 
 
+It's possible to specify an output format by prefixing the output filename in the form
+
+    format:filename
+    
+For example:
+
+    ./asciidia.php -t ebnf -i rules.ebnf -o svg:diagram.svg
+
 Requirements
 ------------
 
 *   php 5.3
-*   imagemagick
+*   imagemagick is only required, if output format is not 'svg'
 
 License
 -------
