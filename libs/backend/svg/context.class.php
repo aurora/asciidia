@@ -62,7 +62,7 @@ namespace asciidia\backend\svg {
         
             $this->doc = new \DOMDocument();
             $this->svg = $this->doc->appendChild($this->doc->createElement('svg'));
-            $this->svg->setAttibute('xmlns', 'http://www.w3.org/2000/svg');
+            $this->svg->setAttribute('xmlns', 'http://www.w3.org/2000/svg');
             $this->svg->setAttribute('version', '1.1');
         }
 
