@@ -38,7 +38,7 @@ namespace asciidia {
          * @octdoc  p:backend/$context
          * @type    context
          */
-        private $context = null;
+        protected $context = null;
         /**/
     
         /**
@@ -47,7 +47,7 @@ namespace asciidia {
          * @octdoc  p:backend/$scale_to
          * @type    string
          */
-        private $scale_to = null;
+        protected $scale_to = null;
         /**/
     
         /**
@@ -90,7 +90,7 @@ namespace asciidia {
          * @param   float       $w                  Width of a cell.
          * @param   float       $h                  Height of a cell.
          */
-        final public function setCellSize($w, $h)
+        public function setCellSize($w, $h)
         /**/
         {
             $context = $this->getContext();
@@ -104,7 +104,7 @@ namespace asciidia {
          * @octdoc  m:backend/setScaleTo
          * @param   float       $scale              Imagemagick scaling size.
          */
-        final public function setScaleTo($scale)
+        public function setScaleTo($scale)
         /**/
         {
             $this->scale_to = $scale;
