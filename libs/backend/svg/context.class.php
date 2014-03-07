@@ -297,10 +297,10 @@ namespace asciidia\backend\svg {
             $this->setSize(max($x1, $x2), max($y1, $y2));
      
             $rect = $this->doc->createElement('rect');
-            $rect->setAttribute('x', min($x1, $x2) + $this->xf);
-            $rect->setAttribute('y', min($y1, $y2) + $this->yf);
-            $rect->setAttribute('width',  abs($x2 - $x1) + (2 * $this->xf));
-            $rect->setAttribute('height', abs($y2 - $y1) + (2 * $this->yf));
+            $rect->setAttribute('x', min($x1, $x2) * $this->xs + $this->xf);
+            $rect->setAttribute('y', min($y1, $y2) * $this->ys + $this->yf);
+            $rect->setAttribute('width',  abs($x2 - $x1) * $this->xs);
+            $rect->setAttribute('height', abs($y2 - $y1) * $this->ys);
             
             $this->setStyles($rect);
         
