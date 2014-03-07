@@ -353,7 +353,9 @@ namespace asciidia\backend\svg {
                     $cx2 * $this->xs + $this->xf, $cy2 * $this->ys + $this->yf,
                     $x2 * $this->xs + $this->xf,  $y2 * $this->ys + $this->yf
                 ));
-            
+                
+                $this->setStyles($path);
+        
                 $this->svg->appendChild($path);
             }
         }
@@ -386,6 +388,8 @@ namespace asciidia\backend\svg {
             $line->setAttribute('y1', $y1 * $this->ys + $this->yf);
             $line->setAttribute('x2', $x2 * $this->xs + $this->xf);
             $line->setAttribute('y2', $y2 * $this->ys + $this->yf);
+        
+            $this->setStyles($line);
         
             $this->svg->appendChild($line);
         
@@ -425,6 +429,8 @@ namespace asciidia\backend\svg {
             $line->setAttribute('x2', $x2 * $this->xs + $this->xs);
             $line->setAttribute('y2', $y * $this->ys + $this->yf);
         
+            $this->setStyles($line);
+        
             $this->svg->appendChild($line);
         
             if ($arrow !== false) {
@@ -461,6 +467,8 @@ namespace asciidia\backend\svg {
             $line->setAttribute('x2', $x * $this->xs + $this->xf);
             $line->setAttribute('y2', $y2 * $this->ys + $this->ys);
         
+            $this->setStyles($line);
+        
             $this->svg->appendChild($line);
         
             if ($arrow !== false) {
@@ -493,6 +501,8 @@ namespace asciidia\backend\svg {
             $line->setAttribute('y1', $y * $this->ys + $this->yf);
             $line->setAttribute('x2', $x * $this->xs + $this->xf + $this->xf);
             $line->setAttribute('y2', $y * $this->ys + $this->yf);
+        
+            $this->setStyles($line);
         
             $this->svg->appendChild($line);
 
@@ -535,6 +545,8 @@ namespace asciidia\backend\svg {
             $line->setAttribute('x2', $x * $this->xs + $this->xf + ((int)$cr * $this->xf));
             $line->setAttribute('y2', $y * $this->ys + $this->yf);
         
+            $this->setStyles($line);
+        
             $this->svg->appendChild($line);
 
             $line = $this->doc->createElement('line');
@@ -543,6 +555,8 @@ namespace asciidia\backend\svg {
             $line->setAttribute('y1', $y * $this->ys + ((1 - (int)$ca) * $this->yf));
             $line->setAttribute('x2', $x * $this->xs + $this->xf);
             $line->setAttribute('y2', $y * $this->ys + $this->yf + ((int)$cb * $this->yf));
+        
+            $this->setStyles($line);
         
             $this->svg->appendChild($line);
         
@@ -559,6 +573,8 @@ namespace asciidia\backend\svg {
                 $line->setAttribute('x2', $x * $this->xs + $this->xs - $hxf);
                 $line->setAttribute('y2', $y * $this->ys + $this->ys - $hyf);
         
+                $this->setStyles($line);
+        
                 $this->svg->appendChild($line);
 
                 $line = $this->doc->createElement('line');
@@ -567,6 +583,8 @@ namespace asciidia\backend\svg {
                 $line->setAttribute('y1', $y * $this->ys + $hyf);
                 $line->setAttribute('x2', $x * $this->xs + $hxf);
                 $line->setAttribute('y2', $y * $this->ys + $this->ys - $hyf);
+        
+                $this->setStyles($line);
         
                 $this->svg->appendChild($line);
                 break;
@@ -582,6 +600,8 @@ namespace asciidia\backend\svg {
                 $ellipse->setAttribute('ry', $hyf);
                 $ellipse->setAttribute('style', 'fill:' . $this->bg);
             
+                $this->setStyles($ellipse);
+        
                 $this->svg->appendChild($ellipse);
                 break;
             }
@@ -765,8 +785,6 @@ namespace asciidia\backend\svg {
                 );
             };
 
-            trigger_error("'drawArrowHead' todo for 'svg' backend: 'fill'");
-
             $group = $this->doc->createElement('g');
             $this->svg->appendChild($group);
 
@@ -778,6 +796,8 @@ namespace asciidia\backend\svg {
                 $get_xy(0, -$this->yf),
                 $get_xy($this->xf, 0)
             ));
+        
+            $this->setStyles($path);
         
             $group->appendChild($path);
         }
