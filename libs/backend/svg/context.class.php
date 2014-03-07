@@ -347,7 +347,7 @@ namespace asciidia\backend\svg {
 
                 $path = $this->doc->createElement('path');
                 $path->setAttribute('d', sprintf(
-                    "path 'M %f,%f C %f,%f %f,%f %f,%f'",
+                    "M %f,%f C %f,%f %f,%f %f,%f",
                     $x1 * $this->xs + $this->xf,  $y1 * $this->ys + $this->yf,
                     $cx1 * $this->xs + $this->xf, $cy1 * $this->ys + $this->yf,
                     $cx2 * $this->xs + $this->xf, $cy2 * $this->ys + $this->yf,
