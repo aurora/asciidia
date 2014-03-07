@@ -215,12 +215,12 @@ namespace asciidia\plugins {
          * Parse EBNF production.
          *
          * @octdoc  m:ebnf/parseProd
-         * @param   DOMDocument $dom         Document to add elements to.
+         * @param   \DOMDocument $dom         Document to add elements to.
          * @param   array       $tokens         Token stack.
          * @param   array       $current        Current token.
          * @return  array                       Elements to add to syntax.
          */
-        protected function parseProd(DOMDocument $dom, &$tokens, array $current)
+        protected function parseProd(\DOMDocument $dom, &$tokens, array $current)
         /**/
         {
             $return = $dom->createElement('production');
@@ -245,12 +245,12 @@ namespace asciidia\plugins {
          * Parse EBNF expression.
          *
          * @octdoc  m:ebnf/parseExpr
-         * @param   DOMDocument $dom         Document to add elements to.
+         * @param   \DOMDocument $dom         Document to add elements to.
          * @param   array       $tokens         Token stack.
          * @param   array       $token          Current token.
          * @return  array                       Elements to add to syntax.
          */
-        protected function parseExpr(DOMDocument $dom, &$tokens, array $token)
+        protected function parseExpr(\DOMDocument $dom, &$tokens, array $token)
         /**/
         {
             $return = $dom->createElement('expression');
@@ -266,12 +266,12 @@ namespace asciidia\plugins {
          * Parse EBNF term.
          *
          * @octdoc  m:ebnf/parseTerm
-         * @param   DOMDocument $dom         Document to add elements to.
+         * @param   \DOMDocument $dom         Document to add elements to.
          * @param   array       $tokens         Token stack.
          * @param   array       $token          Current token.
          * @return  array                       Elements to add to syntax.
          */
-        public function parseTerm(DOMDocument $dom, &$tokens, array $token)
+        public function parseTerm(\DOMDocument $dom, &$tokens, array $token)
         /**/
         {
             $return = $dom->createElement('term');
@@ -287,12 +287,12 @@ namespace asciidia\plugins {
          * Parse EBNF factor.
          *
          * @octdoc  m:ebnf/parseFact
-         * @param   DOMDocument $dom         Document to add elements to.
+         * @param   \DOMDocument $dom         Document to add elements to.
          * @param   array       $tokens         Token stack.
          * @param   array       $current        Current token.
          * @return  array                       Elements to add to syntax.
          */
-        public function parseFact(DOMDocument $dom, &$tokens, array $current)
+        public function parseFact(\DOMDocument $dom, &$tokens, array $current)
         /**/
         {
             if (!($token = $this->getToken($tokens))) {
@@ -343,7 +343,7 @@ namespace asciidia\plugins {
          * Render syntax to imagemagick MVG commands.
          *
          * @octdoc  m:ebnf/render
-         * @param   DOMNode     $node           Node to render.
+         * @param   \DOMNode     $node           Node to render.
          */
         protected function render(\DOMNode $node)
         /**/
