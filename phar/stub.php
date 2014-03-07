@@ -18,6 +18,6 @@ if (!class_exists('PHAR')) {
 Phar::mapPhar();
 include 'phar://asciidia.phar/main.class.php';
 
-$main = new main();
+$main = new \asciidia\main();
 $main->run();
 __HALT_COMPILER();

@@ -21,7 +21,7 @@
  * https://github.com/aurora/asciidia
  */
 
-namespace chart {
+namespace asciidia\chart {
     /**
      * Dataset for creating charts.
      *

@@ -21,66 +21,66 @@
  * https://github.com/aurora/asciidia
  */
 
-require_once(__DIR__ . '/../plugin.class.php');
-
-/**
- * Dummy-class for testing purpose only.
- *
- * @octdoc      c:plugin/test
- * @copyright   copyright (c) 2011 by Harald Lapp
- * @author      Harald Lapp <harald@octris.org>
- */
-class test extends plugin
-/**/
-{
+namespace asciidia\plugins {
     /**
-     * Overwrite loadFile of plugin class -- to load nothing.
+     * Dummy-class for testing purpose only.
      *
-     * @octdoc  m:test/loadFile
-     * @param   string      $name               Name of file to do nothing with.
-     * @return  array                           Status information.
+     * @octdoc      c:plugin/test
+     * @copyright   copyright (c) 2011 by Harald Lapp
+     * @author      Harald Lapp <harald@octris.org>
      */
-    public function loadFile($name)
+    class test extends \asciidia\plugin
     /**/
     {
-        return array(true, '', '');
-    }
+        /**
+         * Overwrite loadFile of plugin class -- to load nothing.
+         *
+         * @octdoc  m:test/loadFile
+         * @param   string      $name               Name of file to do nothing with.
+         * @return  array                           Status information.
+         */
+        public function loadFile($name)
+        /**/
+        {
+            return array(true, '', '');
+        }
     
-    /**
-     * Display usage information.
-     *
-     * @octdoc  m:test/usage
-     * @param   string          $script     Contains name of the script.
-     */
-    public function usage($script)
-    /**/
-    {
-        print "description:
-    this is a dummy plugin -- it let's the developer try and test (new) 
-    drawing functionality.
+        /**
+         * Display usage information.
+         *
+         * @octdoc  m:test/usage
+         * @param   string          $script     Contains name of the script.
+         */
+        public function usage($script)
+        /**/
+        {
+            print "description:
+        this is a dummy plugin -- it let's the developer try and test (new) 
+        drawing functionality.
     
-    -i  this parameter does not have any effect for this plugin, but as it 
-        is a required parameter and to keep command-line short, just set 
-        it to '-'\n";
-    }
+        -i  this parameter does not have any effect for this plugin, but as it 
+            is a required parameter and to keep command-line short, just set 
+            it to '-'\n";
+        }
     
-    /**
-     * Sanbox for testing.
-     *
-     * @octdoc  m:test/parse
-     * @param   string      $diagram        throw-away parameter.
-     * @return  string                      Imagemagick commands to draw diagram.
-     */
-    public function parse($diagram)
-    /**/
-    {
-        $context = $this->getContext();
+        /**
+         * Sanbox for testing.
+         *
+         * @octdoc  m:test/parse
+         * @param   string      $diagram        throw-away parameter.
+         * @return  string                      Imagemagick commands to draw diagram.
+         */
+        public function parse($diagram)
+        /**/
+        {
+            $context = $this->getContext();
         
-        /* insert your commands here */
+            /* insert your commands here */
 
 
-        /*---------------------------*/
+            /*---------------------------*/
         
-        return $this->getCommands();
+            return $this->getCommands();
+        }
     }
 }

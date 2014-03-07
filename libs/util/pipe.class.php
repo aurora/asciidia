@@ -21,7 +21,7 @@
  * https://github.com/aurora/phpreprocess
  */
 
-namespace util {
+namespace \asciidia\util {
     /**
      * Execute a command using pipes.
      *

@@ -33,5 +33,5 @@
 
 require_once(__DIR__ . '/libs/main.class.php');
 
-$main = new main();
+$main = new \asciidia\main();
 $main->run();

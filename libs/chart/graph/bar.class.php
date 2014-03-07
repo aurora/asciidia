@@ -21,7 +21,7 @@
  * https://github.com/aurora/asciidia
  */
 
-namespace chart\graph {
+namespace asciidia\chart\graph {
     /**
      * Bar graph.
      *

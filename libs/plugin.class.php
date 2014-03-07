@@ -21,349 +21,351 @@
  * https://github.com/aurora/asciidia
  */
 
-/**
- * Plugin base class. Implements drawing primitives and provides plugins with 
- * all other needed methods.
- *
- * @octdoc      c:libs/plugin
- * @copyright   copyright (c) 2011 by Harald Lapp
- * @author      Harald Lapp <harald@octris.org>
- */
-abstract class plugin
-/**/
-{
+namespace asciidia {
     /**
-     * Instance of main graphic context.
+     * Plugin base class. Implements drawing primitives and provides plugins with 
+     * all other needed methods.
      *
-     * @octdoc  v:plugin/$context
-     * @type    context
+     * @octdoc      c:libs/plugin
+     * @copyright   copyright (c) 2011 by Harald Lapp
+     * @author      Harald Lapp <harald@octris.org>
      */
-    private $context = null;
-    /**/
-    
-    /**
-     * Size of the final bitmap.
-     *
-     * @octdoc  v:plugin/$scale_to
-     * @type    string
-     */
-    private $scale_to = null;
-    /**/
-    
-    /**
-     * Output format.
-     *
-     * @octdoc  p:plugin/$out_format
-     * @type    string
-     */
-    private $out_format = '';
-    /**/
-    
-    /**
-     * Constructor.
-     *
-     * @octdoc  m:plugin/__construct
-     */
-    public function __construct()
+    abstract class plugin
     /**/
     {
-    }
+        /**
+         * Instance of main graphic context.
+         *
+         * @octdoc  v:plugin/$context
+         * @type    context
+         */
+        private $context = null;
+        /**/
+    
+        /**
+         * Size of the final bitmap.
+         *
+         * @octdoc  v:plugin/$scale_to
+         * @type    string
+         */
+        private $scale_to = null;
+        /**/
+    
+        /**
+         * Output backend.
+         *
+         * @octdoc  p:plugin/$backend
+         * @type    \asciidia\backend\backend|null
+         */
+        private $backend = null;
+        /**/
+    
+        /**
+         * Constructor.
+         *
+         * @octdoc  m:plugin/__construct
+         */
+        public function __construct()
+        /**/
+        {
+        }
 
-    /**
-     * Abstract method(s) to be implemented by plugins.
-     *
-     * @octdoc  m:plugin/parse
-     */
-    abstract public function parse($content);
-    /**/
+        /**
+         * Abstract method(s) to be implemented by plugins.
+         *
+         * @octdoc  m:plugin/parse
+         */
+        abstract public function parse($content);
+        /**/
     
-    /**
-     * Display usage information.
-     *
-     * @octdoc  m:diagram/usage
-     * @param   string          $script     Contains name of the script.
-     */
-    public function usage($script)
-    /**/
-    {
-        print "no additional help available for plugin\n";
-    }
+        /**
+         * Display usage information.
+         *
+         * @octdoc  m:diagram/usage
+         * @param   string          $script     Contains name of the script.
+         */
+        public function usage($script)
+        /**/
+        {
+            print "no additional help available for plugin\n";
+        }
     
-    /**
-     * Set output format.
-     *
-     * @octdoc  m:plugin/setOutputFormat
-     * @param   string      $fmt                Output format.
-     */
-    public function setOutputFormat($fmt)
-    /**/
-    {
-        $this->out_format = $fmt;    
-    }
+        /**
+         * Set output backend.
+         *
+         * @octdoc  m:plugin/setBackend
+         * @param   \asciidia\backend\backend       $backend                Output format.
+         */
+        public function setBackend(\asciidia\backend\backend $backend)
+        /**/
+        {
+            $this->backend = $backend;
+        }
     
-    /**
-     * Return instance of main context.
-     *
-     * @octdoc  m:plugin/getContext
-     * @return  context                     Instance of main context.
-     */
-    protected function getContext()
-    /**/
-    {
-        if (is_null($this->context)) {
+        /**
+         * Return instance of main context.
+         *
+         * @octdoc  m:plugin/getContext
+         * @return  context                     Instance of main context.
+         */
+        protected function getContext()
+        /**/
+        {
+            if (is_null($this->context)) {
+                switch ($this->out_format) {
+                    case 'svg':
+                        require_once(__DIR__ . '/backend/svg.class.php');
+                        $this->context = new svg();
+                        break;
+                    default:
+                        require_once(__DIR__ . '/backend/imagemagick.class.php');
+                        $this->context = new imagemagick();
+                        break;
+                }
+            }
+        
+            return $this->context;
+        }
+
+        /**
+         * Return all commands needed for drawing diagram.
+         *
+         * @octdoc  m:plugin/getCommands
+         * @return  array                       Imagemagick MVG commands.
+         */
+        public function getCommands()
+        /**/
+        {
+            return $this->getContext()->getCommands();
+        }
+
+        /**
+         * Get size of bitmap to render.
+         *
+         * @octdoc  m:plugin/getSize
+         * @return  array                       w, h of bitmap to be rendered.   
+         */
+        public function getSize()
+        /**/
+        {
+            return $this->getContext()->getSize();
+        }
+
+        /**
+         * Set the size of the cells.
+         *
+         * @octdoc  m:plugin/setCellSize
+         * @param   float       $w                  Width of a cell.
+         * @param   float       $h                  Height of a cell.
+         */
+        final public function setCellSize($w, $h)
+        /**/
+        {
+            $context = $this->getContext();
+            $context->xs = $w;
+            $context->ys = $h;
+        }
+
+        /**
+         * Set the size of the bitmap the result should be scaled to.
+         *
+         * @octdoc  m:plugin/setScaleTo
+         * @param   float       $scale              Imagemagick scaling size.
+         */
+        final public function setScaleTo($scale)
+        /**/
+        {
+            $this->scale_to = $scale;
+        }
+
+        /**
+         * Get scaling value.
+         *
+         * @octdoc  m:plugin/getScaleTo
+         * @return  string|null                     Configured scaling parameter.
+         */
+        public function getScaleTo()
+        /**/
+        {
+            return $this->scale_to;
+        }
+
+        /**
+         * Enable a debugging mode for context.
+         *
+         * @octdoc  m:plugin/enableDebug
+         * @param   bool        $enable             Whether to enable / disable debugging.
+         */
+        public function enableDebug($enable)
+        /**/
+        {
+            $this->getContext()->enableDebug($enable);
+        }
+
+        /**
+         * Execute plugin.
+         *
+         * @octdoc  m:plugin/run
+         * @param   string      $inp                Name of input.
+         * @param   string      $out                Name of output.
+         * @return  array                           Status information.
+         */
+        public function run($inp, $out)
+        /**/
+        {
+            list($status, $msg, $content) = $this->loadFile($inp);
+        
+            if ($status) {
+                list($status, $msg) = $this->testFile($out);
+            
+                if ($status) {
+                    $mvg = $this->parse($content);
+                
+                    $this->saveFile($out, $mvg);
+                }
+            }
+
+            return array($status, $msg);
+        }
+
+        /**
+         * Check command-line arguments.
+         *
+         * @octdoc  m:plugin/checkArgs
+         * @param   string          $script         Contains name of the script.
+         * @param   string          $opt            Commandline options.
+         * @return  array                           Status information.
+         */
+        public function checkArgs($script, array $opt)
+        /**/
+        {
+            return array(true, '', '');
+        }
+
+        /**
+         * Method to perform environment checks for example, if imagemagick 
+         * is found through the path.
+         *
+         * @octdoc  m:plugin/testEnv
+         * @return  array                           Status information.
+         */
+        public function testEnv()
+        /**/
+        {
+            $status = true;
+            $msg    = '';
+            $out    = array();
+            $err    = 0;
+        
             switch ($this->out_format) {
                 case 'svg':
-                    require_once(__DIR__ . '/backend/svg.class.php');
-                    $this->context = new svg();
                     break;
                 default:
-                    require_once(__DIR__ . '/backend/imagemagick.class.php');
-                    $this->context = new imagemagick();
+                    // test if imagemagick is available
+                    exec('which convert', $out, $err);
+                    $mh = getenv('MAGICK_HOME');
+        
+                    if ($err != 0) {
+                        $status = false;
+                        $msg    = 'imagemagick "convert" is not found in path';
+                    } elseif ($mh == '') {
+                        $status = false;
+                        $msg    = '"MAGICK_HOME" environment variable is not set';
+                    }
                     break;
             }
+        
+            return array($status, $msg);
         }
+
+        /**
+         * Load a file.
+         *
+         * @octdoc  m:plugin/loadFile
+         * @param   string      $name               Name of file to load.
+         * @return  array                           Status information.
+         */
+        public function loadFile($name)
+        /**/
+        {
+            $return = array(true, '', '');
         
-        return $this->context;
-    }
-
-    /**
-     * Return all commands needed for drawing diagram.
-     *
-     * @octdoc  m:plugin/getCommands
-     * @return  array                       Imagemagick MVG commands.
-     */
-    public function getCommands()
-    /**/
-    {
-        return $this->getContext()->getCommands();
-    }
-
-    /**
-     * Get size of bitmap to render.
-     *
-     * @octdoc  m:plugin/getSize
-     * @return  array                       w, h of bitmap to be rendered.   
-     */
-    public function getSize()
-    /**/
-    {
-        return $this->getContext()->getSize();
-    }
-
-    /**
-     * Set the size of the cells.
-     *
-     * @octdoc  m:plugin/setCellSize
-     * @param   float       $w                  Width of a cell.
-     * @param   float       $h                  Height of a cell.
-     */
-    final public function setCellSize($w, $h)
-    /**/
-    {
-        $context = $this->getContext();
-        $context->xs = $w;
-        $context->ys = $h;
-    }
-
-    /**
-     * Set the size of the bitmap the result should be scaled to.
-     *
-     * @octdoc  m:plugin/setScaleTo
-     * @param   float       $scale              Imagemagick scaling size.
-     */
-    final public function setScaleTo($scale)
-    /**/
-    {
-        $this->scale_to = $scale;
-    }
-
-    /**
-     * Get scaling value.
-     *
-     * @octdoc  m:plugin/getScaleTo
-     * @return  string|null                     Configured scaling parameter.
-     */
-    public function getScaleTo()
-    /**/
-    {
-        return $this->scale_to;
-    }
-
-    /**
-     * Enable a debugging mode for context.
-     *
-     * @octdoc  m:plugin/enableDebug
-     * @param   bool        $enable             Whether to enable / disable debugging.
-     */
-    public function enableDebug($enable)
-    /**/
-    {
-        $this->getContext()->enableDebug($enable);
-    }
-
-    /**
-     * Execute plugin.
-     *
-     * @octdoc  m:plugin/run
-     * @param   string      $inp                Name of input.
-     * @param   string      $out                Name of output.
-     * @return  array                           Status information.
-     */
-    public function run($inp, $out)
-    /**/
-    {
-        list($status, $msg, $content) = $this->loadFile($inp);
-        
-        if ($status) {
-            list($status, $msg) = $this->testFile($out);
-            
-            if ($status) {
-                $mvg = $this->parse($content);
-                
-                $this->saveFile($out, $mvg);
+            if ($name != '-' && !is_readable($name)) {
+                $return = array(false, 'input is not readable', '');
+            } else {
+                $return[2] = file_get_contents(
+                    ($name == '-' ? 'php://stdin' : $name)
+                );
             }
+        
+            return $return;
         }
 
-        return array($status, $msg);
-    }
-
-    /**
-     * Check command-line arguments.
-     *
-     * @octdoc  m:plugin/checkArgs
-     * @param   string          $script         Contains name of the script.
-     * @param   string          $opt            Commandline options.
-     * @return  array                           Status information.
-     */
-    public function checkArgs($script, array $opt)
-    /**/
-    {
-        return array(true, '', '');
-    }
-
-    /**
-     * Method to perform environment checks for example, if imagemagick 
-     * is found through the path.
-     *
-     * @octdoc  m:plugin/testEnv
-     * @return  array                           Status information.
-     */
-    public function testEnv()
-    /**/
-    {
-        $status = true;
-        $msg    = '';
-        $out    = array();
-        $err    = 0;
+        /**
+         * Test if a file is valid for writing.
+         *
+         * @octdoc  m:plugin/testFile
+         * @param   string      $name               Name of file to save.
+         * @return  array                           Status information.
+         */
+        public function testFile($name)
+        /**/
+        {
+            $return = array(true, '');
         
-        switch ($this->out_format) {
-            case 'svg':
-                break;
-            default:
-                // test if imagemagick is available
-                exec('which convert', $out, $err);
-                $mh = getenv('MAGICK_HOME');
-        
-                if ($err != 0) {
-                    $status = false;
-                    $msg    = 'imagemagick "convert" is not found in path';
-                } elseif ($mh == '') {
-                    $status = false;
-                    $msg    = '"MAGICK_HOME" environment variable is not set';
+            if (is_dir($name)) {
+                $return = array(false, 'only a filename is allowed as output');
+            } elseif ($name != '-') {
+                if (file_exists($name)) {
+                    $return = array(false, 'output already exists');
+                } elseif (!touch($name) || !is_writable($name)) {
+                    $return = array(false, 'output is not writable');
                 }
-                break;
-        }
-        
-        return array($status, $msg);
-    }
-
-    /**
-     * Load a file.
-     *
-     * @octdoc  m:plugin/loadFile
-     * @param   string      $name               Name of file to load.
-     * @return  array                           Status information.
-     */
-    public function loadFile($name)
-    /**/
-    {
-        $return = array(true, '', '');
-        
-        if ($name != '-' && !is_readable($name)) {
-            $return = array(false, 'input is not readable', '');
-        } else {
-            $return[2] = file_get_contents(
-                ($name == '-' ? 'php://stdin' : $name)
-            );
-        }
-        
-        return $return;
-    }
-
-    /**
-     * Test if a file is valid for writing.
-     *
-     * @octdoc  m:plugin/testFile
-     * @param   string      $name               Name of file to save.
-     * @return  array                           Status information.
-     */
-    public function testFile($name)
-    /**/
-    {
-        $return = array(true, '');
-        
-        if (is_dir($name)) {
-            $return = array(false, 'only a filename is allowed as output');
-        } elseif ($name != '-') {
-            if (file_exists($name)) {
-                $return = array(false, 'output already exists');
-            } elseif (!touch($name) || !is_writable($name)) {
-                $return = array(false, 'output is not writable');
             }
-        }
         
-        return $return;
-    }
+            return $return;
+        }
 
-    /**
-     * Save a file or test if file can be saved to.
-     *
-     * @octdoc  m:plugin/saveFile
-     * @param   string      $name               Name of file to save.
-     * @param   array       $commands           Imagemagick commands to save.
-     */
-    public function saveFile($name, array $commands)
-    /**/
-    {
-        switch ($this->out_format) {
-            case 'mvg':
-                // imagemagick mvg commands
-                file_put_contents(
-                    ($name == '-' ? 'php://stdout' : $name),
-                    implode("\n", $commands)
-                );
-                break;
-            case 'svg':
-                // svg xml output
-                file_put_contents(
-                    ($name == '-' ? 'php://stdout' : $name),
-                    $commands
-                );
-                break;
-            default:
-                list($w, $h) = $this->getSize();
+        /**
+         * Save a file or test if file can be saved to.
+         *
+         * @octdoc  m:plugin/saveFile
+         * @param   string      $name               Name of file to save.
+         * @param   array       $commands           Imagemagick commands to save.
+         */
+        public function saveFile($name, array $commands)
+        /**/
+        {
+            switch ($this->out_format) {
+                case 'mvg':
+                    // imagemagick mvg commands
+                    file_put_contents(
+                        ($name == '-' ? 'php://stdout' : $name),
+                        implode("\n", $commands)
+                    );
+                    break;
+                case 'svg':
+                    // svg xml output
+                    file_put_contents(
+                        ($name == '-' ? 'php://stdout' : $name),
+                        $commands
+                    );
+                    break;
+                default:
+                    list($w, $h) = $this->getSize();
 
-                $cmd = sprintf(
-                    'convert -size %dx%d xc:white -stroke black -fill none -draw %s %s %s:%s',
-                    $w, $h,
-                    escapeshellarg(implode(' ', $commands)),
-                    ($this->scale_to ? '-scale ' . $this->scale_to : ''),
-                    $this->out_format,
-                    $name
-                );
+                    $cmd = sprintf(
+                        'convert -size %dx%d xc:white -stroke black -fill none -draw %s %s %s:%s',
+                        $w, $h,
+                        escapeshellarg(implode(' ', $commands)),
+                        ($this->scale_to ? '-scale ' . $this->scale_to : ''),
+                        $this->out_format,
+                        $name
+                    );
 
-                passthru($cmd);
-                break;
+                    passthru($cmd);
+                    break;
+            }
         }
     }
 }
