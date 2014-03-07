@@ -791,13 +791,12 @@ namespace asciidia\backend\svg {
             $path = $this->doc->createElement('path');
             $path->setAttribute('d', sprintf(
                 "M %s L %s %s Z",
-                $this->stroke,
                 $get_xy(-$this->xf, 0),
                 $get_xy(0, -$this->yf),
                 $get_xy($this->xf, 0)
             ));
         
-            $this->setStyles($path);
+            $this->setStyles($path, array('fill' => $this->stroke['color']));
         
             $group->appendChild($path);
         }
