@@ -52,7 +52,11 @@ namespace asciidia\backend {
         {
             list($w, $h) = $this->getSize();
 
-            $this->doc->documentElement->setAttribute('viewbox', sprintf('0 0 %d %d', $w, $h));
+            $svg = $this->doc->documentElement;
+            
+            $svg->setAttribute('viewbox', sprintf('0 0 %d %d', $w, $h));
+            $svg->setAttribute('width', $w);
+            $svg->setAttribute('height', $h);
             
             return $this->doc->saveXML();
         }
@@ -72,8 +76,6 @@ namespace asciidia\backend {
                 $svg = $this->doc->appendChild($this->doc->createElement('svg'));
                 $svg->setAttribute('xmlns', 'http://www.w3.org/2000/svg');
                 $svg->setAttribute('version', '1.1');
-                $svg->setAttribute('width', '100%');
-                $svg->setAttribute('height', '100%');
                 
                 $this->context = new \asciidia\backend\svg\context($svg);
             }
