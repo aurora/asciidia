@@ -3,7 +3,7 @@
 
 /*
  * asciidia
- * Copyright (C) 2011 by Harald Lapp <harald@octris.org>
+ * Copyright (c) by Harald Lapp <harald@octris.org>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,12 +26,12 @@
  * Main application.
  *
  * @octdoc      h:asciidia/asciidia
- * @copyright   copyright (c) 2011 by Harald Lapp
+ * @copyright   copyright (c) 2011-2014 by Harald Lapp
  * @author      Harald Lapp <harald@octris.org>
  */
 /**/
 
 require_once(__DIR__ . '/libs/main.class.php');
 
-$main = new main();
+$main = new \asciidia\main();
 $main->run();

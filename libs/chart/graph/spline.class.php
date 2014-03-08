@@ -2,7 +2,7 @@
 
 /*
  * This file is part of asciidia
- * Copyright (C) 2012 by Harald Lapp <harald@octris.org>
+ * Copyright (c) by Harald Lapp <harald@octris.org>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@
  * https://github.com/aurora/asciidia
  */
 
-namespace chart\graph {
+namespace asciidia\chart\graph {
     /**
      * Spline graph.
      *
@@ -55,7 +55,7 @@ namespace chart\graph {
          * @param   float               $x_mul                  Point multiplicator for X-Axis.
          * @param   float               $y_mul                  Point multiplicator for Y-Axis.
          */
-        public function create(\context $context, $width, $height, $zero, $x_mul, $y_mul)
+        public function create(\asciidia\context $context, $width, $height, $zero, $x_mul, $y_mul)
         /**/
         {
             $points = array();

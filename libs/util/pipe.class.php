@@ -2,7 +2,7 @@
 
 /*
  * This file is part of phpreprocess
- * Copyright (C) 2011-2012 by Harald Lapp <harald@octris.org>
+ * Copyright (c) by Harald Lapp <harald@octris.org>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@
  * https://github.com/aurora/phpreprocess
  */
 
-namespace util {
+namespace \asciidia\util {
     /**
      * Execute a command using pipes.
      *

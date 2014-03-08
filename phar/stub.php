@@ -5,7 +5,7 @@
  * Asciidia PHAR stub.
  *
  * @octdoc      h:phar/stub
- * @copyright   copyright (c) 2011 by Harald Lapp
+ * @copyright   copyright (c) 2011-2014 by Harald Lapp
  * @author      Harald Lapp <harald@octris.org>
  */
 /**/
@@ -18,6 +18,6 @@ if (!class_exists('PHAR')) {
 Phar::mapPhar();
 include 'phar://asciidia.phar/main.class.php';
 
-$main = new main();
+$main = new \asciidia\main();
 $main->run();
 __HALT_COMPILER();

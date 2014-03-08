@@ -2,7 +2,7 @@
 
 /*
  * This file is part of asciidia
- * Copyright (C) 2011 by Harald Lapp <harald@octris.org>
+ * Copyright (c) by Harald Lapp <harald@octris.org>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,126 +21,126 @@
  * https://github.com/aurora/asciidia
  */
 
-require_once(__DIR__ . '/diagram.class.php');
-
-/**
- * Class for creating "nice"-looking directory-trees from ASCII representation.
- *
- * @octdoc      c:plugin/tree
- * @copyright   copyright (c) 2011 by Harald Lapp
- * @author      Harald Lapp <harald@octris.org>
- */
-class tree extends diagram
-/**/
-{
+namespace asciidia\plugins {
     /**
-     * Overwrite loadFile of plugin class, because tree plugin may read
-     * directories and use their content for rendering a diagram.
+     * Class for creating "nice"-looking directory-trees from ASCII representation.
      *
-     * @octdoc  m:tree/loadFile
-     * @param   string      $name               Name of file to load.
-     * @return  array                           Status information.
+     * @octdoc      c:plugin/tree
+     * @copyright   copyright (c) 2011-2014 by Harald Lapp
+     * @author      Harald Lapp <harald@octris.org>
      */
-    public function loadFile($name)
+    class tree extends \asciidia\plugins\diagram
     /**/
     {
-        $return = array(true, '', '');
+        /**
+         * Overwrite loadFile of plugin class, because tree plugin may read
+         * directories and use their content for rendering a diagram.
+         *
+         * @octdoc  m:tree/loadFile
+         * @param   string      $name               Name of file to load.
+         * @return  array                           Status information.
+         */
+        public function loadFile($name)
+        /**/
+        {
+            $return = array(true, '', '');
         
-        if (is_dir($name)) {
-            $return[2] = $this->getTree($name);
-        } else {
-            $return = parent::loadFile($name);
+            if (is_dir($name)) {
+                $return[2] = $this->getTree($name);
+            } else {
+                $return = parent::loadFile($name);
+            }
+        
+            return $return;
         }
-        
-        return $return;
-    }
     
-    /**
-     * Display usage information.
-     *
-     * @octdoc  m:tree/usage
-     * @param   string          $script     Contains name of the script.
-     */
-    public function usage($script)
-    /**/
-    {
-        print "options:
-    -i  besides the default input types (see above) the tree plugin allows
-        a directory as input, too. if specified, the directory-tree will be
-        rendered\n";
-    }
+        /**
+         * Display usage information.
+         *
+         * @octdoc  m:tree/usage
+         * @param   string          $script     Contains name of the script.
+         */
+        public function usage($script)
+        /**/
+        {
+            print "options:
+        -i  besides the default input types (see above) the tree plugin allows
+            a directory as input, too. if specified, the directory-tree will be
+            rendered\n";
+        }
     
-    /**
-     * Parse an ASCII tree diagram an convert it to imagemagick commands.
-     *
-     * @octdoc  m:tree/parse
-     * @param   string      $diagram        ASCII Diagram to parse.
-     * @return  string                      Imagemagick commands to draw diagram.
-     */
-    public function parse($diagram)
-    /**/
-    {
-        $ctx  = $this->getContext();
-        $rows = explode("\n", $diagram);
+        /**
+         * Parse an ASCII tree diagram an convert it to imagemagick commands.
+         *
+         * @octdoc  m:tree/parse
+         * @param   string      $diagram        ASCII Diagram to parse.
+         * @return  string                      Imagemagick commands to draw diagram.
+         */
+        public function parse($diagram)
+        /**/
+        {
+            $ctx  = $this->getContext();
+            $rows = explode("\n", $diagram);
     
-        for ($y = 0, $h = count($rows); $y < $h; ++$y) {
-            for ($x = 0, $w = strlen($rows[$y]); $x < $w; ++$x) {
-                $c = $rows[$y][$x];
-                list($a, $r, $b, $l) = $this->getSurrounding($x, $y, $rows);
+            for ($y = 0, $h = count($rows); $y < $h; ++$y) {
+                for ($x = 0, $w = strlen($rows[$y]); $x < $w; ++$x) {
+                    $c = $rows[$y][$x];
+                    list($a, $r, $b, $l) = $this->getSurrounding($x, $y, $rows);
 
-                if ($c == '+' && $r == '-') {
-                    $ctx->drawMarker($x, $y, $c, true, true, ($b == '+' || $b == '|'), false);
-                } elseif ($c == '-' && ($l == '+' || $l == '-' || $r == '-' || $r == '>')) {
-                    $this->addLine($x, $y, $rows);
-                } elseif ($c == '>' && ($l == '-')) {
-                    $this->addLine($x, $y, $rows);
-                } elseif ($c == '|' && ($a == '+' || $a == '|' || $b == '+' || $b == '|')) {
-                    $this->addLine($x, $y, $rows);
-                } elseif ($c != ' ') {
-                    $this->addChar($x, $y, $c);
+                    if ($c == '+' && $r == '-') {
+                        $ctx->drawMarker($x, $y, $c, true, true, ($b == '+' || $b == '|'), false);
+                    } elseif ($c == '-' && ($l == '+' || $l == '-' || $r == '-' || $r == '>')) {
+                        $this->addLine($x, $y, $rows);
+                    } elseif ($c == '>' && ($l == '-')) {
+                        $this->addLine($x, $y, $rows);
+                    } elseif ($c == '|' && ($a == '+' || $a == '|' || $b == '+' || $b == '|')) {
+                        $this->addLine($x, $y, $rows);
+                    } elseif ($c != ' ') {
+                        $this->addChar($x, $y, $c);
+                    }
                 }
             }
-        }
         
-        foreach ($this->strings as $string) {
-            $ctx->drawText($string['x'], $string['y'], $string['text']);
-        }
-        
-        foreach ($this->lines as $line) {
-            if ($line['type'] == 'H') {
-                $ctx->drawHLine($line['x1'], $line['y1'], $line['x2'], $line['arrow']);
-            } elseif ($line['type'] == 'V') {
-                $ctx->drawVLine($line['x1'], $line['y1'], $line['y2'], $line['arrow']);
+            foreach ($this->strings as $string) {
+                $ctx->drawText($string['x'], $string['y'], $string['text']);
             }
+        
+            foreach ($this->lines as $line) {
+                if ($line['type'] == 'H') {
+                    $ctx->drawHLine($line['x1'], $line['y1'], $line['x2'], $line['arrow']);
+                } elseif ($line['type'] == 'V') {
+                    $ctx->drawVLine($line['x1'], $line['y1'], $line['y2'], $line['arrow']);
+                }
+            }
+        
+            return $this->getDocument();
         }
-        
-        return $this->getCommands();
-    }
 
-    /**
-     * Return recursive directory ASCII tree for a specified path.
-     *
-     * @octdoc  m:tree/getTree
-     * @return  string      $path           Path to return directory tree for.
-     */
-    protected function getTree($path)
-    /**/
-    {
-        $path = rtrim($path, '/');
-        $out  = array(basename($path));
+        /**
+         * Return recursive directory ASCII tree for a specified path.
+         *
+         * @octdoc  m:tree/getTree
+         * @return  string      $path           Path to return directory tree for.
+         */
+        protected function getTree($path)
+        /**/
+        {
+            $path = rtrim($path, '/');
+            $out  = array(basename($path));
         
-        $rglob = function($path, $struct = '') use (&$rglob, &$out) {
-            $dirs = glob($path . '/*', GLOB_ONLYDIR);
+            $rglob = function($path, $struct = '') use (&$rglob, &$out) {
+                $dirs = glob($path . '/*', GLOB_ONLYDIR);
             
-            for ($i = 0, $cnt = count($dirs); $i < $cnt; ++$i) {
-                $out[] = $struct . '+-' . basename($dirs[$i]);
+                for ($i = 0, $cnt = count($dirs); $i < $cnt; ++$i) {
+                    $out[] = $struct . '+-' . basename($dirs[$i]);
                 
-                $rglob($dirs[$i], $struct . ($i == $cnt - 1 ? '  ' : '| '));
-            }
-        };
+                    $rglob($dirs[$i], $struct . ($i == $cnt - 1 ? '  ' : '| '));
+                }
+            };
         
-        $rglob($path);
+            $rglob($path);
 
-        return implode("\n", $out);
+            return implode("\n", $out);
+        }
     }
 }
