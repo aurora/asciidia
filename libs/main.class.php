@@ -335,9 +335,7 @@ namespace asciidia {
             if (substr($classpath, 0, 8) == 'asciidia') {
                 $file = __DIR__ . '/' . preg_replace('|\\\\|', '/', substr($classpath, 8)) . '.class.php';
 
-                if (file_exists($file)) {
-                    require_once($file);
-                }
+                require_once($file);
             }        
         }
     }
