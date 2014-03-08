@@ -285,7 +285,7 @@ namespace asciidia {
 
             printf("usage: %s -h\n", $argv[0]);
             printf("usage: %s -t ... -h\n", $argv[0]);
-            printf("usage: %s -t ... -i ... -o ... [-c ...] [-s ...]\n", $argv[0]);
+            printf("usage: %s -t ... -i ... -o [format:]... [-c ...] [-s ...]\n", $argv[0]);
 
             if ($usage != '') {
                 print $usage;
@@ -293,23 +293,25 @@ namespace asciidia {
         
             if ($help) {
                 printf("default options:
-        -h  show information about command-line arguments. provide a diagram type
-            with '-t' to show help about the plugin
+    -h  show information about command-line arguments. provide a diagram type
+        with '-t' to show help about the plugin
 
-        -t  plugin type to load. available plugins are:
-    
-            %s
+    -t  plugin type to load. available plugins are:
 
-        -i  input filename or '-' for STDIN
+        %s
 
-        -o  output filename or '-' for STDOUT
+    -i  input filename or '-' for STDIN
 
-        -c  defines the widht/height of each cell / character on the canvas in 
-            pixel. Notation is ...x... (width x height) or ... (width x width).
+    -o  output filename or '-' for STDOUT, optionally prefixed with the format
+        in form of [format:filename]. The default format is 'png'. The supported
+        formats 'svg' and 'mvg' do not require an installation of imagemagick.
 
-        -s  scales image. notation is ...x... (width x height) whereas ... is a 
-            number to scale to. if width or height are ommited, image will be 
-            scaled by keeping aspect ratio.\n", 
+    -c  defines the widht/height of each cell / character on the canvas in 
+        pixel. Notation is ...x... (width x height) or ... (width x width).
+
+    -s  scales image. notation is ...x... (width x height) whereas ... is a 
+        number to scale to. if width or height are ommited, image will be 
+        scaled by keeping aspect ratio.\n", 
                     implode("\n        ", $this->plugins)
                 );
         
@@ -318,6 +320,11 @@ namespace asciidia {
 
                     $this->plugin->usage($argv[0]);
                 }
+                
+                print "
+examples:
+    
+    asciidia -t ebnf -i example.ebnf -o svg:/tmp/example.svg\n";
             }
         
             exit(0);
