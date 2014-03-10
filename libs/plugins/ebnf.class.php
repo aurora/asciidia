@@ -410,6 +410,37 @@ namespace asciidia\plugins {
                         $child = $child->nextSibling;
                     }
                     break;
+                case 'option':
+                    $ctx = $context->addContext();
+                    $ctx->translate(3, 2);
+                
+                    $child = $node->firstChild;
+                    while ($child) {
+                        $render($child, $ctx, $l2r);
+            
+                        $child = $child->nextSibling;
+                    }
+                
+                    list($tw, $th) = $ctx->getSize(true);
+                
+                    $twf = ($tw + 3) / 2;
+                
+                    $context->drawLine(0, 1, $twf, 1, ($l2r ? 1 : -1));
+                    $context->drawLine($twf, 1, $tw + 2, 1);
+                    $context->drawPath(
+                        array(
+                            array(3, 3), array(1, 3), array(1, 1), array(0, 1)
+                        ),
+                        false, true
+                    );
+                    $context->drawPath(
+                        array(
+                            array($tw + 2, 1), array($tw + 1, 1), array($tw + 1, 3), array($tw - 1, 3)
+                        ),
+                        false, true
+                    );
+                
+                    break;
                 case 'expression':
                     $indent = (int)($node->childNodes->length > 1) * 3;
                     $max_th = $th = 0;
