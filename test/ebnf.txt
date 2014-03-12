@@ -1,6 +1,6 @@
 {
     syntax     = "{" { production } "}" ;
-    production = identifier "=" expression ";" ;
+    production = identifier "=" expression ( ";" | "." ) ;
     expression = term { "|" term } ;
     term       = factor { [ "," ] factor } ;
     factor     = identifier
