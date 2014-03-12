@@ -27,7 +27,7 @@
  */
 
 // definition      =
-// termination     ;
+// termination     ; | .
 // alternation     |
 // concatenation   ,
 // option          [ ... ]
@@ -68,7 +68,7 @@ namespace asciidia\plugins {
          */
         protected static $patterns = array(
             self::T_COMMENT       => '\(\*.*?\*\)',
-            self::T_OPERATOR      => '[=;\{\}\(\)\|\[\]]',
+            self::T_OPERATOR      => '[=;\{\}\(\)\|\[\]\.]',
             self::T_LITERAL       => "(?:(?:\"(?:\\\\\"|[^\"])*\")|(?:\'(?:\\\\\'|[^\'])*\'))",
             self::T_IDENTIFIER    => '([a-zA-Z0-9_-]+|\<[a-zA-Z0-9_-]+\>)',
             self::T_WHITESPACE    => '\s+',
@@ -234,7 +234,7 @@ namespace asciidia\plugins {
         
             $return->appendChild($this->parseExpr($dom, $tokens, $token));
         
-            if (!($token = $this->getToken($tokens, self::T_OPERATOR, ';'))) {
+            if (!($token = $this->getToken($tokens, self::T_OPERATOR, array(';', '.')))) {
                 $this->error('production must end with ";" in line %d', array($line));
             }
         
@@ -278,7 +278,7 @@ namespace asciidia\plugins {
         
             do {
                 $return->appendChild($this->parseFact($dom, $tokens, $token));
-            } while (!$this->getToken($tokens, null, array(';', '=', '|', ')', ']', '}'), false)); 
+            } while (!$this->getToken($tokens, null, array(';', '.', '=', '|', ')', ']', '}'), false)); 
         
             return $return;
         }
