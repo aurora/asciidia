@@ -61,6 +61,18 @@ For example:
 *   php 5.3
 *   imagemagick is only required, if output format is not 'svg'
 
+
+## Example
+
+The following embedded image was created on Mac OS X using asciidia and
+inkscape with the command:
+
+    /Applications/Inkscape.app/Contents/Resources/bin/inkscape \
+        -z -e test/ebnf.png -w 500 \
+        <(asciidia -t ebnf -i test/ebnf.txt -o svg:-)
+
+![ebnf](https://github.com/aurora/asciidia/raw/master/test/ebnf.png)
+
 ## License
 
 asciidia
