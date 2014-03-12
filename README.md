@@ -1,20 +1,16 @@
-asciidia
-========
+# asciidia
 
-Version
--------
+## Version
     
     v0.3.1, 2014-03-08
 
-Usage
------
+## Usage
 
     $ ./asciidia.php -h
     $ ./asciidia.php -t ... -h
     $ ./asciidia.php -t ... -i ... -o ... [-c ...] [-s ...]
 
-Description
------------
+## Description
 
 Asciidia generates bitmap files (png) from simple ASCII diagrams. In that it is similar
 to programs like [ditaa](http://ditaa.sourceforge.net/). It's build on top of a plugin
@@ -60,14 +56,12 @@ For example:
 
     ./asciidia.php -t ebnf -i rules.ebnf -o svg:diagram.svg
 
-Requirements
-------------
+## Requirements
 
 *   php 5.3
 *   imagemagick is only required, if output format is not 'svg'
 
-License
--------
+## License
 
 asciidia
 
@@ -86,8 +80,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <<http://www.gnu.org/licenses/>>.
 
-Thanks
-------
+## Thanks
 
 I would like to thank the following person(s) for improvments and bug fixing:
 
