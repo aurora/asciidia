@@ -78,7 +78,7 @@ namespace asciidia\backend\svg {
          * @type    array
          */
         protected $fill = array(
-            'color'   => 'transparent',
+            'color'   => 'none',
             'opacity' => 1
         );
         /**/
