@@ -338,12 +338,12 @@ namespace asciidia {
          * points are inserted (path drawing is only allowed for horizontals and 
          * verticals)
          *
-         * @octdoc  m:context/drawPath
+         * @octdoc  m:context/drawConnection
          * @param   array       $points             Points of path.
          * @param   int|bool    $arrow              Optional arrow head.
          * @param   bool        $round              Whether corners should be round.
          */
-        public function drawPath(array $points, $arrow = false, $round = false)
+        public function drawConnection(array $points, $arrow = false, $round = false)
         /**/
         {
             // normalize points

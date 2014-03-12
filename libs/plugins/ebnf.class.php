@@ -448,13 +448,13 @@ namespace asciidia\plugins {
                                 $context->drawLine(0, 1, 3, 1);
                                 $context->drawLine($tmp['w'] + $indent - 1, 1, $max_tw + $indent + 2, 1);
                             } else {
-                                $context->drawPath(
+                                $context->drawConnection(
                                     array(
                                         array(0, 1), array(1, 1), array(1, $tmp['h'] + 1), array(3, $tmp['h'] + 1)
                                     ),
                                     false, true
                                 );
-                                $context->drawPath(
+                                $context->drawConnection(
                                     array(
                                         array($tmp['w'] + $indent - 1, $tmp['h'] + 1), 
                                         array($max_tw + $indent + 1, $tmp['h'] + 1), 
@@ -518,13 +518,13 @@ namespace asciidia\plugins {
                 
                     $context->drawLine(0, 1, $twf, 1, ($l2r ? 1 : -1));
                     $context->drawLine($twf, 1, $tw + 2, 1);
-                    $context->drawPath(
+                    $context->drawConnection(
                         array(
                             array(3, 3), array(1, 3), array(1, 1), array(3, 1)
                         ),
                         false, true
                     );
-                    $context->drawPath(
+                    $context->drawConnection(
                         array(
                             array($tw - 1, 1), array($tw + 1, 1), array($tw + 1, 3), array($tw - 1, 3)
                         ),
