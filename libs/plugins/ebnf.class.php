@@ -27,7 +27,7 @@
  */
 
 // definition      =
-// termination     ;
+// termination     ; | .
 // alternation     |
 // concatenation   ,
 // option          [ ... ]
@@ -68,7 +68,7 @@ namespace asciidia\plugins {
          */
         protected static $patterns = array(
             self::T_COMMENT       => '\(\*.*?\*\)',
-            self::T_OPERATOR      => '[=;\{\}\(\)\|\[\]]',
+            self::T_OPERATOR      => '[=;\{\}\(\)\|\[\]\.]',
             self::T_LITERAL       => "(?:(?:\"(?:\\\\\"|[^\"])*\")|(?:\'(?:\\\\\'|[^\'])*\'))",
             self::T_IDENTIFIER    => '([a-zA-Z0-9_-]+|\<[a-zA-Z0-9_-]+\>)',
             self::T_WHITESPACE    => '\s+',
@@ -234,7 +234,7 @@ namespace asciidia\plugins {
         
             $return->appendChild($this->parseExpr($dom, $tokens, $token));
         
-            if (!($token = $this->getToken($tokens, self::T_OPERATOR, ';'))) {
+            if (!($token = $this->getToken($tokens, self::T_OPERATOR, array(';', '.')))) {
                 $this->error('production must end with ";" in line %d', array($line));
             }
         
@@ -278,7 +278,7 @@ namespace asciidia\plugins {
         
             do {
                 $return->appendChild($this->parseFact($dom, $tokens, $token));
-            } while (!$this->getToken($tokens, null, array(';', '=', '|', ')', ']', '}'), false)); 
+            } while (!$this->getToken($tokens, null, array(';', '.', '=', '|', ')', ']', '}'), false)); 
         
             return $return;
         }
@@ -409,6 +409,37 @@ namespace asciidia\plugins {
 
                         $child = $child->nextSibling;
                     }
+                    break;
+                case 'option':
+                    $ctx = $context->addContext();
+                    $ctx->translate(3, 2);
+                
+                    $child = $node->firstChild;
+                    while ($child) {
+                        $render($child, $ctx, $l2r);
+            
+                        $child = $child->nextSibling;
+                    }
+                
+                    list($tw, $th) = $ctx->getSize(true);
+                
+                    $twf = ($tw + 3) / 2;
+                
+                    $context->drawLine(0, 1, $twf, 1, ($l2r ? 1 : -1));
+                    $context->drawLine($twf, 1, $tw + 2, 1);
+                    $context->drawPath(
+                        array(
+                            array(3, 3), array(1, 3), array(1, 1), array(0, 1)
+                        ),
+                        false, true
+                    );
+                    $context->drawPath(
+                        array(
+                            array($tw + 2, 1), array($tw + 1, 1), array($tw + 1, 3), array($tw - 1, 3)
+                        ),
+                        false, true
+                    );
+                
                     break;
                 case 'expression':
                     $indent = (int)($node->childNodes->length > 1) * 3;
@@ -553,17 +584,17 @@ namespace asciidia\plugins {
             $dom    = new \DOMDocument();
             $syntax = $dom->appendChild($dom->createElement('syntax'));
         
-            // if (!($token = $this->getToken($tokens, self::T_OPERATOR, '{'))) {
-            //     // $this->error('EBNF must start with "{"');
-            // }
+            if (($token = $this->getToken($tokens, self::T_OPERATOR, '{', false))) {
+                $this->eatToken($tokens);
+            }
 
             while (count($tokens) > 0 && ($token = $this->getToken($tokens, self::T_IDENTIFIER))) {
                 $syntax->appendChild($this->parseProd($dom, $tokens, $token));
             }
         
-            // if (count($tokens) > 1 || $this->chkToken($token, self::T_OPERATOR, '}')) {
-            //     // $this->error('EBNF must end with "}"');
-            // }
+            if (count($tokens) > 1 || (count($tokens) == 1 && !$this->chkToken($token, self::T_OPERATOR, '}'))) {
+                $this->error('unexpected end of EBNF');
+            }
 
             // render syntax and return it's MVG commands
             $this->render($syntax);

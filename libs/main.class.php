@@ -33,6 +33,15 @@ namespace asciidia {
     /**/
     {
         /**
+         * Asciidia version and version-date.
+         *
+         * @octdoc  d:main/T_VERSION
+         * @type    string
+         */
+        const T_VERSION = '0.3.2';
+        /**/
+        
+        /**
          * Instance of loaded plugin.
          *
          * @octdoc  v:main/$plugin
@@ -282,6 +291,8 @@ namespace asciidia {
                 printf("error: %s\n", $msg);
                 exit(1);
             }
+
+            printf("asciidia v%s -- (c) by Harald Lapp <harald@octris.org>\n", self::T_VERSION);
 
             printf("usage: %s -h\n", $argv[0]);
             printf("usage: %s -t ... -h\n", $argv[0]);
