@@ -69,10 +69,9 @@ namespace asciidia\chart\graph {
 
             for ($i = 0, $cnt = count($values); $i < $cnt; ++$i) {
                 if ($values[$i] > 0) {
-                    $ctx->addCommand(sprintf(
-                        'rectangle %f,%f %f,%f', 
+                    $ctx->drawRectangle(
                         $i * $x_mul + $b_o, $zero, $i * $x_mul + $b_o + $b_w, $zero - $values[$i] * $y_mul
-                    ));
+                    );
                 }
             }
         }

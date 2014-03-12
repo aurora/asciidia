@@ -128,10 +128,9 @@ namespace asciidia\chart\graph {
                         $ctx->setFill(array('color' => $this->options[$k]['background_color']));
                         $ctx->setStroke(array('color' => $this->options[$k]['border_color']));
 
-                        $ctx->addCommand(sprintf(
-                            'rectangle %f,%f %f,%f', 
+                        $ctx->drawRectangle(
                             $i * $x_mul + $b_o, $zero, $i * $x_mul + $b_o + $b_w, $zero - $v * $y_mul
-                        ));
+                        );
                     }
                 }
             }
