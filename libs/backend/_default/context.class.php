@@ -398,6 +398,18 @@ namespace asciidia\backend\_default {
         }
 
         /**
+         * Draw a path.
+         *
+         * @octdoc  m:context/drawPath
+         * @param   string      $d                  Path definition.
+         */
+        public function drawPath($d)
+        /**/
+        {
+            $this->mvg[] = "path '" . $d . "'";
+        }
+
+        /**
          * Draw a line between two points. An optional arrow head may be specified:
          *
          * *    false -- no arrow heads

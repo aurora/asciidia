@@ -325,6 +325,15 @@ namespace asciidia {
         /**/
 
         /**
+         * Draw a path.
+         *
+         * @octdoc  m:context/drawPath
+         * @param   string      $d                  Path definition.
+         */
+        abstract public function drawPath($d);
+        /**/
+
+        /**
          * Draw a path between specified points. An optional arrow head may be
          * specified.
          *

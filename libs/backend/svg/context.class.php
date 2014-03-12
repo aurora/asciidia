@@ -365,6 +365,23 @@ namespace asciidia\backend\svg {
         }
 
         /**
+         * Draw a path.
+         *
+         * @octdoc  m:context/drawPath
+         * @param   string      $d                  Path definition.
+         */
+        public function drawPath($d)
+        /**/
+        {
+            $path = $this->doc->createElement('path');
+            $path->setAttribute('d', $d);
+            
+            $this->setStyles($path);
+    
+            $this->svg->appendChild($path);
+        }
+
+        /**
          * Draw a line between two points. An optional arrow head may be specified:
          *
          * *    false -- no arrow heads
