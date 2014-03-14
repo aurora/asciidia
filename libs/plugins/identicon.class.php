@@ -263,14 +263,15 @@ namespace asciidia\plugins {
 
             // generate corner sprites
             $ctx = $this->getContext();
-            $ctx->setStroke(array('color' => 'transparent'));
-        
+
+            $ctx->setStroke(array('color' => array($cfr, $cfg, $cfb)));
             $this->drawBorder($ctx, $csh, array($cfr, $cfg, $cfb), ($cro * 270) % 360, 0, 0);
             $this->drawBorder($ctx, $csh, array($cfr, $cfg, $cfb), ($cro * 270 + 90) % 360, $this->spriteZ * 2, 0);
             $this->drawBorder($ctx, $csh, array($cfr, $cfg, $cfb), ($cro * 270 + 180) % 360, $this->spriteZ * 2, $this->spriteZ * 2);
             $this->drawBorder($ctx, $csh, array($cfr, $cfg, $cfb), ($cro * 270 + 270) % 360, 0, $this->spriteZ * 2);
 
             // generate side sprites
+            $ctx->setStroke(array('color' => array($sfr, $sfg, $sfb)));
             $this->drawBorder($ctx, $ssh, array($sfr, $sfg, $sfb), ($sro * 270) % 360, $this->spriteZ, 0);
             $this->drawBorder($ctx, $ssh, array($sfr, $sfg, $sfb), ($sro * 270 + 90) % 360, $this->spriteZ * 2, $this->spriteZ);
             $this->drawBorder($ctx, $ssh, array($sfr, $sfg, $sfb), ($sro * 270 + 180) % 360, $this->spriteZ, $this->spriteZ * 2);
@@ -288,6 +289,7 @@ namespace asciidia\plugins {
                 $rgb = array(255, 255, 255);
             }
 
+            $ctx->setStroke(array('color' => array($cfr, $cfg, $cfb)));
             $this->drawCenter($ctx, $xsh, array($cfr, $cfg, $cfb), $rgb, $this->spriteZ, $this->spriteZ);
         
             return $this->getDocument();
