@@ -58,6 +58,20 @@ namespace asciidia\backend {
             $svg->setAttribute('width', $w);
             $svg->setAttribute('height', $h);
             
+            // { apply crisp-edges "trick" if necessary
+            list($xs, $ys) = $this->context->getCellSize();
+
+            $tx = ($xs % 2 == 0 ? 0.5 : 0);
+            $ty = ($ys % 2 == 0 ? 0.5 : 0);
+            
+            if ($tx != 0 || $ty != 0) {
+                $svg->firstChild->setAttribute('transform', sprintf(
+                    'translate(%f %f)',
+                    $tx, $ty
+                ));
+            }
+            // }
+            
             return $this->doc->saveXML();
         }
 
