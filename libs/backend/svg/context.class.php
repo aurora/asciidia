@@ -181,6 +181,21 @@ namespace asciidia\backend\svg {
         }
 
         /**
+         * Rotate cursor.
+         *
+         * @octdoc  m:context/rotate
+         * @param   float       $angle          Angle to rotate by.
+         */
+        public function rotate($angle)
+        /**/
+        {
+            $g = $this->svg->appendChild($this->doc->createElement('g'));
+            $g->setAttribute('transform', sprintf('rotate(%f)', $angle));
+        
+            $this->svg = $g;
+        }
+
+        /**
          * Change font settings.
          *
          * @octdoc  m:context/setFont
@@ -214,7 +229,7 @@ namespace asciidia\backend\svg {
                 switch ($name) {
                     case 'color':
                         if (is_string($value)) {
-                            $this->fill['color'] = $value;
+                            $this->fill['color'] = ($value == 'transparent' ? 'none' : $value);
                         } elseif (is_array($value) && count($value) == 3) {
                             $this->fill['color'] = vsprintf('rgb(%d,%d,%d)', $value);
                         }
@@ -242,7 +257,7 @@ namespace asciidia\backend\svg {
                         break;
                     case 'color':
                         if (is_string($value)) {
-                            $this->stroke['color'] = $value;
+                            $this->stroke['color'] = ($value == 'transparent' ? 'none' : $value);
                         } elseif (is_array($value) && count($value) == 3) {
                             $this->stroke['color'] = vsprintf('rgb(%d,%d,%d)', $value);
                         }

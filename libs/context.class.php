@@ -272,6 +272,15 @@ namespace asciidia {
         }
 
         /**
+         * Rotate cursor.
+         *
+         * @octdoc  m:context/rotate
+         * @param   float       $angle          Angle to rotate by.
+         */
+        abstract public function rotate($angle);
+        /**/
+
+        /**
          * Change font settings.
          *
          * @octdoc  m:context/setFont

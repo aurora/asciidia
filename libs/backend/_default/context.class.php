@@ -187,6 +187,18 @@ namespace asciidia\backend\_default {
         }
 
         /**
+         * Rotate cursor.
+         *
+         * @octdoc  m:context/rotate
+         * @param   float       $angle          Angle to rotate by.
+         */
+        public function rotate($angle)
+        /**/
+        {
+            $this->mvg[] = sprintf('rotate %f', $angle);
+        }
+
+        /**
          * Change font settings.
          *
          * @octdoc  m:context/setFont
