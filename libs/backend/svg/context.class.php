@@ -150,29 +150,6 @@ namespace asciidia\backend\svg {
             return $context;
         }
     
-        /**
-         * Add MVG command to command-list.
-         *
-         * @octdoc  m:context/addCommand
-         * @param   string      $command        Command to at.
-         */
-        public function addCommand($command)
-        /**/
-        {
-            trigger_error("'addCommand' is not available for 'svg' backend\n");
-        }
-
-        /**
-         * Clear MVG command stack.
-         *
-         * @octdoc  m:context/clearCommands
-         */
-        public function clearCommands()
-        /**/
-        {
-            trigger_error("'clearCommand' is not available for 'svg' backend\n");
-        }
-
         /*
          * misc commands
          */

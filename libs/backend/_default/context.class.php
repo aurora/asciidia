@@ -94,18 +94,6 @@ namespace asciidia\backend\_default {
         }
     
         /**
-         * Add MVG command to command-list.
-         *
-         * @octdoc  m:context/addCommand
-         * @param   string      $command        Command to at.
-         */
-        public function addCommand($command)
-        /**/
-        {
-            $this->mvg[] = $command;
-        }
-
-        /**
          * Return MVG commands.
          *
          * @octdoc  m:context/getCommands
@@ -171,23 +159,6 @@ namespace asciidia\backend\_default {
             $mvg[] = 'pop graphic-context';
 
             return $mvg;
-        }
-
-        /**
-         * Clear MVG command stack.
-         *
-         * @octdoc  m:context/clearCommands
-         */
-        public function clearCommands()
-        /**/
-        {
-            $this->applyCallback(function($context) {
-                $context->clearCommands();
-            
-                unset($context);
-            });
-        
-            $this->mvg = array();
         }
 
         /*
