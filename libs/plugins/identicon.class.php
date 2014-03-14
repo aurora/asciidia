@@ -205,7 +205,7 @@ namespace asciidia\plugins {
          * @param   float       $tx             X-translation value.
          * @param   float       $ty             Y-translation value.
          */
-        public function drawCenter(context $context, $shape, array $frgb, array $brgb, $tx, $ty)
+        public function drawCenter(\asciidia\context $context, $shape, array $frgb, array $brgb, $tx, $ty)
         /**/
         {
             $points       = self::$center[($shape <= 7 ? $shape : 7)];
