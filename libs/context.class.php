@@ -231,6 +231,18 @@ namespace asciidia {
         }
 
         /**
+         * Return size of a cell.
+         *
+         * @octdoc  m:context/getCellSize
+         * @return  array                       w,h size of a cell.
+         */
+        public function getCellSize()
+        /**/
+        {
+            return array($this->xs, $this->ys);
+        }
+
+        /**
          * Enable a debugging mode for context.
          *
          * @octdoc  m:context/enableDebug
