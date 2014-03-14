@@ -101,14 +101,19 @@ namespace asciidia\backend\svg {
          *
          * @octdoc  m:context/__construct
          * @param   \DOMNode            $parent             Parent node.
+         * @param   array               $inherit            Optional settings to inherit.
          */
-        public function __construct(\DOMNode $parent)
+        public function __construct(\DOMNode $parent, array $inherit = array())
         /**/
         {
             parent::__construct();
         
             $this->doc = $parent->ownerDocument;
             $this->svg = $parent->appendChild($this->doc->createElement('g'));
+            
+            foreach ($inherit as $name => $settings) {
+                $this->{$name} = $settings;
+            }
         }
 
         /**
@@ -138,7 +143,14 @@ namespace asciidia\backend\svg {
             $this->children[] = array(
                 'tx'        => $this->tx,
                 'ty'        => $this->ty,
-                'context'   => ($context = new static($this->svg))
+                'context'   => ($context = new static(
+                    $this->svg,
+                    array(
+                        'font'   => $this->font,
+                        'fill'   => $this->fill,
+                        'stroke' => $this->stroke
+                    )
+                ))
             );
         
             $context->__set('xs', $this->xs);
