@@ -159,7 +159,7 @@ namespace asciidia\plugins {
          * @param   float       $tx             X-translation value.
          * @param   float       $ty             Y-translation value.
          */
-        public function drawBorder(context $context, $shape, array $rgb, $rotation, $tx, $ty)
+        public function drawBorder(\asciidia\context $context, $shape, array $rgb, $rotation, $tx, $ty)
         /**/
         {
             $points       = self::$border[($shape <= 15 ? $shape : 15)];

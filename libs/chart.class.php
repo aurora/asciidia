@@ -109,7 +109,7 @@ namespace asciidia {
          * @param   int                 $height             Height of chart to create.
          * @param   array               $options            Optional options.
          */
-        public function __construct(context $context, $width, $height, array $options = array())
+        public function __construct(\asciidia\context $context, $width, $height, array $options = array())
         /**/
         {
             $this->context = $context->addContext();
