@@ -189,9 +189,9 @@ namespace asciidia\plugins {
 
             $ctx = $context->addContext();
             $ctx->translate($tx, $ty);
-            $ctx->addCommand(sprintf('rotate %f', $rotation));
-            $ctx->addCommand(vsprintf('fill rgb(%d,%d,%d)', $rgb));
-            $ctx->addCommand(sprintf("path 'M %s Z'", implode(' ', $poly)));
+            $ctx->rotate($rotation);
+            $ctx->setFill(array('color' => $rgb));
+            $ctx->drawPath('M ' . implode(' ', $poly) . ' Z');
         }
 
         /**
@@ -221,10 +221,10 @@ namespace asciidia\plugins {
 
                 $ctx = $context->addContext();
                 $ctx->translate($tx, $ty);
-                $ctx->addCommand(vsprintf('fill rgb(%d,%d,%d)', $brgb));
-                $ctx->addCommand(sprintf('rectangle 0,0 %f,%f', $spriteZCoord, $spriteZCoord));
-                $ctx->addCommand(vsprintf('fill rgb(%d,%d,%d)', $frgb));
-                $ctx->addCommand(sprintf("path 'M %s Z'", implode(' ', $poly)));
+                $ctx->setFill(array('color' => $brgb));
+                $ctx->drawRectangle(0, 0, $spriteZCoord, $spriteZCoord);
+                $ctx->setFill(array('color' => $frgb));
+                $ctx->drawPath('M ' . implode(' ', $poly) . ' Z');
             }
         }
 
@@ -263,7 +263,7 @@ namespace asciidia\plugins {
 
             // generate corner sprites
             $ctx = $this->getContext();
-            $ctx->addCommand('stroke transparent');
+            $ctx->setStroke(array('color' => 'transparent'));
         
             $this->drawBorder($ctx, $csh, array($cfr, $cfg, $cfb), ($cro * 270) % 360, 0, 0);
             $this->drawBorder($ctx, $csh, array($cfr, $cfg, $cfb), ($cro * 270 + 90) % 360, $this->spriteZ * 2, 0);
