@@ -427,13 +427,13 @@ namespace asciidia\plugins {
                 
                     $context->drawLine(0, 1, $twf, 1, ($l2r ? 1 : -1));
                     $context->drawLine($twf, 1, $tw + 2, 1);
-                    $context->drawPath(
+                    $context->drawConnection(
                         array(
                             array(3, 3), array(1, 3), array(1, 1), array(0, 1)
                         ),
                         false, true
                     );
-                    $context->drawPath(
+                    $context->drawConnection(
                         array(
                             array($tw + 2, 1), array($tw + 1, 1), array($tw + 1, 3), array($tw - 1, 3)
                         ),
