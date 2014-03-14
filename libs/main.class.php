@@ -353,7 +353,7 @@ examples:
             if (substr($classpath, 0, 8) == 'asciidia') {
                 $file = __DIR__ . '/' . preg_replace('|\\\\|', '/', substr($classpath, 8)) . '.class.php';
 
-                require_once($file);
+                @include_once($file);
             }        
         }
     }
