@@ -12,7 +12,7 @@
 
 ## Description
 
-Asciidia generates bitmap files (png) from simple ASCII diagrams. In that it is similar
+Asciidia generates bitmap or vector files from simple ASCII diagrams. In that it is similar
 to programs like [ditaa](http://ditaa.sourceforge.net/). It's build on top of a plugin
 architecture to make it easy to enhance it with additional diagram or drawing plugins. 
 Currently available plugin types are:
@@ -22,7 +22,8 @@ Currently available plugin types are:
 - syntax-diagrams (railroad diagrams) by specifying an EBNF
 - identicon generator
 
-Asciidia requires and uses imagemagick to render it's diagrams to a bitmap.
+Asciidia can directly generate SVG and ImageMagick MVG files, it can make use of ImageMagick
+"convert" utility to render to many other image formats, too.
 
 ### Parameters
 
