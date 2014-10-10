@@ -2,11 +2,12 @@
 
 ## Version
     
-    v0.3.5, 2014-10-10
+    v0.3.6, 2014-10-10
 
 ## Usage
 
     $ ./asciidia.php -h
+    $ ./asciidia.php -v
     $ ./asciidia.php -t ... -h
     $ ./asciidia.php -t ... -i ... -o ... [-c ...] [-s ...]
 
@@ -29,6 +30,8 @@ Asciidia can directly generate SVG and ImageMagick MVG files, it can make use of
 
     -h  show information about command-line arguments. provide a diagram type
         with '-t' to show help about the plugin
+
+    -v  show version information
 
     -t  plugin type to load. available plugins are:
 
