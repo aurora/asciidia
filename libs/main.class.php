@@ -38,7 +38,8 @@ namespace asciidia {
          * @octdoc  d:main/T_VERSION
          * @type    string
          */
-        const T_VERSION = '0.3.2';
+        const T_VERSION      = '0.3.5';
+        const T_VERSION_DATE = '2014-10-10';
         /**/
         
         /**
