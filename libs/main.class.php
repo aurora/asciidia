@@ -163,6 +163,10 @@ namespace asciidia {
         
             $opt = $this->getOptions();
 
+            if (array_key_exists('v', $opt)) {
+                printf("asciidia %s (%s)\n", self::T_VERSION, self::T_VERSION_DATE);
+                exit(0);
+            }
             if (array_key_exists('t', $opt)) {
                 $plugin = $this->loadPlugin($opt['t']);
             }
@@ -306,6 +310,8 @@ namespace asciidia {
                 printf("default options:
     -h  show information about command-line arguments. provide a diagram type
         with '-t' to show help about the plugin
+        
+    -v  show version information
 
     -t  plugin type to load. available plugins are:
 
