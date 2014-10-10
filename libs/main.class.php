@@ -38,7 +38,7 @@ namespace asciidia {
          * @octdoc  d:main/T_VERSION
          * @type    string
          */
-        const T_VERSION      = '0.3.5';
+        const T_VERSION      = '0.3.6';
         const T_VERSION_DATE = '2014-10-10';
         /**/
         
@@ -300,6 +300,7 @@ namespace asciidia {
             printf("asciidia v%s -- (c) by Harald Lapp <harald@octris.org>\n", self::T_VERSION);
 
             printf("usage: %s -h\n", $argv[0]);
+            printf("usage: %s -v\n", $argv[0]);
             printf("usage: %s -t ... -h\n", $argv[0]);
             printf("usage: %s -t ... -i ... -o [format:]... [-c ...] [-s ...]\n", $argv[0]);
 
