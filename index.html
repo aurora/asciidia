@@ -1,103 +1,171 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
-  <meta charset='utf-8'>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Asciidia by aurora</title>
 
-  <title>aurora/asciidia @ GitHub</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 
-  <style type="text/css">
-    body {
-      margin-top: 1.0em;
-      background-color: #fff;
-      font-family: Helvetica, Arial, FreeSans, san-serif;
-      color: #000;
-    }
-    #container {
-      margin: 0 auto;
-      width: 700px;
-    }
-    h1 { font-size: 3.8em; color: #000; margin-bottom: 3px; }
-    h1 .small { font-size: 0.4em; }
-    h1 a { text-decoration: none }
-    h2 { font-size: 1.5em; color: #000; }
-    h3 { text-align: center; color: #000; }
-    a { color: #000; }
-    .description { font-size: 1.2em; margin-bottom: 30px; margin-top: 30px; font-style: italic;}
-    .download { float: right; }
-    pre { background: #000; color: #fff; padding: 15px;}
-    hr { border: 0; width: 80%; border-bottom: 1px solid #aaa}
-    .footer { text-align:center; padding-top:30px; font-style: italic; }
-  </style>
-</head>
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Asciidia</h1>
+        <p>Create SVG or bitmaps from simple ASCII diagrams, EBNF notations, etc.</p>
+        <p class="view"><a href="https://github.com/aurora/asciidia">View the Project on GitHub <small>aurora/asciidia</small></a></p>
+        <ul>
+          <li><a href="https://github.com/aurora/asciidia/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/aurora/asciidia/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/aurora/asciidia">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
+<a id="asciidia" class="anchor" href="#asciidia" aria-hidden="true"><span class="octicon octicon-link"></span></a>asciidia</h1>
 
-<body>
-  <a href="http://github.com/aurora/asciidia"><img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" /></a>
+<h2>
+<a id="version" class="anchor" href="#version" aria-hidden="true"><span class="octicon octicon-link"></span></a>Version</h2>
 
-  <div id="container">
+<pre><code>v0.3.6, 2014-10-10
+</code></pre>
 
-    <div class="download">
-      <a href="http://github.com/aurora/asciidia/zipball/master">
-        <img border="0" width="90" src="http://github.com/images/modules/download/zip.png"></a>
-      <a href="http://github.com/aurora/asciidia/tarball/master">
-        <img border="0" width="90" src="http://github.com/images/modules/download/tar.png"></a>
+<h2>
+<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Usage</h2>
+
+<pre><code>$ ./asciidia.php -h
+$ ./asciidia.php -v
+$ ./asciidia.php -t ... -h
+$ ./asciidia.php -t ... -i ... -o ... [-c ...] [-s ...]
+</code></pre>
+
+<h2>
+<a id="description" class="anchor" href="#description" aria-hidden="true"><span class="octicon octicon-link"></span></a>Description</h2>
+
+<p>Asciidia generates bitmap or vector files from simple ASCII diagrams. In that it is similar
+to programs like <a href="http://ditaa.sourceforge.net/">ditaa</a>. It's build on top of a plugin
+architecture to make it easy to enhance it with additional diagram or drawing plugins. 
+Currently available plugin types are:</p>
+
+<ul>
+<li>simple ASCII diagrams, currently not as many features as what ditaa provides, though</li>
+<li>directory tree diagrams</li>
+<li>syntax-diagrams (railroad diagrams) by specifying an EBNF</li>
+<li>identicon generator</li>
+</ul>
+
+<p>Asciidia can directly generate SVG and ImageMagick MVG files, it can make use of ImageMagick
+"convert" utility to render to many other image formats, too.</p>
+
+<h3>
+<a id="parameters" class="anchor" href="#parameters" aria-hidden="true"><span class="octicon octicon-link"></span></a>Parameters</h3>
+
+<pre><code>-h  show information about command-line arguments. provide a diagram type
+    with '-t' to show help about the plugin
+
+-v  show version information
+
+-t  plugin type to load. available plugins are:
+
+    diagram
+    ebnf
+    identicon
+    test
+    tree
+
+-i  input filename or '-' for STDIN
+
+-o  output filename or '-' for STDOUT
+
+-c  defines the widht/height of each cell / character on the canvas in 
+    pixel. Notation is ...x... (width x height) or ... (width x width).
+
+-s  scales image. notation is ...x... (width x height) whereas ... is a 
+    number to scale to. if width or height are ommited, image will be 
+    scaled by keeping aspect ratio. 
+</code></pre>
+
+<p>It's possible to specify an output format by prefixing the output filename in the form</p>
+
+<pre><code>format:filename
+</code></pre>
+
+<p>For example:</p>
+
+<pre><code>./asciidia.php -t ebnf -i rules.ebnf -o svg:diagram.svg
+</code></pre>
+
+<h2>
+<a id="requirements" class="anchor" href="#requirements" aria-hidden="true"><span class="octicon octicon-link"></span></a>Requirements</h2>
+
+<ul>
+<li>  php 5.3</li>
+<li>  imagemagick is only required, if output format is not 'svg'</li>
+</ul>
+
+<h2>
+<a id="example" class="anchor" href="#example" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example</h2>
+
+<p>The following embedded image was created on Mac OS X using asciidia and
+inkscape with the command:</p>
+
+<pre><code>/Applications/Inkscape.app/Contents/Resources/bin/inkscape \
+    -z -e test/ebnf.png -w 500 \
+    &lt;(asciidia -t ebnf -i test/ebnf.txt -o svg:-)
+</code></pre>
+
+<p><img src="https://github.com/aurora/asciidia/raw/master/test/ebnf.png" alt="ebnf"></p>
+
+<h2>
+<a id="license" class="anchor" href="#license" aria-hidden="true"><span class="octicon octicon-link"></span></a>License</h2>
+
+<p>asciidia</p>
+
+<p>Copyright (c) by Harald Lapp &lt;<a href="mailto:harald@octris.org">harald@octris.org</a>&gt;</p>
+
+<p>This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.</p>
+
+<p>This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.</p>
+
+<p>You should have received a copy of the GNU General Public License
+along with this program.  If not, see &lt;<a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>&gt;.</p>
+
+<h2>
+<a id="thanks" class="anchor" href="#thanks" aria-hidden="true"><span class="octicon octicon-link"></span></a>Thanks</h2>
+
+<p>I would like to thank the following person(s) for improvments and bug fixing:</p>
+
+<ul>
+<li>
+<p>Liviu Cristian Mirea-Ghiban, <a href="http://github.com/liviumirea">http://github.com/liviumirea</a></p>
+
+<p>identicon plugin: </p>
+
+<ol>
+<li> The sprites were being drawn with an additional 1px per width and height and had bleeding edges in the final image.</li>
+<li> The rotations didn't completely match the ones in the original PHP Identicon script.</li>
+</ol>
+</li>
+</ul>
+      </section>
     </div>
-
-    <h1><a href="http://github.com/aurora/asciidia">asciidia</a>
-      <span class="small">by <a href="http://github.com/aurora">aurora</a></span></h1>
-
-    <div class="description">
-      Create bitmaps from simple ASCII diagrams
-    </div>
-
-    <h2>Description</h2>
-
-    <p>
-        Asciidia generates bitmap files (png) from simple ASCII diagrams. In that it is similar to programs 
-        like <a href="http://ditaa.sf.net">ditaa</a>. It's build on top of a plugin architecture to make 
-        it easy to enhance it with additional diagram or drawing plugins. 
-    </p>
+    <footer>
+      <p>Project maintained by <a href="https://github.com/aurora">aurora</a></p>
+      <p>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></p>
+    </footer>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
     
-    <p>
-        Currently available plugin types are:
-    </p>
-    
-    <ul>
-        <li>simple ASCII diagrams, currently not as many features as what ditaa provides, though</li>
-        <li>directory tree diagrams</li>
-        <li>syntax-diagrams (railroad diagrams) by specifying an EBNF</li>
-        <li>identicon generator</li>
-    </ul>
-    
-    <p>
-        Asciidia requires and uses imagemagick to render it's diagrams to a bitmap.
-    </p>
-
-    <h2>Authors</h2>
-<p>Harald Lapp (harald.lapp@gmail.com)
-<br/>
-<br/>      </p>
-<h2>Contact</h2>
-<p>Harald Lapp (harald.lapp@gmail.com)
-<br/>      </p>
-
-
-    <h2>Download</h2>
-    <p>
-      You can download this project in either
-      <a href="http://github.com/aurora/asciidia/zipball/master">zip</a> or
-      <a href="http://github.com/aurora/asciidia/tarball/master">tar</a> formats.
-    </p>
-    <p>You can also clone the project with <a href="http://git-scm.com">Git</a>
-      by running:
-      <pre>$ git clone git://github.com/aurora/asciidia</pre>
-    </p>
-
-    <div class="footer">
-      get the source code on GitHub : <a href="http://github.com/aurora/asciidia">aurora/asciidia</a>
-    </div>
-
-  </div>
-
-  
-</body>
+  </body>
 </html>
